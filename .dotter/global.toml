@@ -1,0 +1,17 @@
+[helpers]
+
+[default]
+depends = []
+
+[default.files]
+
+zshrc = "~/.zshrc"
+
+hypr = "~/.config/hypr/"
+nvim = "~/.config/nvim/"
+rofi = "~/.config/rofi/"
+yazi = "~/.config/yazi/"
+dunst = "~/.config/dunst/"
+
+
+[default.variables]

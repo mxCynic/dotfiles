@@ -1,0 +1,22 @@
+[symlinks]
+"hypr/Execs.conf" = "/home/mx/.config/hypr/Execs.conf"
+"hypr/Windowrules.conf" = "/home/mx/.config/hypr/Windowrules.conf"
+"hypr/binds.conf" = "/home/mx/.config/hypr/binds.conf"
+"hypr/hyprland.conf" = "/home/mx/.config/hypr/hyprland.conf"
+"nvim/.gitignore" = "/home/mx/.config/nvim/.gitignore"
+"nvim/.neoconf.json" = "/home/mx/.config/nvim/.neoconf.json"
+"nvim/LICENSE" = "/home/mx/.config/nvim/LICENSE"
+"nvim/README.md" = "/home/mx/.config/nvim/README.md"
+"nvim/init.lua" = "/home/mx/.config/nvim/init.lua"
+"nvim/lazy-lock.json" = "/home/mx/.config/nvim/lazy-lock.json"
+"nvim/lazyvim.json" = "/home/mx/.config/nvim/lazyvim.json"
+"nvim/lua/config/autocmds.lua" = "/home/mx/.config/nvim/lua/config/autocmds.lua"
+"nvim/lua/config/keymaps.lua" = "/home/mx/.config/nvim/lua/config/keymaps.lua"
+"nvim/lua/config/lazy.lua" = "/home/mx/.config/nvim/lua/config/lazy.lua"
+"nvim/lua/config/options.lua" = "/home/mx/.config/nvim/lua/config/options.lua"
+"nvim/lua/plugins/cmp.lua" = "/home/mx/.config/nvim/lua/plugins/cmp.lua"
+"nvim/lua/plugins/example.lua" = "/home/mx/.config/nvim/lua/plugins/example.lua"
+"nvim/stylua.toml" = "/home/mx/.config/nvim/stylua.toml"
+zshrc = "/home/mx/.zshrc"
+
+[templates]
