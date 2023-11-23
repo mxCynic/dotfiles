@@ -8,11 +8,13 @@ fi
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 export PATH=$PATH:~/mxbin/clash/
-export PATH=$PATH:~/mxbin/bar/
 export PATH=$PATH:~/.cargo/swww/
 export PATH=$PATH:~/.cargo/bin/
 export PATH=$PATH:~/.local/bin/
 export PATH=$HOME/.config/rofi/scripts:$PATH
+
+export BROWSER=microsoft-edge-dev.desktop
+
 
 
 # Path to your oh-my-zsh installation.
@@ -93,7 +95,8 @@ plugins=(
 # Add wisely, as too many plugins slow down shell startup.
 
 source $ZSH/oh-my-zsh.sh
-source ~/somewhere/fzf-tab.plugin.zsh
+source ~/.config/fzf-tab/fzf-tab.plugin.zsh
+source ~/.config/fzf-tab-source/fzf-tab-source.plugin.zsh
 
 # User configuration
 
@@ -164,4 +167,3 @@ if [ -n "${NVIM_LISTEN_ADDRESS+x}" ]; then
   export MANPAGER="/usr/local/bin/nvr -c 'Man!' -o -"
 fi
 
-# test 
