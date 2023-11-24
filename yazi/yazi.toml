@@ -40,7 +40,9 @@ play = [
   { exec = 'mpv "%1"', orphan = true, for = "windows" },
   { exec = '''mediainfo "$1"; echo "Press enter to exit"; read''', block = true, desc = "Show media info", for = "unix" },
 ]
-image = [{ exec = 'swww img "$@"' }]
+image = [
+  { exec = 'swww img "$@" --transition-fps 90 --transition-duration 5 --transition-type any' },
+]
 read = [{ exec = 'zathura "$@" ' }]
 
 [open]
