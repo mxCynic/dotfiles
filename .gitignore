@@ -1,4 +1,5 @@
 .dotter/cache.toml
 .dotter/local.toml
+nvim/lazy-lock.json
 
 
