@@ -134,6 +134,7 @@ alias battery="upower -i `upower -e | grep 'BAT'`"
 alias mf="~/mxbin/musicfox.sh"
 alias ct="countdown"
 alias mv="mv -i"
+alias lg="lazygit"
 
 
 
