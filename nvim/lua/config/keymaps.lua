@@ -11,3 +11,4 @@ local map = Util.safe_keymap_set
 
 map({ "i", "n" }, "<A-o>", "<esc>", { desc = "Esc" })
 map("n", "<A-o>", ":noh<enter>", { desc = "Nohelight" })
+map("n", "<leader>fl", ":Telescope builtin<enter>", { desc = "Telescope" })
