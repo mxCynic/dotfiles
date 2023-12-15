@@ -8,12 +8,12 @@ fi
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 export PATH=$PATH:~/mxbin/clash/
-export PATH=$PATH:~/.cargo/swww/
 export PATH=$PATH:~/.cargo/bin/
 export PATH=$PATH:~/.local/bin/
 export PATH=$HOME/.config/rofi/scripts:$PATH
+export PATH=$PATH:~/.config/hypr/scripts/
 
-export BROWSER=microsoft-edge-dev.desktop
+export BROWSER=Google-Chrome.desktop
 
 
 
@@ -169,15 +169,6 @@ alias lg="lazygit"
 
 # starship
  eval "$(starship init zsh)"
-
-function ya() {
-    tmp="$(mktemp -t "yazi-cwd.XXXXX")"
-    yazi --cwd-file="$tmp"
-    if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
-        cd -- "$cwd"
-    fi
-    rm -f -- "$tmp"
-}
 
 if [ -n "${NVIM_LISTEN_ADDRESS+x}" ]; then
   export MANPAGER="/usr/local/bin/nvr -c 'Man!' -o -"

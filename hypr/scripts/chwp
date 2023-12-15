@@ -1,0 +1,16 @@
+#!/bin/bash
+
+DIR=$HOME/Pictures/wallpapers
+PICS=($(ls ${DIR}))
+echo $PICS
+
+RANDOMPICS=${PICS[$RANDOM % ${#PICS[@]}]}
+echo $RANDOMPICS
+
+# if [[ $(pidof swaybg) ]]; then
+# 	pkill swaybg
+# fi
+
+swww query || swww init
+
+swww img ${DIR}/${RANDOMPICS} --transition-fps 90 --transition-type any --transition-duration 5
