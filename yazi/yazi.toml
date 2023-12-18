@@ -43,7 +43,7 @@ play = [
 image = [
   { exec = 'swww img "$@" --transition-fps 90 --transition-duration 5 --transition-type any' },
 ]
-read = [{ exec = 'zathura "$@" ' }]
+read = [{ exec = 'zathura "$@" ', orphan = true }]
 
 [open]
 rules = [
