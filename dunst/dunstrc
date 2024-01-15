@@ -1,6 +1,9 @@
 [global]
     font = SouCodePro 14
     origin = top-center
+
+    mouse_left = open_url
+
     # Allow a small subset of html markup:
     #   <b>bold</b>
     #   <i>italic</i>
@@ -74,6 +77,7 @@
     # Display notification on focused monitor.  Possible modes are:
     #   mouse: follow mouse pointer
     #   keyboard: follow window with keyboard focus
+    #
     #   none: don't follow anything
     #
     # "keyboard" needs a window manager that exports the
@@ -85,7 +89,7 @@
     follow = mouse
     # Should a notification popped up from history be sticky or timeout
     # as if it would normally do.
-    sticky_history = no
+    sticky_history = false
     # Maximum amount of notifications kept in history
     history_length = 20
     # Display indicators for URLs (U) and actions (A).
