@@ -139,6 +139,9 @@ return {
   {
     "nvim-treesitter/nvim-treesitter",
     opts = {
+      indent = {
+        enable = false,
+      },
       ensure_installed = {
         "bash",
         "html",

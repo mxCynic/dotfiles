@@ -22,6 +22,13 @@ return {
     require("orgmode").setup({
       org_agenda_files = "~/orgfiles/**/*",
       org_default_notes_file = "~/orgfiles/refile.org",
+      mappings = {
+        org = {
+
+          org_next_visible_heading = "<C-n>",
+          org_previous_visible_heading = "<C-P>",
+        },
+      },
     })
 
     require("org-bullets").setup({
