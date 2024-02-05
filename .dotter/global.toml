@@ -11,6 +11,7 @@ nvim = "~/.config/nvim/"
 rofi = "~/.config/rofi/"
 yazi = "~/.config/yazi/"
 dunst = "~/.config/dunst/"
+ricemood = "~/.config/ricemood/"
 
 [zsh.files]
 "zsh/zshrc" = "~/.zshrc"
