@@ -13,8 +13,8 @@
  *
  **/
 * {
-    background:     #2E3440FF;
-    background-alt: #383E4AFF;
+    background:     #00000000;
+    background-alt: #39c5bbFF;
     foreground:     #E5E9F0FF;
     selected:       #81A1C1FF;
     active:         #A3BE8CFF;

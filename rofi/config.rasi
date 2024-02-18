@@ -62,7 +62,7 @@ window {
 
     /* properties for all widgets */
     enabled:                     true;
-    margin:                      0px;
+    margin:                      10px;
     padding:                     0px;
     border:                      0px solid;
     border-radius:               0px;
@@ -75,11 +75,12 @@ window {
 mainbox {
     enabled:                     true;
     spacing:                     10px;
-    margin:                      0px;
+    margin:                      10px;
     padding:                     30px;
     border:                      0px solid;
     border-radius:               0px 0px 0px 0px;
     border-color:                @border-colour;
+    background-image:            url("~/.config/hypr/scripts/wallpaper.link", height);
     background-color:            transparent;
     children:                    [ "inputbar", "listview" ];
 }
