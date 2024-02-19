@@ -3,5 +3,5 @@
 -- Add any additional options here
 
 vim.filetype.add({
-  pattern = { [".*/hyprland%.conf"] = "hyprlang" },
+  pattern = { [".*/hypr/.*conf"] = "hyprlang" },
 })
