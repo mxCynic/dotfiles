@@ -139,14 +139,14 @@ source ~/.config/fzf-tab/fzf-tab.plugin.zsh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 alias vim=nvim
-alias bdwp="~/mxbin/baidudisk/opt/baidunetdisk/baidunetdisk"
+alias bdwp="~/Mxbin/baidudisk/opt/baidunetdisk/baidunetdisk"
 alias matlab="~/matlab/R2022b/bin/matlab -nosplash -nodesktop"
 alias chkit="GLFW_IM_MODULE=ibus kitty"
 alias kicat="kitty +kitten icat"
 alias hl="Hyprland"
 alias read="zathura"
 alias battery="upower -i `upower -e | grep 'BAT'`"
-alias mf="~/mxbin/musicfox.sh"
+alias mf="~/Mxbin/musicfox.sh"
 alias ct="countdown"
 alias mv="mv -i"
 alias lg="lazygit"
@@ -158,9 +158,16 @@ alias lg="lazygit"
 
 
 #  设置 socket 代理(clash)
+set_pro() {
  export http_proxy=socks5://127.0.0.1:7890
  export https_proxy=socks5://127.0.0.1:7890
  export ALL_PROXY=socks5://127.0.0.1:7890
+}
+unset_pro() {
+ export http_proxy=
+ export https_proxy=
+ export ALL_PROXY=
+}
 
  export GTK_MODULES=unity-gtk-module
 # git peoxy
