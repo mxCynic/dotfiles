@@ -55,7 +55,8 @@ zstyle ':fzf-tab:complete:(kill|ps):argument-rest' fzf-flags --preview-window=do
 # show systemd unit status
 zstyle ':fzf-tab:complete:systemctl-*:*' fzf-preview 'SYSTEMD_COLORS=1 systemctl status $word'
 # show file contents
-zstyle ':fzf-tab:complete:*:*' fzf-preview 'less ${(Q)realpath}'
+zstyle ':fzf-tab:complete:*:*' fzf-preview 'bat $realpath --color=auto 2> /dev/null ||
+  eza $realpath --color=always --icons'
 export LESSOPEN='|~/.lessfilter %s'
 # environment variable
 zstyle ':fzf-tab:complete:(-command-|-parameter-|-brace-parameter-|export|unset|expand):*' fzf-preview 'echo ${(P)word}'
@@ -150,6 +151,7 @@ alias mf="~/Mxbin/musicfox.sh"
 alias ct="countdown"
 alias mv="mv -i"
 alias lg="lazygit"
+alias svim="sudo -E nvim"
 
 
 
@@ -158,12 +160,18 @@ alias lg="lazygit"
 
 
 #  设置 socket 代理(clash)
-set_pro() {
+
+ export http_proxy=socks5://127.0.0.1:7890
+ export https_proxy=socks5://127.0.0.1:7890
+ export ALL_PROXY=socks5://127.0.0.1:7890
+
+spro(){
  export http_proxy=socks5://127.0.0.1:7890
  export https_proxy=socks5://127.0.0.1:7890
  export ALL_PROXY=socks5://127.0.0.1:7890
 }
-unset_pro() {
+
+upro(){
  export http_proxy=
  export https_proxy=
  export ALL_PROXY=
