@@ -10,10 +10,10 @@ fi
 export PATH=$PATH:~/mxbin/clash/
 export PATH=$PATH:~/.cargo/bin/
 export PATH=$PATH:~/.local/bin/
+export PATH=$PATH:/opt/cuda/bin/:$PATH
 export PATH=$HOME/.config/rofi/scripts:$PATH
 export PATH=$PATH:~/.config/hypr/scripts/
 
-export BROWSER=Google-Chrome.desktop
 
 
 
@@ -56,7 +56,7 @@ zstyle ':fzf-tab:complete:(kill|ps):argument-rest' fzf-flags --preview-window=do
 zstyle ':fzf-tab:complete:systemctl-*:*' fzf-preview 'SYSTEMD_COLORS=1 systemctl status $word'
 # show file contents
 zstyle ':fzf-tab:complete:*:*' fzf-preview 'bat $realpath --color=auto 2> /dev/null ||
-  eza $realpath --color=always --icons'
+  eza $realpath --color=always --icons --tree'
 export LESSOPEN='|~/.lessfilter %s'
 # environment variable
 zstyle ':fzf-tab:complete:(-command-|-parameter-|-brace-parameter-|export|unset|expand):*' fzf-preview 'echo ${(P)word}'
@@ -126,6 +126,7 @@ source ~/.config/fzf-tab/fzf-tab.plugin.zsh
 #   export EDITOR='vim'
 # else
 #   export EDITOR='mvim'
+export EDITOR='nvim';
 # fi
 
 # Compilation flags
@@ -152,7 +153,17 @@ alias ct="countdown"
 alias mv="mv -i"
 alias lg="lazygit"
 alias svim="sudo -E nvim"
+alias dolist="todoist-cli"
 
+# python go to visiual environment
+pgve ()
+{
+  if [ -f "pyvenv.cfg" ]; then
+    source bin/activate
+  else
+    echo "No visiual environment"
+  fi
+}
 
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
@@ -161,14 +172,13 @@ alias svim="sudo -E nvim"
 
 #  设置 socket 代理(clash)
 
- export http_proxy=socks5://127.0.0.1:7890
- export https_proxy=socks5://127.0.0.1:7890
- export ALL_PROXY=socks5://127.0.0.1:7890
+ export http_proxy=socks5://127.0.0.1:7891
+ export https_proxy=socks5://127.0.0.1:7891
 
 spro(){
- export http_proxy=socks5://127.0.0.1:7890
- export https_proxy=socks5://127.0.0.1:7890
- export ALL_PROXY=socks5://127.0.0.1:7890
+ export http_proxy=http://127.0.0.1:7891
+ export https_proxy=https://127.0.0.1:7891
+ export ALL_PROXY=socks5://127.0.0.1:7891
 }
 
 upro(){
@@ -179,8 +189,8 @@ upro(){
 
  export GTK_MODULES=unity-gtk-module
 # git peoxy
- git config --global http.proxy 'socks5://127.0.0.1:7890' 
- git config --global https.proxy 'socks5://127.0.0.1:7890'
+ git config --global http.proxy 'socks5://127.0.0.1:7891' 
+ git config --global https.proxy 'socks5://127.0.0.1:7891'
 
 # starship
  eval "$(starship init zsh)"
@@ -188,4 +198,6 @@ upro(){
 if [ -n "${NVIM_LISTEN_ADDRESS+x}" ]; then
   export MANPAGER="/usr/local/bin/nvr -c 'Man!' -o -"
 fi
+
+
 
