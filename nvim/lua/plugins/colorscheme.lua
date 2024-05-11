@@ -11,12 +11,15 @@ return {
   -- add gruvbox
   { "ellisonleao/gruvbox.nvim" },
 
+  -- add kastushika
+  { "rebelot/kanagawa.nvim" },
+
   -- Configure LazyVim to load gruvbox
   {
     "LazyVim/LazyVim",
 
     opts = {
-      colorscheme = "solarized-osaka",
+      colorscheme = "kanagawa-wave",
     },
   },
 }
