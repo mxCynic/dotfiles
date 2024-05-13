@@ -12,6 +12,7 @@ rofi = "~/.config/rofi/"
 yazi = "~/.config/yazi/"
 dunst = "~/.config/dunst/"
 ricemood = "~/.config/ricemood/"
+latexmkrc = "~/.latexmkrc"
 
 [zsh.files]
 "zsh/zshrc" = "~/.zshrc"
