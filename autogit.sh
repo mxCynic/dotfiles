@@ -7,4 +7,4 @@ git diff --name-only | xargs git add
 
 git commit -m "$(date +"%Y-%m-%d-%H-%M update")"
 
-git push
+git push origin master

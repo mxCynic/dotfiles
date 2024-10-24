@@ -39,7 +39,7 @@ return {
         -- stylua: ignore
         center = {
           { action = "Telescope find_files",                                     desc = " Find file",       icon = " ", key = "f" },
-          { action = "Neotree ~/Documents/Obsidian\\ Vault/",                    desc = " Notes",           icon = " ", key = "n" },
+          { action = "Telescope find_files cwd=~/Documents/Obsidian\\ Vault/",                    desc = " Notes",           icon = " ", key = "n" },
           { action = "Telescope oldfiles",                                       desc = " Recent files",    icon = " ", key = "r" },
           { action = "Telescope live_grep",                                      desc = " Find text",       icon = " ", key = "g" },
           { action = ":e ~/.config/nvim/init.lua",                               desc = " Config",          icon = " ", key = "c" },
