@@ -196,10 +196,11 @@ keymap = [
   ], run = "rename", desc = "Rename a file or directory" },
   { on = [
     ";",
-  ], run = "shell", desc = "Run a shell command" },
+  ], run = "shell --interactive", desc = "Run a shell command" },
   { on = [
     ":",
-  ], run = "shell --block", desc = "Run a shell command (block the UI until the command finishes)" },
+  ], run = "shell --block --interactive", desc = "Run a shell command (block the UI until the command finishes)" },
+
   { on = [
     ".",
   ], run = "hidden toggle", desc = "Toggle the visibility of hidden files" },
@@ -257,7 +258,7 @@ keymap = [
 
   # Find
   { on = [
-    "/",
+    "f",
   ], run = "find --smart" },
   { on = [
     "?",
@@ -372,7 +373,7 @@ keymap = [
   { on = [
     "g",
     "c",
-  ], run = "cd ~/.config", desc = "Go to the config directory" },
+  ], run = "cd ~/Code/", desc = "Go to the Code directory" },
 
   { on = [
     "g",

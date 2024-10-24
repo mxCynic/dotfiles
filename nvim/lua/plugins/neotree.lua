@@ -5,5 +5,8 @@ return {
     window = {
       position = "float",
     },
+    symlink_target = {
+      enabled = true,
+    },
   },
 }

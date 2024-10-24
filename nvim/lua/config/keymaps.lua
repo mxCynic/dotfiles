@@ -9,6 +9,17 @@ local Util = require("lazyvim.util")
 -- use `vim.keymap.set` instead
 local map = Util.safe_keymap_set
 
-map({ "i", "n" }, "<A-o>", "<esc>", { desc = "Esc" })
+map({ "i", "n", "v" }, "<A-o>", "<esc>", { desc = "Esc" })
 map("n", "<A-o>", ":noh<enter>", { desc = "Nohelight" })
 map("n", "<leader>fl", ":Telescope builtin<enter>", { desc = "Telescope" })
+map("n", "<leader>he", ":VimtexCompile<enter>", { desc = "toggle tex compile" })
+map("n", "<leader>j", ":windo normal! j<enter>", { desc = "down in all windows" })
+map("n", "<leader>k", ":windo normal! k<enter>", { desc = "up in all windows" })
+map("n", "<A-n>", ":ObsidianToday<enter>", { desc = "up in all windows" })
+
+-- 切换inlay hint
+if vim.lsp.buf.inlay_hint or vim.lsp.inlay_hint then
+  map("n", "<leader>hi", function()
+    LazyVim.toggle.inlay_hints()
+  end, { desc = "Toggle Inlay Hints" })
+end

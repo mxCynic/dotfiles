@@ -16,6 +16,7 @@ return {
       options = { -- latexmk的编译选项列表
         "-pdfxe", -- 使用xelatex编译成PDF，支持中文等
         "-verbose", -- 输出详细信息
+        "-g",
         "-file-line-error", -- 错误信息包含文件名和行号
         "-synctex=1", -- 启用Synctex支持，便于源代码和PDF间跳转
         "-interaction=nonstopmode", -- 遇到错误不中断编译过程

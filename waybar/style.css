@@ -30,12 +30,20 @@ window#waybar {
 
 #cava_mviz {
   background: #0F1419;
-  margin: 5px;
+  margin: 10px;
   padding: 0px 1px;
   border-radius: 15px;
   border: 0px;
   font-style: normal;
-  color: #0F1419;
+  color: #39c5bb;
+}
+#mpris {
+  background: #0F1419;
+  padding: 0px 1px;
+  border-radius: 15px;
+  border: 0px;
+  font-style: normal;
+  color: #39c5bb;
 }
 #taskbar button,
 #workspaces button {
@@ -162,6 +170,7 @@ color: #F3F4F5;
 	margin: 5px;
 	padding: 2px 15px;
 }
+
 
 #backlight {
 	color: white;

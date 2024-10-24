@@ -16,11 +16,7 @@ return {
       completion = {
         completeopt = "menu,menuone,noinsert",
       },
-      snippet = {
-        expand = function(args)
-          require("luasnip").lsp_expand(args.body)
-        end,
-      },
+
       mapping = cmp.mapping.preset.insert({
         ["<A-n>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
         ["<A-p>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),

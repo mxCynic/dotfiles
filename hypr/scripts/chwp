@@ -1,22 +1,17 @@
 #!/bin/bash
 
-DIR=$HOME/Pictures/wallpapers
+DIR=$HOME/Pictures/wallpapers/wallpapers/
 PICS=($(ls ${DIR}))
-echo $PICS
+# a link to all wallpaper
+TARGET=~/.config/hypr/scripts/wallpaper.link
 
 RANDOMPICS=${PICS[$RANDOM % ${#PICS[@]}]}
-echo $RANDOMPICS
 
-# if [[ $(pidof swaybg) ]]; then
-# 	pkill swaybg
-# fi
-
+# init swww
 swww query || swww init
 
-swww img ${DIR}/${RANDOMPICS} --transition-fps 90 --transition-type any --transition-duration 5
-echo ${DIR}/${RANDOMPICS}
+# change wallpaper
 
-ln -sf ${DIR}/${RANDOMPICS} ~/.config/hypr/scripts/wallpaper.link
+ln -sf ${DIR}/${RANDOMPICS} ${TARGET}
 
-sleep 2
-echo "Y" | ricemood -a
+swww img ${TARGET} --transition-fps 90 --transition-type any --transition-duration 5

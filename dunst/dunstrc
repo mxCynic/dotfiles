@@ -42,6 +42,7 @@
     show_age_threshold = 60
     # Split notifications into multiple lines if they don't fit into
     # geometry.
+    teometry = center
     word_wrap = yes
     # Ignore newlines '\n' in notifications.
     ignore_newline = no

@@ -8,7 +8,5 @@ return {
     vim.fn["mkdp#util#install"]()
   end,
 
-  config = {
-    mkdp_echo_browser = "Chromium",
-  },
+  config = function() end,
 }
