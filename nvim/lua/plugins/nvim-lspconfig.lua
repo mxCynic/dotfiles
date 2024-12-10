@@ -126,8 +126,7 @@ return {
 
     LazyVim.lsp.setup()
     LazyVim.lsp.on_dynamic_capability(require("lazyvim.plugins.lsp.keymaps").on_attach)
-
-    LazyVim.lsp.words.setup(opts.document_highlight)
+    Snacks.words.setup(opts.document_highlight)
 
     -- diagnostics signs
     if vim.fn.has("nvim-0.10.0") == 0 then

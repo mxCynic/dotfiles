@@ -43,7 +43,9 @@ play = [
 image = [
   { run = 'swww img "$@" --transition-fps 90 --transition-duration 5 --transition-type any && ln -sf "$@" ~/.config/hypr/scripts/wallpaper.link' },
 ]
-read = [{ run = 'zathura "$@" ', orphan = true }]
+read = [{ run = 'sioyek  "$@" ', orphan = true }]
+
+wps = [{ run = 'wps $@', orphan = true }]
 
 [open]
 rules = [
@@ -54,6 +56,9 @@ rules = [
   ] },
   { name = "*.pdf", use = [
     "read",
+  ] },
+  { name = "*.doc", use = [
+    "wps",
   ] },
 
 
