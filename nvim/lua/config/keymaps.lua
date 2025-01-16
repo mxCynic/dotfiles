@@ -17,6 +17,11 @@ map("n", "<leader>j", ":windo normal! j<enter>", { desc = "down in all windows" 
 map("n", "<leader>k", ":windo normal! k<enter>", { desc = "up in all windows" })
 map("n", "<A-n>", ":ObsidianToday<enter>", { desc = "up in all windows" })
 
+map("i", "<A-h>", "<Left>", { desc = "move right in insert mode" })
+map("i", "<A-j>", "<Down>", { desc = "move down in insert mode" })
+map("i", "<A-k>", "<Up>", { desc = "move up in insert mode" })
+map("i", "<A-l>", "<Rig t>", { desc = "move left in insert mode" })
+
 -- 切换inlay hint
 if vim.lsp.buf.inlay_hint or vim.lsp.inlay_hint then
   map("n", "<leader>hi", function()
