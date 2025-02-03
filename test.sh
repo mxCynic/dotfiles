@@ -1,4 +1,5 @@
 #!/bin/bash
+# 利用deepseek编写
 
 # 配置文件映射表
 declare -A configs=(
