@@ -21,10 +21,3 @@ map("i", "<A-h>", "<Left>", { desc = "move right in insert mode" })
 map("i", "<A-j>", "<Down>", { desc = "move down in insert mode" })
 map("i", "<A-k>", "<Up>", { desc = "move up in insert mode" })
 map("i", "<A-l>", "<Right>", { desc = "move left in insert mode" })
-
--- 切换inlay hint
-if vim.lsp.buf.inlay_hint or vim.lsp.inlay_hint then
-  map("n", "<leader>hi", function()
-    LazyVim.toggle.inlay_hints()
-  end, { desc = "Toggle Inlay Hints" })
-end

@@ -6,14 +6,23 @@ return {
   opts = {
     -- add any opts here
     -- for example
-    provider = "openai",
-    openai = {
-      endpoint = "https://api.openai.com/v1",
-      model = "gpt-4o", -- your desired model (or use gpt-4o, etc.)
-      timeout = 30000, -- timeout in milliseconds
-      temperature = 0, -- adjust if needed
-      max_tokens = 4096,
+    provider = "deepseek",
+    vendors = {
+      deepseek = {
+        __inherited_from = "openai",
+        api_key_name = "DEEPSEEK_API_KEY",
+        endpoint = "https://api.deepseek.com",
+        model = "deepseek-coder",
+      },
     },
+    -- provider = "openai",
+    -- openai = {
+    --   endpoint = "https://api.openai.com/v1",
+    --   model = "gpt-4o", -- your desired model (or use gpt-4o, etc.)
+    --   timeout = 30000, -- timeout in milliseconds
+    --   temperature = 0, -- adjust if needed
+    --   max_tokens = 4096,
+    -- },
   },
   -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
   build = "make",

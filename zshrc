@@ -204,12 +204,7 @@ fi
 
 
 # pyenv 
-export PYENV_ROOT="$HOME/.pyenv"
-[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
+# export PYENV_ROOT="$HOME/.pyenv"
+# [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+# eval "$(pyenv init -)"
 
-# 让整个终端的文本默认是斜体
-export ITALIC=$'\e[3m'
-export RESET=$'\e[0m'
-export PS1="$ITALIC%F{cyan}%n@%m%f %F{yellow}%~%f$RESET$ "
-RPROMPT=$'%{\x1b[34;1;3m%} hello %{\x1b[0m%}'

@@ -8,11 +8,28 @@ return {
     -- refer to the configuration section below
     bigfile = { enabled = true },
     dashboard = { enabled = false },
+    explorer = { enabled = true },
+    picker = {
+      sources = {
+        explorer = {
+          auto_close = true,
+          layout = { layout = { position = "float" } },
+        },
+      },
+    },
+    image = {
+      enabled = true,
+      doc = {
+        enable = true,
+        inline = true,
+      },
+    },
     notifier = { enabled = true },
     quickfile = { enabled = true },
     statuscolumn = { enabled = true },
     terminal = {
       win = {
+        style = "terminal",
         position = "float",
       },
     },
@@ -31,6 +48,7 @@ return {
         disabled = "yellow",
       },
     },
+    ui = {},
     words = { enabled = true },
   },
 }
