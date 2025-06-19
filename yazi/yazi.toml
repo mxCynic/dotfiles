@@ -1,4 +1,4 @@
-[manager]
+[mgr]
 layout = [1, 4, 3]
 sort_by = "alphabetical"
 sort_sensitive = true
@@ -8,11 +8,13 @@ linemode = "none"
 show_hidden = false
 show_symlink = true
 
+
 [preview]
+image_delay = 0
 tab_size = 2
 max_width = 600
 max_height = 900
-cache_dir = ""
+cache_dir = "~/.config/yazi/cache"
 ueberzug_scale = 1
 ueberzug_offset = [0, 0, 0, 0]
 

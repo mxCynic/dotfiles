@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 HYPRGAMEMODE=$(hyprctl getoption animations:enabled | awk 'NR==1{print $2}')
 if [ "$HYPRGAMEMODE" = 1 ]; then
-	hyprctl --batch "\
+  hyprctl --batch "\
         keyword animations:enabled 0;\
         keyword decoration:drop_shadow 0;\
         keyword decoration:blur:enabled 0;\
@@ -14,7 +14,8 @@ if [ "$HYPRGAMEMODE" = 1 ]; then
         keyword unbind  , F3;\
         keyword unbind  , F4;\
         keyword unbind  , F5;\
+        keyword unbind  Alt, w;\
         "
-	exit
+  exit
 fi
 hyprctl reload

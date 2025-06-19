@@ -159,6 +159,7 @@ alias mv="mv -i"
 alias lg="lazygit"
 alias svim="sudo -E nvim"
 alias dolist="todoist-cli"
+alias jmc="jmcomic-downloader"
 
 # python go to visiual environment
 pe ()
@@ -212,3 +213,9 @@ fi
 # uv pip mirrors
 export UV_DEFAULT_INDEX="https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple"
 
+# 启用命令执行时长记录
+setopt INC_APPEND_HISTORY_TIME
+
+# 确保禁用其他可能导致时长为0的选项 (如果它们被默认或Oh My Zsh启用)
+unsetopt INC_APPEND_HISTORY
+unsetopt SHARE_HISTORY

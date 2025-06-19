@@ -2,8 +2,8 @@ return {
   "neovim/nvim-lspconfig",
   event = "LazyFile",
   dependencies = {
-    "mason.nvim",
-    { "williamboman/mason-lspconfig.nvim", config = function() end },
+    { "mason.nvim", version = "^1.0.0" },
+    { "williamboman/mason-lspconfig.nvim", version = "^1.0.0", config = function() end },
   },
   opts = function()
     ---@class PluginLspOpts
@@ -11,6 +11,9 @@ return {
       -- options for vim.diagnostic.config()
       ---@type vim.diagnostic.Opts
       diagnostics = {
+        float = {
+          border = "rounded",
+        },
         underline = true,
         update_in_insert = false,
         virtual_text = {
@@ -37,6 +40,17 @@ return {
       inlay_hints = {
         enabled = true,
         exclude = { "vue" }, -- filetypes for which you don't want to enable inlay hints
+      },
+
+      util = {
+        open_floating_preview = {
+          opts = { border = "rounded" },
+        },
+      },
+      buf = {
+        hover = {
+          border = "rounded",
+        },
       },
       -- Enable this to enable the builtin LSP code lenses on Neovim >= 0.10.0
       -- Be aware that you also will need to properly configure your LSP server to

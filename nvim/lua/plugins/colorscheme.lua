@@ -29,12 +29,16 @@ return {
     "folke/tokyonight.nvim",
   },
 
+  {
+    "sainnhe/everforest",
+  },
+
   -- Configure LazyVim to load gruvbox
   {
     "LazyVim/LazyVim",
 
     opts = {
-      colorscheme = "tokyonight",
+      colorscheme = "everforest",
     },
   },
 }
