@@ -219,3 +219,4 @@ setopt INC_APPEND_HISTORY_TIME
 # 确保禁用其他可能导致时长为0的选项 (如果它们被默认或Oh My Zsh启用)
 unsetopt INC_APPEND_HISTORY
 unsetopt SHARE_HISTORY
+
