@@ -197,7 +197,7 @@ git config --global http.proxy 'socks5://127.0.0.1:7891'
 git config --global https.proxy 'socks5://127.0.0.1:7891'
 
 # starship
- eval "$(starship init zsh)"
+# eval "$(starship init zsh)"
 
 if [ -n "${NVIM_LISTEN_ADDRESS+x}" ]; then
   export MANPAGER="/usr/local/bin/nvr -c 'Man!' -o -"
