@@ -171,6 +171,14 @@ pe ()
   fi
 }
 
+swap() {
+  local file1="$1"
+  local file2="$2"
+  local tmp="$(mktemp )"
+  rm -f "$tmp"
+  mv "$file1" "$tmp"
+  mv "$file2" "$file1"
+  mv "$tmp" "$file2"
 
 #  设置 socket 代理(clash)
 export http_proxy=socks5://127.0.0.1:7891
