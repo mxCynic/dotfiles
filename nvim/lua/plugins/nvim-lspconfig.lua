@@ -3,7 +3,7 @@ return {
   event = "LazyFile",
   dependencies = {
     { "mason.nvim", version = "^1.0.0" },
-    { "williamboman/mason-lspconfig.nvim", version = "^1.0.0", config = function() end },
+    { "mason-org/mason-lspconfig.nvim", version = "^1.0.0", config = function() end },
   },
   opts = function()
     ---@class PluginLspOpts
@@ -81,6 +81,9 @@ return {
       -- LSP Server Settings
       ---@type lspconfig.options
       servers = {
+        -- copilot.lua only works with its own copilot lsp server
+        copilot = { enabled = true },
+
         hls = {
           enabled = false,
         },
@@ -259,15 +262,15 @@ return {
       })
     end
 
-    if LazyVim.lsp.is_enabled("denols") and LazyVim.lsp.is_enabled("vtsls") then
-      local is_deno = require("lspconfig.util").root_pattern("deno.json", "deno.jsonc")
-      LazyVim.lsp.disable("vtsls", is_deno)
-      LazyVim.lsp.disable("denols", function(root_dir, config)
-        if not is_deno(root_dir) then
-          config.settings.deno.enable = false
-        end
-        return false
-      end)
-    end
+    -- if LazyVim.lsp.is_enabled("denols") and LazyVim.lsp.is_enabled("vtsls") then
+    --   local is_deno = require("lspconfig.util").root_pattern("deno.json", "deno.jsonc")
+    --   LazyVim.lsp.disable("vtsls", is_deno)
+    --   LazyVim.lsp.disable("denols", function(root_dir, config)
+    --     if not is_deno(root_dir) then
+    --       config.settings.deno.enable = false
+    --     end
+    --     return false
+    --   end)
+    -- end
   end,
 }

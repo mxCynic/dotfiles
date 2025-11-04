@@ -15,6 +15,7 @@ if [ "$HYPRGAMEMODE" = 1 ]; then
         keyword unbind  , F4;\
         keyword unbind  , F5;\
         keyword unbind  Alt, w;\
+        keyword unbind  CTRL_ALT, A;\
         "
   exit
 fi

@@ -14,9 +14,8 @@ export PATH=$PATH:~/.ghcup/bin/
 export PATH=$PATH:/opt/cuda/bin/:$PATH
 export PATH=$HOME/.config/rofi/scripts:$PATH
 export PATH=$PATH:~/.config/hypr/scripts/
-
-
-
+export PATH=$PATH:/opt/nvidia/hpc_sdk/Linux_x86_64/2025/compilers/bin
+# export PATH="$HOME/.elan/bin:$PATH"
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
@@ -160,14 +159,20 @@ alias lg="lazygit"
 alias svim="sudo -E nvim"
 alias dolist="todoist-cli"
 alias jmc="jmcomic-downloader"
+alias su="su-rs"
+alias kde_wayland="/usr/lib/plasma-dbus-run-session-if-needed /usr/bin/startplasma-wayland"
+alias kde_x11="/usr/lib/plasma-dbus-run-session-if-needed /usr/bin/startplasma-x11"
 
 # python go to visiual environment
-pe ()
-{
+pe () {
   if [ -f "pyvenv.cfg" ]; then
     source bin/activate
   else
+    if [ -f ".venv/pyvenv.cfg" ]; then 
+      source .venv/bin/activate
+    else
     echo "No visiual environment"
+    fi
   fi
 }
 
@@ -176,9 +181,21 @@ swap() {
   local file2="$2"
   local tmp="$(mktemp )"
   rm -f "$tmp"
+
   mv "$file1" "$tmp"
   mv "$file2" "$file1"
   mv "$tmp" "$file2"
+}
+alas() {
+  adb connect 103.36.202.5:499
+  adb -s 103.36.202.5:499 forward tcp:7070 tcp:8080
+}
+if hash sudo-rs 2>&-; then
+  sudo() {
+    sudo-rs "$@"
+  }
+fi
+
 
 #  设置 socket 代理(clash)
 export http_proxy=socks5://127.0.0.1:7891
@@ -228,3 +245,8 @@ setopt INC_APPEND_HISTORY_TIME
 unsetopt INC_APPEND_HISTORY
 unsetopt SHARE_HISTORY
 
+
+PAGER=cat 
+eval "$(atuin init zsh)"
+
+export GEMINI_API_KEY=AIzaSyDj6-hK0rDoU_wtU_zfoKj0MvHmwrVaMlA
