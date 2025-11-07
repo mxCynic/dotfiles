@@ -47,10 +47,22 @@ image = [
 ]
 read = [{ run = 'sioyek  "$@" ', orphan = true }]
 
-wps = [{ run = 'wps $@', orphan = true }]
+wps-word = [{ run = 'wps $@', orphan = true }]
+wps-ppt = [{ run = 'wpp $@', orphan = true }]
+wps-excel = [{ run = 'et $@', orphan = true }]
 
 [open]
 rules = [
+    { name = "*.docx", use = [
+    "wps-word", 
+  ] },
+    { name = "*.pptx", use = [
+    "wps-ppt", 
+  ] },
+    { name = "*.xlsx", use = [
+    "wps-excel", 
+  ] },
+
   { name = "*/", use = [
     "edit",
     "open",
