@@ -75,8 +75,6 @@ return {
           -- stylua: ignore
           keys = {
             { "<leader>cl", function() Snacks.picker.lsp_config() end, desc = "Lsp Info" },
-            { "gd", vim.lsp.buf.definition, desc = "Goto Definition", has = "definition" },
-            { "gr", vim.lsp.buf.references, desc = "References", nowait = true },
             { "gd", function() Snacks.picker.lsp_definitions() end,desc = "Goto Definition", has = "definition" },
             { "gr", function() Snacks.picker.lsp_references() end, desc = "References", nowait = true },
             { "gI", vim.lsp.buf.implementation, desc = "Goto Implementation" },

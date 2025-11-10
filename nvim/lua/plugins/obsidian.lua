@@ -21,12 +21,12 @@ return {
     workspaces = {
       {
         name = "personal",
-        path = "~/Documents/Obsidian Vault/",
+        path = "~/Documents/",
       },
-      {
-        name = "work",
-        path = "~/Documents/Obsidian Vault/",
-      },
+      --   {
+      --     name = "work",
+      --     path = "~/Documents/Obsidian Vault/",
+      --   },
     },
     daily_notes = {
       -- Optional, if you keep daily notes in a separate directory.

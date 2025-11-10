@@ -1,9 +1,11 @@
+POWERLEVEL9K_INSTANT_PROMPT=quiet
 # Enable Powerlevel9k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
+ZSH_THEME="powerlevel10k/powerlevel10k"
 
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
@@ -15,7 +17,24 @@ export PATH=$PATH:/opt/cuda/bin/:$PATH
 export PATH=$HOME/.config/rofi/scripts:$PATH
 export PATH=$PATH:~/.config/hypr/scripts/
 export PATH=$PATH:/opt/nvidia/hpc_sdk/Linux_x86_64/2025/compilers/bin
-# export PATH="$HOME/.elan/bin:$PATH"
+export PATH=$HOME/.elan/bin:$PATH
+# export PATH="$HOME/.elan/env:$PATH"
+
+# source /home/mx/.zcomet/bin/zcomet.zsh
+#
+# zcomet load mafredri/zsh-async
+#
+# zcomet compinit
+
+plugins=(
+    # other plugins...
+    zsh-autosuggestions  # 插件之间使用空格隔开
+    zsh-syntax-highlighting
+    z
+    zsh-eza
+    # async
+)
+
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
@@ -24,7 +43,6 @@ export ZSH="$HOME/.oh-my-zsh"
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="powerlevel10k/powerlevel10k"
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
@@ -102,13 +120,6 @@ zstyle ':fzf-tab:complete:yay:*' fzf-preview ' yay -Si $word | bat --color=alway
 # ZSH_CUSTOM=/path/to/new-custom-folder
 
 # Which plugins would you like to load?
-plugins=(
-    # other plugins...
-    zsh-autosuggestions  # 插件之间使用空格隔开
-    zsh-syntax-highlighting
-    z
-    zsh-eza
-)
 # Standard plugins can be found in $ZSH/plugins/
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
@@ -162,6 +173,9 @@ alias jmc="jmcomic-downloader"
 alias su="su-rs"
 alias kde_wayland="/usr/lib/plasma-dbus-run-session-if-needed /usr/bin/startplasma-wayland"
 alias kde_x11="/usr/lib/plasma-dbus-run-session-if-needed /usr/bin/startplasma-x11"
+alias zxvpn="sudo easytier-core -d --no-listener -p udp://211.143.247.66 --network-name stepai --network-secret eztier@stepai"
+alias tarui_way_env="WEBKIT_DISABLE_DMABUF_RENDERER=1"
+
 
 # python go to visiual environment
 pe () {
@@ -190,17 +204,15 @@ alas() {
   adb connect 103.36.202.5:499
   adb -s 103.36.202.5:499 forward tcp:7070 tcp:8080
 }
-if hash sudo-rs 2>&-; then
-  sudo() {
-    sudo-rs "$@"
-  }
-fi
-
-
+# if hash sudo-rs 2>&-; then
+#   sudo() {
+#     sudo-rs "$@"
+#   }
+# fi
 #  设置 socket 代理(clash)
-export http_proxy=socks5://127.0.0.1:7891
-export https_proxy=socks5://127.0.0.1:7891
-
+# export http_proxy=socks5://127.0.0.1:7891
+# export https_proxy=socks5://127.0.0.1:7891
+#
 spro(){
  export http_proxy=socks5://127.0.0.1:7891
  export https_proxy=socks5://127.0.0.1:7891
@@ -218,8 +230,8 @@ upro(){
 
 export GTK_MODULES=unity-gtk-module
 # git peoxy
-git config --global http.proxy 'socks5://127.0.0.1:7891' 
-git config --global https.proxy 'socks5://127.0.0.1:7891'
+# git config --global http.proxy 'socks5://127.0.0.1:7891' 
+# git config --global https.proxy 'socks5://127.0.0.1:7891'
 
 # starship
 # eval "$(starship init zsh)"
@@ -246,7 +258,8 @@ unsetopt INC_APPEND_HISTORY
 unsetopt SHARE_HISTORY
 
 
-PAGER=cat 
+# PAGER=cat 
 eval "$(atuin init zsh)"
 
 export GEMINI_API_KEY=AIzaSyDj6-hK0rDoU_wtU_zfoKj0MvHmwrVaMlA
+
