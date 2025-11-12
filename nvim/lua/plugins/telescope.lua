@@ -13,6 +13,11 @@ return {
         require("lazyvim.util").on_load("telescope.nvim", function()
           require("telescope").load_extension("projects")
         end)
+
+        -- opts.pickers.lsp_references = {
+        --   layout_strategy = "horizontal",
+        --   previewer = "buffer_previewer",
+        -- }
       end,
       keys = {
         map = { "<leader>fp", "<Cmd>Telescope builtin<CR>", desc = "Projects" },
