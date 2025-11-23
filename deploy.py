@@ -3,6 +3,7 @@
 import os
 import os.path as op
 
+
 def deploy_dotfiles():
     DOTFILE_DIR = op.expanduser("~/.dotfiles")
     MAPPING = {
@@ -12,13 +13,14 @@ def deploy_dotfiles():
         "rofi": op.expanduser("~/.config/rofi"),
         "waybar": op.expanduser("~/.config/waybar"),
         "yazi": op.expanduser("~/.config/yazi"),
-        "zshrc": op.expanduser("~/.zshrc"),
-        "latexmkrc": op.expanduser("~/.latexmkrc")
+        "zsh/zshrc": op.expanduser("~/.zshrc"),
+        "zsh/p10k": op.expanduser("~/.p10k.zsh"),
+        "latexmkrc": op.expanduser("~/.latexmkrc"),
     }
 
     for src_name, tgt_path in MAPPING.items():
         src_path = op.join(DOTFILE_DIR, src_name)
-        
+
         if not op.exists(src_path):
             print(f"⚠️  源文件不存在: {src_path}")
             continue
@@ -48,7 +50,7 @@ def deploy_dotfiles():
                     tgt_file = op.join(tgt_path, rel_path)
 
                     os.makedirs(op.dirname(tgt_file), exist_ok=True)
-                    
+
                     if op.exists(tgt_file):
                         if op.islink(tgt_file):
                             current_target = os.readlink(tgt_file)
@@ -63,6 +65,7 @@ def deploy_dotfiles():
                     else:
                         os.symlink(src_file, tgt_file)
                         print(f"🔗 链接创建: {tgt_file} → {src_file}")
+
 
 if __name__ == "__main__":
     deploy_dotfiles()

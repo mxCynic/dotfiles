@@ -1,4 +1,3 @@
-POWERLEVEL9K_INSTANT_PROMPT=quiet
 # Enable Powerlevel9k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -30,7 +29,7 @@ plugins=(
     # other plugins...
     zsh-autosuggestions  # 插件之间使用空格隔开
     zsh-syntax-highlighting
-    z
+    #z
     zsh-eza
     # async
 )
@@ -263,3 +262,4 @@ eval "$(atuin init zsh)"
 
 export GEMINI_API_KEY=AIzaSyDj6-hK0rDoU_wtU_zfoKj0MvHmwrVaMlA
 
+eval "$(zoxide init zsh)"
