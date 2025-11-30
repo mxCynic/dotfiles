@@ -13,6 +13,7 @@ def deploy_dotfiles():
         "rofi": op.expanduser("~/.config/rofi"),
         "waybar": op.expanduser("~/.config/waybar"),
         "yazi": op.expanduser("~/.config/yazi"),
+        "kitty/kitty.conf": op.expanduser("~/.config/kitty/kitty.conf"),
         "zsh/zshrc": op.expanduser("~/.zshrc"),
         "zsh/p10k": op.expanduser("~/.p10k.zsh"),
         "latexmkrc": op.expanduser("~/.latexmkrc"),
