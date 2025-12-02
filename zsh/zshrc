@@ -263,3 +263,4 @@ eval "$(atuin init zsh)"
 export GEMINI_API_KEY=AIzaSyDj6-hK0rDoU_wtU_zfoKj0MvHmwrVaMlA
 
 eval "$(zoxide init zsh)"
+source <(COMPLETE=zsh jj)
