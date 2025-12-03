@@ -24,7 +24,7 @@ edit = [
   { run = 'code "%*"', orphan = true, for = "windows" },
 ]
 open = [
-  { run = 'nvim "$@"', desc = "Open", for = "linux" },
+  # { run = 'nvim "$@"', desc = "Open", for = "linux" },
   { run = 'open "$@"', desc = "Open", for = "macos" },
   { run = 'start "%1"', orphan = true, desc = "Open", for = "windows" },
 ]
@@ -53,14 +53,14 @@ wps-excel = [{ run = 'et $@', orphan = true }]
 
 [open]
 rules = [
-    { name = "*.docx", use = [
-    "wps-word", 
+  { name = "*.docx", use = [
+    "wps-word",
   ] },
-    { name = "*.pptx", use = [
-    "wps-ppt", 
+  { name = "*.pptx", use = [
+    "wps-ppt",
   ] },
-    { name = "*.xlsx", use = [
-    "wps-excel", 
+  { name = "*.xlsx", use = [
+    "wps-excel",
   ] },
 
   { name = "*/", use = [
