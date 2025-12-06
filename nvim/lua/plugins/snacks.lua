@@ -40,7 +40,7 @@ return {
       },
     },
     explorer = {
-      enabled = true,
+      enabled = false,
     },
     picker = {
       sources = {
