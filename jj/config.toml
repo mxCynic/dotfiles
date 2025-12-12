@@ -17,3 +17,7 @@ diff-editor = ":builtin"
 
 [remotes.origin]
 auto-track-bookmarks = "glob:*"
+
+[fsmonitor]
+backend = "watchman"
+watchman.register-snapshot-trigger = true
