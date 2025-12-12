@@ -1,9 +1,10 @@
 #!/bin/bash
 
-DIR=$HOME/Pictures/wallpapers/wallpapers/
-PICS=($(ls ${DIR}))
+DIR="$HOME/Pictures/wallpapers/wallpapers/"
+# mapfile -t PICS < <(ls "$DIR")
+mapfile -t PICS < <(find "$DIR" -maxdepth 1 -type f -print)
 # a link to all wallpaper
-TARGET=~/.config/hypr/scripts/wallpaper.link
+TARGET="$HOME/.config/hypr/scripts/wallpaper.link"
 
 RANDOMPICS=${PICS[$RANDOM % ${#PICS[@]}]}
 
@@ -12,6 +13,6 @@ swww query || swww init
 
 # change wallpaper
 
-ln -sf ${DIR}/${RANDOMPICS} ${TARGET}
+ln -sf "$RANDOMPICS" "$TARGET"
 
-swww img ${TARGET} --transition-fps 90 --transition-type any --transition-duration 5
+swww img "$TARGET" --transition-fps 90 --transition-type any --transition-duration 5
