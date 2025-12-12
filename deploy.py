@@ -16,6 +16,7 @@ def deploy_dotfiles():
         "kitty/kitty.conf": op.expanduser("~/.config/kitty/kitty.conf"),
         "zsh/zshrc": op.expanduser("~/.zshrc"),
         "zsh/p10k": op.expanduser("~/.p10k.zsh"),
+        "jj/config.toml": op.expanduser("~/.config/jj/config.toml"),
         "latexmkrc": op.expanduser("~/.latexmkrc"),
     }
 
