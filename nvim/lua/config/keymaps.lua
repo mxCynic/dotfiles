@@ -21,3 +21,6 @@ map("i", "<A-h>", "<Left>", { desc = "move right in insert mode" })
 map("i", "<A-j>", "<Down>", { desc = "move down in insert mode" })
 map("i", "<A-k>", "<Up>", { desc = "move up in insert mode" })
 map("i", "<A-l>", "<Right>", { desc = "move left in insert mode" })
+
+map("n", "<leader><tab>h", "<cmd>tabprevious<cr>", { desc = "Previous Tab" })
+map("n", "<leader><tab>l", "<cmd>tabnext<cr>", { desc = "Next Tab" })

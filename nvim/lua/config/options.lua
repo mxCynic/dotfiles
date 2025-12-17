@@ -6,6 +6,19 @@ vim.filetype.add({
   pattern = { [".*/hypr/.*conf"] = "hyprlang" },
 })
 
+-- 关闭保存时自动格式化
+vim.g.autoformat = false
+--   -- vim.filetype.add({
+--   extension = {
+--     tsx = "typescriptreact",
+--   },
+--   -- 强制将非标准的命名映射到标准命名
+--   pattern = {
+--     [".*%.tsx"] = "typescriptreact",
+--     [".*/hypr/.*conf"] = "hyprlang",
+--   },
+-- })
+
 -- Hyprlang LSP
 -- vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
 --   pattern = { "*/hypr/*.conf" },
