@@ -5,7 +5,8 @@ name = "mxCynicc"
 email = "xuqi.wang@stepai.cn"
 
 [ui]
-pager = "cat" # 设置为空字符串以禁用分页器
+pager = "less -FR" # 设置为空字符串以禁用分页器
+# pager = "delta" # 设置为空字符串以禁用分页器
 # default-command = ["log", "--limit=8"]
 bookmark-list-sort-keys = ["committer-date-"]
 default-command = "log"
@@ -15,8 +16,8 @@ diff-editor = ":builtin"
 # 'commit_timestamp(commit)' = 'commit.author().timestamp()'
 
 
-[remotes.origin]
-auto-track-bookmarks = "glob:*"
+# [remotes.origin]
+# auto-track-bookmarks = "glob:*"
 
 [fsmonitor]
 backend = "watchman"
