@@ -35,4 +35,4 @@ export CXX=g++-11
 
 export ZED_DEVELOPMENT_USE_KEYCHAIN=1
 
-
+export STARSHIP_CONFIG=~/.config/starship/starship.toml

@@ -14,6 +14,7 @@ def deploy_dotfiles():
         "waybar": op.expanduser("~/.config/waybar"),
         "yazi": op.expanduser("~/.config/yazi"),
         "kitty": op.expanduser("~/.config/kitty"),
+        "starship": op.expanduser("~/.config/starship"),
         "zsh/zshrc": op.expanduser("~/.zshrc"),
         "zsh/p10k": op.expanduser("~/.p10k.zsh"),
         "zsh/config": op.expanduser("~/.config/zsh"),
