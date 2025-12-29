@@ -9,10 +9,10 @@ ${custom.jj} \
 $rust\
 $python\
 $lua\
-$fill\
-$time\
-$cmd_duration\
 $nodejs\
+$fill\
+$cmd_duration\
+$time\
 $line_break\
 $character"""
 
@@ -37,6 +37,7 @@ style = "bold cyan"
 description = "The current jj status"
 when = "jj --ignore-working-copy root"
 symbol = "󱗆  "
+style = "bold blue"
 command = '''
 jj log --revisions @ --no-graph --ignore-working-copy --color always --limit 1 --template '
   separate(" ",
