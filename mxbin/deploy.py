@@ -17,7 +17,6 @@ def deploy_dotfiles():
         "mxbin": op.expanduser("~/.mxbin"),
         "starship": op.expanduser("~/.config/starship"),
         "zsh/zshrc": op.expanduser("~/.zshrc"),
-        "zsh/p10k": op.expanduser("~/.p10k.zsh"),
         "zsh/config": op.expanduser("~/.config/zsh"),
         "jj/config.toml": op.expanduser("~/.config/jj/config.toml"),
         "latexmkrc": op.expanduser("~/.latexmkrc"),
