@@ -53,3 +53,26 @@ function y() {
 	rm -f -- "$tmp"
 }
 
+fif() {
+  rm -f /tmp/fzf_scope
+  RG_PREFIX="rg --column --line-number --no-heading --color=always --smart-case "
+  INITIAL_QUERY="${*:-}"
+  fzf --ansi --disabled --query "$INITIAL_QUERY" \
+      --bind "start:reload:$RG_PREFIX {q}" \
+      --bind "change:reload:sleep 0.1; $RG_PREFIX {q} || true" \
+      --delimiter ":" \
+      --preview 'bat --color=always --style=numbers --highlight-line {2} {1}' \
+      --layout=reverse
+      --bind "alt-j:preview-down,alt-k:preview-up"
+}
+
+fkill() {
+  local pid
+  pid=$(ps -ef | sed 1d | fzf -m | awk '{print $2}')
+  if [ "x$pid" != "x" ]; then
+    echo $pid | xargs kill -${1:-9}
+  fi
+}
+fenv() {
+  env | fzf --preview 'echo {} | cut -d= -f2-'
+}
