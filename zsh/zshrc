@@ -7,32 +7,30 @@
 # ZSH_THEME="powerlevel10k/powerlevel10k"
 # [[ ! -f ~/.config/zsh/p10k.zsh ]] || source ~/.config/zsh/p10k.zsh
 
-
-plugins=(
-    # other plugins...
-    zsh-autosuggestions  # 插件之间使用空格隔开
-    zsh-syntax-highlighting
-    #z
-    zsh-eza
-    # async
-)
-
-
-
-source $ZSH/oh-my-zsh.sh
-source ~/.config/fzf-tab/fzf-tab.plugin.zsh
-source ~/.oh-my-zsh/plugins/fsh/
-
-
 source ~/.config/zsh/alias.zsh
 source ~/.config/zsh/eval.zsh
 source ~/.config/zsh/export.zsh
 source ~/.config/zsh/function.zsh
-source ~/.config/zsh/plugins.zsh
-source ~/.config/zsh/theme.zsh
+
+plugins=(
+    zsh-autosuggestions  # 插件之间使用空格隔开
+    zsh-syntax-highlighting
+    zsh-eza
+)
+
+
+# source $ZSH/oh-my-zsh.sh
+# source $HOME/.config/fzf-tab/fzf-tab.plugin.zsh
+
 source ~/.config/zsh/zstyle.zsh
 
-source <(COMPLETE=zsh jj)
+source ~/.config/zsh/plugins.zsh
+source ~/.config/zsh/theme.zsh
+
+source ~/.oh-my-zsh/plugins/fsh/
+
+
+# source <(COMPLETE=zsh jj)
 
 # 启用命令执行时长记录
 setopt INC_APPEND_HISTORY_TIME
