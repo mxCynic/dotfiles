@@ -6,9 +6,8 @@
 # fi
 # ZSH_THEME="powerlevel10k/powerlevel10k"
 # [[ ! -f ~/.config/zsh/p10k.zsh ]] || source ~/.config/zsh/p10k.zsh
-
+bindkey -e  # 强制使用 Emacs/Bash 风格绑定
 source ~/.config/zsh/alias.zsh
-source ~/.config/zsh/eval.zsh
 source ~/.config/zsh/export.zsh
 source ~/.config/zsh/function.zsh
 
@@ -18,7 +17,6 @@ source ~/.config/zsh/plugins.zsh
 source ~/.config/zsh/theme.zsh
 
 
-source <(COMPLETE=zsh jj)
 
 # 启用命令执行时长记录
 setopt INC_APPEND_HISTORY_TIME
@@ -48,14 +46,26 @@ zinit light-mode for \
     zdharma-continuum/zinit-annex-patch-dl \
     zdharma-continuum/zinit-annex-rust
 
-zinit light zdharma-continuum/fast-syntax-highlighting
-zinit light zsh-users/zsh-autosuggestions
 zinit light zsh-users/zsh-completions
-zinit wait lucid atload"zicompinit; zicdreplay" blockf for \
-    zsh-users/zsh-completions
-zinit light Aloxaf/fzf-tab
 zinit light z-shell/zsh-eza
 
-source ~/.config/zsh/zstyle.zsh
+# Atuin (替换原 eval)
+zinit ice wait"0" lucid atload'eval "$(atuin init zsh)"'
+zinit snippet /dev/null
 
-### End of Zinit's installer chunk
+# Zoxide (替换原 eval)
+zinit ice wait"0" lucid atload'eval "$(zoxide init zsh)"'
+zinit snippet /dev/null
+#
+source ~/.config/zsh/zstyle.zsh
+zinit snippet OMZ::lib/directories.zsh
+
+autoload -Uz compinit
+compinit
+zinit light Aloxaf/fzf-tab
+zinit light zdharma-continuum/fast-syntax-highlighting
+zinit light zsh-users/zsh-autosuggestions
+
+# zinit snippet <(COMPLETE=zsh jj)
+source ~/.config/zsh/eval.zsh
+## End of Zinit's installer chunk
