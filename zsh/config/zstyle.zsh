@@ -7,6 +7,12 @@
 # zstyle ':omz:update' frequency 13
 
 # give a preview of commandline arguments when completing `kill`
+zstyle ':completion:*:descriptions' format '[%d]'
+# 强制开启补全结果分组
+zstyle ':completion:*' group-name ''
+zstyle ':fzf-tab:*' switch-group ',' '.'
+zstyle ':fzf-tab:complete:*:*' fzf-flags --ansi
+zstyle ':fzf-tab:*' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*:*:*:*:processes' command "ps -u $USER -o pid,user,comm -w -w"
 zstyle ':fzf-tab:complete:(kill|ps):argument-rest' fzf-preview \
   '[[ $group == "[process ID]" ]] && ps --pid=$word -o cmd --no-headers -w -w'

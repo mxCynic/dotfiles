@@ -63,7 +63,9 @@ zinit snippet OMZ::lib/directories.zsh
 autoload -Uz compinit
 compinit
 zinit light Aloxaf/fzf-tab
-zinit light zdharma-continuum/fast-syntax-highlighting
+# zinit light zdharma-continuum/fast-syntax-highlighting
+zinit light zsh-users/zsh-syntax-highlighting
+zinit light catppuccin/zsh-syntax-highlighting
 zinit light zsh-users/zsh-autosuggestions
 
 # zinit snippet <(COMPLETE=zsh jj)
