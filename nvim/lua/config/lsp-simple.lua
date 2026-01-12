@@ -35,5 +35,3 @@ vim.lsp.config("lua_ls", {
 
 -- Enable LSP for Lua
 vim.lsp.enable("lua_ls")
-
-print("LSP configuration loaded successfully!")

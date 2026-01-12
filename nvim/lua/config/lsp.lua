@@ -197,7 +197,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
     -- Auto-format on save if the server supports it and doesn't have willSaveWaitUntil
     if not client:supports_method("textDocument/willSaveWaitUntil") and
-       client:supports_method("textDocument/formatting") then
+        client:supports_method("textDocument/formatting") then
       vim.api.nvim_create_autocmd("BufWritePre", {
         group = vim.api.nvim_create_augroup("lsp_format_" .. args.buf, { clear = true }),
         buffer = args.buf,
@@ -256,5 +256,3 @@ vim.api.nvim_create_autocmd("LspDetach", {
     })
   end,
 })
-
-vim.notify("LSP configuration loaded successfully!", vim.log.levels.INFO)
