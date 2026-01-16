@@ -20,6 +20,7 @@ def deploy_dotfiles():
         "zsh/config": op.expanduser("~/.config/zsh"),
         "jj/config.toml": op.expanduser("~/.config/jj/config.toml"),
         "latexmkrc": op.expanduser("~/.latexmkrc"),
+        "zed": op.expanduser("~/.config/zed"),
     }
 
     for src_name, tgt_path in MAPPING.items():
