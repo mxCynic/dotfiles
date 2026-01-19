@@ -24,7 +24,7 @@ alias jmc="jmcomic-downloader"
 alias su="su-rs"
 alias kde_wayland="/usr/lib/plasma-dbus-run-session-if-needed /usr/bin/startplasma-wayland"
 alias kde_x11="/usr/lib/plasma-dbus-run-session-if-needed /usr/bin/startplasma-x11"
-alias zxvpn="sudo easytier-core -d --no-listener -p udp://211.143.247.66 --network-name stepai --network-secret eztier@stepai"
+alias zxvpn="sudo easytier-core -d --no-listener -p udp://211.143.247.66 --network-name stepai --network-secret eztier@stepai0127"
 alias tarui_way_env="WEBKIT_DISABLE_DMABUF_RENDERER=1"
 alias lj="lazyjj"
 

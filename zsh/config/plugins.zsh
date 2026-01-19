@@ -22,14 +22,6 @@ zinit light-mode for \
 zinit light zsh-users/zsh-completions
 zinit light z-shell/zsh-eza
 
-# Atuin (替换原 eval)
-zinit ice wait"0" lucid atload'eval "$(atuin init zsh)"'
-zinit snippet /dev/null
-
-# Zoxide (替换原 eval)
-zinit ice wait"0" lucid atload'eval "$(zoxide init zsh)"'
-zinit snippet /dev/null
-#
 source ~/.config/zsh/zstyle.zsh
 zinit snippet OMZ::lib/directories.zsh
 

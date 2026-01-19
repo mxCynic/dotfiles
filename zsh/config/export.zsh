@@ -19,9 +19,7 @@ export ZSH="$HOME/.oh-my-zsh"
 
 export LESSOPEN='|~/.lessfilter %s'
 
-if [ -n "${NVIM_LISTEN_ADDRESS+x}" ]; then
-  export MANPAGER="/usr/local/bin/nvr -c 'Man!' -o -"
-fi
+export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 
 # uv pip mirrors
 export UV_DEFAULT_INDEX="https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple"
@@ -29,8 +27,8 @@ export UV_DEFAULT_INDEX="https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple"
 export GEMINI_API_KEY=AIzaSyDj6-hK0rDoU_wtU_zfoKj0MvHmwrVaMlA
 
 # C和CPP环境
-# export CC=gcc-11
-# export CXX=g++-11
+export CC=gcc-11
+export CXX=g++-11
 
 export ZED_DEVELOPMENT_USE_KEYCHAIN=1
 

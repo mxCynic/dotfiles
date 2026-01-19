@@ -16,8 +16,8 @@ diff-editor = ":builtin"
 # 'commit_timestamp(commit)' = 'commit.author().timestamp()'
 
 
-# [remotes.origin]
-# auto-track-bookmarks = "glob:*"
+[remotes.origin]
+auto-track-bookmarks = "wxq*"
 
 [fsmonitor]
 backend = "watchman"

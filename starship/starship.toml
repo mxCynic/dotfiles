@@ -6,6 +6,7 @@ $hostname\
 $localip\
 $shlvl\
 $directory\
+${custom.jj_bookmark}\
 ${custom.jj} \
 $rust\
 $python\
@@ -22,42 +23,52 @@ $character"""
 symbol = " "
 
 
-
 [os]
 disabled = false
 style = "bold blue" # 你可以根据喜好改颜色
 [os.symbols]
-Arch="󰣇 "
+Arch = "󰣇 "
 
 [directory]
 truncation_length = 3
 style = "bold cyan"
 
 # custom module for jj status
+[custom.jj_bookmark]
+description = "The current jj markbook"
+when = "jj --ignore-working-copy root"
+symbol = "󱗆 "
+style = "bold blue"
+ignore_timeout = true
+command = '''
+BOOKMARK=$(jj log -r "latest(ancestors(@) & bookmarks())" --ignore-working-copy --no-graph -T "bookmarks.map(|b| b.name()).join(\",\")" -n 1)
+echo "$BOOKMARK:"
+'''
+
 [custom.jj]
 description = "The current jj status"
 when = "jj --ignore-working-copy root"
-symbol = "󱗆  "
+symbol = ""
 style = "bold blue"
 command = '''
-jj log --revisions @ --no-graph --ignore-working-copy --color always --limit 1 --template '
-  separate(" ",
+JJ_LOG=$(jj log --revisions @ --no-graph --ignore-working-copy --color always --limit 1 --template "
+  separate(\"\",
     change_id.shortest(4),
-    bookmarks,
-    "|",
+    \"| \",
     concat(
-      if(conflict, "💥"),
-      if(divergent, "🚧"),
-      if(hidden, "👻"),
-      if(immutable, "🔒"),
+      if(conflict, \"💥 \"),
+      if(divergent, \"🚧 \"),
+      if(hidden, \"👻 \"),
+      if(immutable, \"🔒 \"),
     ),
-    raw_escape_sequence("\x1b[1;32m") ++ if(empty, "(empty)"),
-    raw_escape_sequence("\x1b[1;32m") ++ coalesce(
-      truncate_end(29, description.first_line(), "…"),
-      "(no description set)",
-    ) ++ raw_escape_sequence("\x1b[0m"),
+    raw_escape_sequence(\"\\x1b[1;32m\") ++ if(empty, \"(empty)\"),
+    raw_escape_sequence(\"\\x1b[1;32m\") ++ coalesce(
+      truncate_end(29, description.first_line(), \"…\"),
+      \"(no description set)\",
+    ) ++ raw_escape_sequence(\"\\x1b[0m\"),
   )
-'
+")
+echo "$JJ_LOG"
 '''
 
 # optionally disable git modules when JJ is found.
@@ -69,7 +80,7 @@ disabled = true
 [custom.git_status]
 when = "! jj --ignore-working-copy root"
 command = "starship module git_status"
-style = "" # This disables the default "(bold green)" style
+style = ""                                                     # This disables the default "(bold green)" style
 description = "Only show git_status if we're not in a jj repo"
 
 [git_commit]
@@ -110,5 +121,7 @@ style = "bold fg:#39c5bb"
 # 设置时间格式（例如 15:30:05）
 time_format = "%T"
 
-
-
+[character]
+# 将默认的 ❯ 替换为 λ
+success_symbol = "[λ](bold green)"
+error_symbol = "[λ](bold red)"

@@ -138,26 +138,26 @@ vim.lsp.config("texlab", {
 })
 
 -- Rust
-vim.lsp.config("rust_analyzer", {
-  cmd = { "rust-analyzer" },
-  filetypes = { "rust" },
-  root_markers = { "Cargo.toml", "rust-project.json", ".git" },
-  settings = {
-    ["rust-analyzer"] = {
-      check = {
-        command = "clippy",
-        workspace = false,
-      },
-      cargo = {
-        allFeatures = true,
-        loadOutDirsFromCheck = true,
-      },
-      procMacro = {
-        enable = true,
-      },
-    },
-  },
-})
+-- vim.lsp.config("rust_analyzer", {
+--   cmd = { "rust-analyzer" },
+--   filetypes = { "rust" },
+--   root_markers = { "Cargo.toml", "rust-project.json", ".git" },
+--   settings = {
+--     ["rust-analyzer"] = {
+--       check = {
+--         command = "clippy",
+--         workspace = false,
+--       },
+--       cargo = {
+--         allFeatures = true,
+--         loadOutDirsFromCheck = true,
+--       },
+--       procMacro = {
+--         enable = true,
+--       },
+--     },
+--   },
+-- })
 
 -- Enable LSP servers
 local servers_to_enable = {

@@ -15,18 +15,13 @@ source ~/.config/zsh/function.zsh
 
 source ~/.config/zsh/theme.zsh
 source ~/.config/zsh/plugins.zsh
+source ~/.config/zsh/zstyle.zsh
+source ~/.config/zsh/option.zsh
 
 
 
-# 启用命令执行时长记录
-setopt INC_APPEND_HISTORY_TIME
-
-# 确保禁用其他可能导致时长为0的选项 (如果它们被默认或Oh My Zsh启用)
-unsetopt INC_APPEND_HISTORY
-unsetopt SHARE_HISTORY
 
 
-# zinit snippet <(COMPLETE=zsh jj)
 source ~/.config/zsh/eval.zsh
 export WORKING_PATH=/home/mx/Code/python/DiffusionDrive/
 export NUPLAN_MAP_VERSION="nuplan-maps-v1.0"
@@ -34,3 +29,7 @@ export NUPLAN_MAPS_ROOT="${WORKING_PATH}/dataset/maps"
 export NAVSIM_EXP_ROOT="${WORKING_PATH}/exp"
 export NAVSIM_DEVKIT_ROOT="${WORKING_PATH}"
 export OPENSCENE_DATA_ROOT="${WORKING_PATH}/dataset"
+
+export PYTHONPATH=.
+export EARTH_DEPLOY_DIR=/opt/stepai/earth/apps/SOC
+export PATH=/opt/stepai/earth/apps/SOC/tools:$PATH

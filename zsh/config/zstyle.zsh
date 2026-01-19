@@ -28,4 +28,8 @@ zstyle ':fzf-tab:complete:(-command-|-parameter-|-brace-parameter-|export|unset|
 zstyle ':fzf-tab:complete:pacman:*' fzf-preview 'pacman -Si $word | bat --color=always -plyaml'
 zstyle ':fzf-tab:complete:yay:*' fzf-preview ' yay -Si $word | bat --color=always -plyaml'
 
+# 开启大小写不敏感补全
+zstyle ':completion:*' matcher-list 'm:{a-z0-9}={A-Z0-9}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
 
+# 如果你想让补全在大小写混输时也更智能（比如输入小写匹配大写，反之亦然）
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
