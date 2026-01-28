@@ -62,7 +62,8 @@ fif() {
       --bind "change:reload:sleep 0.1; $RG_PREFIX {q} || true" \
       --delimiter ":" \
       --preview 'bat --color=always --style=numbers --highlight-line {2} {1}' \
-      --layout=reverse
+      --preview-window 'right,60%,border-left,+{2}+3/3' \
+      --layout=reverse \
       --bind "alt-j:preview-down,alt-k:preview-up"
 }
 
