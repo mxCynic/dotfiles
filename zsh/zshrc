@@ -33,3 +33,6 @@ export OPENSCENE_DATA_ROOT="${WORKING_PATH}/dataset"
 export PYTHONPATH=.
 export EARTH_DEPLOY_DIR=/opt/stepai/earth/apps/SOC
 export PATH=/opt/stepai/earth/apps/SOC/tools:$PATH
+
+export STEPAI_ROOT=/opt/stepai
+export PATH=/opt/stepai/tools:/opt/stepai/earth/mantle/tools:${PATH}
