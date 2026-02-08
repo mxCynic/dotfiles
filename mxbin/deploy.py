@@ -7,11 +7,11 @@ import os.path as op
 def deploy_dotfiles():
     DOTFILE_DIR = op.expanduser("~/.dotfiles")
     MAPPING = {
-        "dunst": op.expanduser("~/.config/dunst"),
+        # "dunst": op.expanduser("~/.config/dunst"),
         "hypr": op.expanduser("~/.config/hypr"),
         "nvim": op.expanduser("~/.config/nvim"),
         "rofi": op.expanduser("~/.config/rofi"),
-        "waybar": op.expanduser("~/.config/waybar"),
+        # "waybar": op.expanduser("~/.config/waybar"),
         "yazi": op.expanduser("~/.config/yazi"),
         "kitty": op.expanduser("~/.config/kitty"),
         "mxbin": op.expanduser("~/.mxbin"),
@@ -19,7 +19,7 @@ def deploy_dotfiles():
         "zsh/zshrc": op.expanduser("~/.zshrc"),
         "zsh/config": op.expanduser("~/.config/zsh"),
         "jj/config.toml": op.expanduser("~/.config/jj/config.toml"),
-        "latexmkrc": op.expanduser("~/.latexmkrc"),
+        "latex/latexmkrc": op.expanduser("~/.latexmkrc"),
         "zed": op.expanduser("~/.config/zed"),
         "ashell": op.expanduser("~/.config/ashell/"),
     }
