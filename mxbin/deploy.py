@@ -21,6 +21,7 @@ def deploy_dotfiles():
         "jj/config.toml": op.expanduser("~/.config/jj/config.toml"),
         "latexmkrc": op.expanduser("~/.latexmkrc"),
         "zed": op.expanduser("~/.config/zed"),
+        "ashell": op.expanduser("~/.config/ashell/"),
     }
 
     for src_name, tgt_path in MAPPING.items():
