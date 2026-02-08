@@ -27,8 +27,8 @@ export UV_DEFAULT_INDEX="https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple"
 export GEMINI_API_KEY=AIzaSyDj6-hK0rDoU_wtU_zfoKj0MvHmwrVaMlA
 
 # C和CPP环境
-export CC=gcc-11
-export CXX=g++-11
+# export CC=gcc-11
+# export CXX=g++-11
 
 export ZED_DEVELOPMENT_USE_KEYCHAIN=1
 

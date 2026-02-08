@@ -43,7 +43,7 @@ play = [
   { run = '''mediainfo "$1"; echo "Press enter to exit"; read''', block = true, desc = "Show media info", for = "unix" },
 ]
 image = [
-  { run = 'swww img "$@" --transition-fps 90 --transition-duration 5 --transition-type any && ln -sf "$@" ~/.config/hypr/scripts/wallpaper.link' },
+  { run = 'awww img "$@" --transition-fps 90 --transition-duration 5 --transition-type any && ln -sf "$@" ~/.config/hypr/scripts/wallpaper.link' },
 ]
 read = [{ run = 'sioyek  "$@" ', orphan = true }]
 

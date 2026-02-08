@@ -8,11 +8,11 @@ TARGET="$HOME/.config/hypr/scripts/wallpaper.link"
 
 RANDOMPICS=${PICS[$RANDOM % ${#PICS[@]}]}
 
-# init swww
-swww query || swww init
+# init awww
+awww query || awww init
 
 # change wallpaper
 
 ln -sf "$RANDOMPICS" "$TARGET"
 
-swww img "$TARGET" --transition-fps 90 --transition-type any --transition-duration 5
+awww img "$TARGET" --transition-fps 90 --transition-type any --transition-duration 5
