@@ -202,6 +202,9 @@ vim.api.nvim_create_autocmd("LspAttach", {
         group = vim.api.nvim_create_augroup("lsp_format_" .. args.buf, { clear = true }),
         buffer = args.buf,
         callback = function()
+          if vim.bo[args.buf].filetype == "toml" then
+            return
+          end
           vim.lsp.buf.format({
             bufnr = args.buf,
             id = client.id,

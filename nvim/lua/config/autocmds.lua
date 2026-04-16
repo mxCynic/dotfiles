@@ -16,6 +16,15 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
+-- Disable autoformat for TOML buffers to avoid save hooks hanging on taplo/LSP.
+vim.api.nvim_create_autocmd("FileType", {
+  group = augroup("toml_no_autoformat"),
+  pattern = { "toml" },
+  callback = function(event)
+    vim.b[event.buf].autoformat = false
+  end,
+})
+
 -- Fix TypeScript/TSX filetype detection
 vim.api.nvim_create_autocmd({ "BufNewFile", "BufRead" }, {
   group = augroup("typescript_filetype"),
