@@ -10,18 +10,10 @@ bindkey -e  # 强制使用 Emacs/Bash 风格绑定
 source ~/.config/zsh/alias.zsh
 source ~/.config/zsh/export.zsh
 source ~/.config/zsh/function.zsh
-
-
-
 source ~/.config/zsh/theme.zsh
 source ~/.config/zsh/plugins.zsh
 source ~/.config/zsh/zstyle.zsh
 source ~/.config/zsh/option.zsh
-
-
-
-
-
 source ~/.config/zsh/eval.zsh
 export WORKING_PATH=/home/mx/Code/python/DiffusionDrive/
 export NUPLAN_MAP_VERSION="nuplan-maps-v1.0"
@@ -38,3 +30,6 @@ export STEPAI_ROOT=/opt/stepai
 export PATH=/opt/stepai/tools:/opt/stepai/earth/mantle/tools:${PATH}
 export PATH="$HOME/.npm-global/bin:$PATH"
 export PATH="/home/mx/.bun/bin:$PATH"
+
+# bun completions
+[ -s "/home/mx/.bun/_bun" ] && source "/home/mx/.bun/_bun"

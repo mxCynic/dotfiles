@@ -33,3 +33,5 @@ export GEMINI_API_KEY=AIzaSyDj6-hK0rDoU_wtU_zfoKj0MvHmwrVaMlA
 export ZED_DEVELOPMENT_USE_KEYCHAIN=1
 
 export STARSHIP_CONFIG=~/.config/starship/starship.toml
+
+export HISTFILE=~/.zsh_history
