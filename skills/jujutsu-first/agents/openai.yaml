@@ -1,0 +1,7 @@
+interface:
+  display_name: "Jujutsu First"
+  short_description: "Prefer Jujutsu workflows over Git in version-controlled repos"
+  default_prompt: "Use $jujutsu-first to handle repository work with `jj` by default and only use `git` when a Git-only path is required."
+
+policy:
+  allow_implicit_invocation: true
