@@ -15,8 +15,12 @@ configuration {
     display-run:                "";
     display-filebrowser:        "";
     display-window:             "";
-	drun-display-format:        "{name} [<span weight='light' size='small'><i>({generic})</i></span>]";
+	drun-display-format:        "<b><i>{name}</i></b>";
 	window-format:              "{w} · {c} · {t}";
+  kb-remove-to-eol: "";
+  kb-accept-entry: "Control+m,Return,KP_Enter";
+  kb-row-down: "Ctrl+j";
+  kb-row-up: "Ctrl+k";
 }
 
 /*****----- Global Properties -----*****/
@@ -36,7 +40,7 @@ configuration {
     active-background:           var(active);
     active-foreground:           var(background);
     selected-normal-background:  var(selected);
-    selected-normal-foreground:  var(background);
+    selected-normal-foreground:  var(accent-foreground);
     selected-urgent-background:  var(active);
     selected-urgent-foreground:  var(background);
     selected-active-background:  var(urgent);
@@ -96,6 +100,7 @@ inputbar {
     border-radius:               0px;
     border-color:                @border-colour;
     background-color:            @background-colour;
+    font:                        "Maple Mono SemiBold Italic 14";
     text-color:                  @foreground-colour;
     children:                    [ "prompt", "entry" ];
 }
@@ -110,11 +115,13 @@ textbox-prompt-colon {
     expand:                      false;
     str:                         "::";
     background-color:            inherit;
+    font:                        "Maple Mono SemiBold Italic 14";
     text-color:                  inherit;
 }
 entry {
     enabled:                     true;
     background-color:            inherit;
+    font:                        inherit;
     text-color:                  inherit;
     cursor:                      text;
     placeholder:                 "";
@@ -178,7 +185,7 @@ element normal.active {
 }
 element selected.normal {
     background-color:            var(alternate-background);
-    text-color:                  var(foreground-colour);
+    text-color:                  var(selected-normal-foreground);
 }
 element selected.urgent {
     background-color:            var(selected-urgent-background);
@@ -233,7 +240,7 @@ button {
     border-radius:               18px;
     border-color:                @border-colour;
     background-color:            @alternate-background;
-    text-color:                  inherit;
+    text-color:                  var(accent-foreground);
     cursor:                      pointer;
 }
 button selected {
@@ -258,11 +265,11 @@ textbox {
     border-radius:               18px;
     border-color:                @border-colour;
     background-color:            @alternate-background;
-    text-color:                  @foreground-colour;
+    text-color:                  var(accent-foreground);
     vertical-align:              0.5;
     horizontal-align:            0.0;
     highlight:                   none;
-    placeholder-color:           @foreground-colour;
+    placeholder-color:           var(accent-foreground);
     blink:                       true;
     markup:                      true;
 }

@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+# Deploy every skill under ~/.dotfiles/skills/ (any directory containing
+# SKILL.md) into the four agent harnesses by symlink. Idempotent.
+#
+#   claude    ~/.claude/skills/<name>
+#   codex     ~/.codex/skills/<name>
+#   opencode  ~/.config/opencode/skills/<name>
+#   gemini    ~/.gemini/extensions/dotfiles-skills/skills/<name>
+
+set -euo pipefail
+
+SKILLS_ROOT="${HOME}/.dotfiles/skills"
+
+CLAUDE_DIR="${HOME}/.claude/skills"
+CODEX_DIR="${HOME}/.codex/skills"
+OPENCODE_DIR="${HOME}/.config/opencode/skills"
+GEMINI_EXT_DIR="${HOME}/.gemini/extensions/dotfiles-skills"
+GEMINI_SKILLS_DIR="${GEMINI_EXT_DIR}/skills"
+
+if [[ ! -d "${SKILLS_ROOT}" ]]; then
+    echo "源目录不存在: ${SKILLS_ROOT}" >&2
+    exit 1
+fi
+
+link_skill() {
+    local target_dir="$1" src="$2"
+    local name link current
+    name="$(basename "$src")"
+    link="${target_dir}/${name}"
+
+    mkdir -p "$target_dir"
+
+    if [[ -L "$link" ]]; then
+        current="$(readlink "$link")"
+        if [[ "$current" == "$src" ]]; then
+            return 0
+        fi
+        rm "$link"
+        ln -s "$src" "$link"
+        echo "🔗 更新 ${link} → ${src}"
+        return 0
+    fi
+
+    if [[ -e "$link" ]]; then
+        echo "⛔ 非链接已存在,跳过: ${link}" >&2
+        return 0
+    fi
+
+    ln -s "$src" "$link"
+    echo "🔗 创建 ${link} → ${src}"
+}
+
+ensure_gemini_extension() {
+    mkdir -p "${GEMINI_EXT_DIR}"
+    local manifest="${GEMINI_EXT_DIR}/gemini-extension.json"
+    if [[ -f "$manifest" ]]; then
+        return 0
+    fi
+    cat > "$manifest" <<'JSON'
+{
+  "name": "dotfiles-skills",
+  "version": "1.0.0",
+  "description": "User skills bundled from ~/.dotfiles/skills"
+}
+JSON
+    echo "📄 创建 ${manifest}"
+}
+
+ensure_gemini_extension
+
+mapfile -t SKILL_DIRS < <(find "${SKILLS_ROOT}" -name SKILL.md -type f -printf '%h\n' | sort)
+
+if [[ ${#SKILL_DIRS[@]} -eq 0 ]]; then
+    echo "没有找到 SKILL.md" >&2
+    exit 1
+fi
+
+declare -A SEEN
+for src in "${SKILL_DIRS[@]}"; do
+    name="$(basename "$src")"
+    if [[ -n "${SEEN[$name]:-}" ]]; then
+        echo "⚠️  skill 名称冲突: '${name}' 同时出现在 ${SEEN[$name]} 与 ${src},跳过后者" >&2
+        continue
+    fi
+    SEEN[$name]="$src"
+
+    link_skill "${CLAUDE_DIR}"        "$src"
+    link_skill "${CODEX_DIR}"         "$src"
+    link_skill "${OPENCODE_DIR}"      "$src"
+    # link_skill "${GEMINI_SKILLS_DIR}" "$src"
+done
+
+echo "✅ 已部署 ${#SEEN[@]} 个 skill"

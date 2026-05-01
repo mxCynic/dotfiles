@@ -15,7 +15,8 @@
 * {
     background:     #00000000;
     background-alt: #39c5bbFF;
-    foreground:     #E5E9F0FF;
+    foreground:     #A7D8D1FF;
+    accent-foreground: #082C29FF;
     selected:       #81A1C1FF;
     active:         #A3BE8CFF;
     urgent:         #BF616AFF;

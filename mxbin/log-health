@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+since="${1:-7 days ago}"
+out="${LOG_HEALTH_OUT:-/tmp/log-health-$(date +%Y%m%d-%H%M%S).md}"
+
+section() {
+  printf '\n## %s\n\n' "$1" >>"$out"
+}
+
+run() {
+  local title="$1"
+  shift
+  section "$title"
+  {
+    printf '```text\n'
+    "$@" 2>&1 || true
+    printf '```\n'
+  } >>"$out"
+}
+
+run_shell() {
+  local title="$1"
+  shift
+  section "$title"
+  {
+    printf '```text\n'
+    bash -lc "$*" 2>&1 || true
+    printf '```\n'
+  } >>"$out"
+}
+
+: >"$out"
+printf '# Log Health Report\n\n' >>"$out"
+printf -- '- Host: `%s`\n' "$(hostname)" >>"$out"
+printf -- '- Generated: `%s`\n' "$(date --iso-8601=seconds)" >>"$out"
+printf -- '- Window: `%s`\n' "$since" >>"$out"
+
+run "Kernel And OS" uname -a
+run "Recent Boots" journalctl --list-boots --no-pager
+run "Current User Warnings" journalctl --user -b -p warning..alert --no-pager -n 250
+run "Recent User Errors" journalctl --user --since "$since" -p err..alert --no-pager -n 500
+
+run_shell "Coredump Count By Process" \
+  "journalctl --user --since '$since' --no-pager -g 'dumped core' -o cat | sed -n 's/.*Process [0-9]* (\\([^)]*\\)).*/\\1/p' | sort | uniq -c | sort -nr"
+
+run "Recent Coredumps" coredumpctl --since "$since" --no-pager list
+
+run "Hyprland And Portal Signals" journalctl --user --since "$since" --no-pager \
+  -g 'Hyprland|xdg-desktop-portal-hyprland|xdg-desktop-portal|hyprsunset|hyprlauncher|awww-daemon|ashell|mako|DMA-BUF|Inhibiting'
+
+run "Application Crash Signals" journalctl --user --since "$since" --no-pager \
+  -g 'sioyek|steamwebhelper|steam\]|cs2|wpscloudsvr|btm|zen-bin|electron|core dumped|dumped core'
+
+run "Audio And Bluetooth Signals" journalctl --user --since "$since" --no-pager \
+  -g 'wireplumber|pipewire|pulse|bluez|alsa|sound|timeout'
+
+section "System-Level Follow-Up"
+cat >>"$out" <<'EOF'
+The current user may not be allowed to read full system journal data. For hardware,
+kernel, disk, thermal, GPU reset, and OOM diagnosis, run these manually when needed:
+
+```sh
+sudo journalctl -b -p warning..alert --no-pager
+sudo journalctl --since "7 days ago" -k --no-pager -g 'error|fail|reset|I/O|nvme|btrfs|ext4|oom|killed|thermal|watchdog|nvidia|amdgpu|i915|ACPI'
+sudo systemctl --failed --no-pager
+sudo dmesg -T --level=err,warn
+```
+EOF
+
+printf 'Wrote %s\n' "$out"

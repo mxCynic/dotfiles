@@ -22,3 +22,6 @@ auto-track-bookmarks = "wxq*"
 [fsmonitor]
 backend = "watchman"
 watchman.register-snapshot-trigger = true
+
+[git]
+subprocess = true

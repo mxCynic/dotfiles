@@ -36,7 +36,7 @@ hl.config({
     inactive_opacity = 1.0,
 
     shadow = {
-      enabled = true,
+      enabled = false,
       range = 4,
       render_power = 3,
       sharp = true,
@@ -53,6 +53,15 @@ hl.config({
       passes = 1,
       vibrancy = 0.1696,
     },
+
+    glow = {
+      enabled = false,
+      range = 10,
+      render_power = 1,
+      color = "rgba(39c5bbee)",
+      color_inactive = 0,
+
+    }
   },
 
   animations = {
@@ -67,6 +76,8 @@ hl.config({
     kb_rules = "",
 
     follow_mouse = 1,
+    left_handed = false,
+    scroll_factor = 1.0,
 
     sensitivity = 0, -- -1.0 - 1.0, 0 means no modification.
 
@@ -93,5 +104,15 @@ hl.gesture({
 
 hl.device({
   name = "epic-mouse-v1",
-  sensitivity = -0.5,
+  sensitivity = 0.5,
+})
+
+-- keyd may expose a virtual pointer device even when no mouse remapping is
+-- configured. Disabling it avoids duplicate/swapped pointer events in Hyprland.
+hl.device({
+  name = "keyd-virtual-pointer",
+  enabled = false,
+  left_handed = false,
+  natural_scroll = false,
+  scroll_factor = 1.0,
 })
