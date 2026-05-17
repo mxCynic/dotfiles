@@ -48,8 +48,8 @@ hl.config({
     },
 
     blur = {
-      enabled = true,
-      size = 3,
+      enabled = false,
+      size = 30,
       passes = 1,
       vibrancy = 0.1696,
     },
@@ -94,6 +94,11 @@ hl.config({
 
   binds = {
     movefocus_cycles_fullscreen = true
+  },
+
+  ecosystem = {
+    no_update_news = true,
+    no_donation_nag = true,
   }
 })
 hl.gesture({
