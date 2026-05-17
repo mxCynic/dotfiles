@@ -1,0 +1,8 @@
+default-timeout=5000
+anchor=top-center
+border-radius=8
+font=Maple Mono CN Italic 13
+width=420
+height=120
+padding=12
+margin=12

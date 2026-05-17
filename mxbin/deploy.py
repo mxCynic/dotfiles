@@ -7,7 +7,7 @@ import os.path as op
 def deploy_dotfiles():
     DOTFILE_DIR = op.expanduser("~/.dotfiles")
     MAPPING = {
-        # "dunst": op.expanduser("~/.config/dunst"),
+        "mako": op.expanduser("~/.config/mako"),
         "hypr": op.expanduser("~/.config/hypr"),
         "nvim": op.expanduser("~/.config/nvim"),
         "rofi": op.expanduser("~/.config/rofi"),
