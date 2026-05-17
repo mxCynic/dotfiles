@@ -61,3 +61,13 @@ hl.window_rule({ match = { class = "clash-verge" }, workspace = "9", no_initial_
 hl.window_rule({ match = { float = true }, border_size = 0 })    -- 浮动窗口无边框
 hl.window_rule({ match = { tag = "opacity" }, opacity = "0.8" }) -- Set opacity for tag `opacity`
 hl.window_rule({ match = { class = "cs2" }, immediate = true })
+
+if os and os.time then
+  math.randomseed(os.time())
+end
+
+hl.on("window.open", function(window)
+  if math.random() < 0.5 then
+    hl.dispatch(hl.dsp.window.tag({ window = window, tag = "opacity" }))
+  end
+end)
