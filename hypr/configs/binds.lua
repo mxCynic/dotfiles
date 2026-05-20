@@ -84,7 +84,7 @@ hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true 
 
 hl.bind(mainMod .. " + O", hl.dsp.window.fullscreen({ mode = "fullscreen" }))
 hl.bind(mainMod .. " + SHIFT + O", hl.dsp.window.fullscreen())
-hl.bind(mainMod .. " + I", hl.dsp.window.tag({ tag = "opacity" })) -- toggle 窗口的透明
+hl.bind(mainMod .. " + S", hl.dsp.window.tag({ tag = "opacity" })) -- toggle 窗口的透明
 hl.bind(mainMod .. " + A", hl.dsp.window.pin())
 hl.bind(mainMod .. " + C", hl.dsp.window.center())
 hl.bind(mainMod .. " + B", hl.dsp.exec_cmd("pkill ashell || ashell"), { locked = true })
