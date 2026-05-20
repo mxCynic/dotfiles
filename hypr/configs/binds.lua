@@ -3,6 +3,7 @@ local fileManager = "pkill dolphin || dolphin"
 -- local menu = "hyprlauncher"
 local menu = "pkill rofi || rofi -show drun"
 local mainMod = "SUPER" -- Sets "Windows" key as main modifier
+local mxbin = "/home/mx/.mxbin/"
 
 -- Example binds, see https://wiki.hypr.land/Configuring/Basics/Binds/ for more
 hl.bind(mainMod .. " + Q", hl.dsp.exec_cmd(terminal))
@@ -53,17 +54,17 @@ hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
 -- Laptop multimedia keys for volume and LCD brightness
 hl.bind(
   "XF86AudioRaiseVolume",
-  hl.dsp.exec_cmd("wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"),
+  hl.dsp.exec_cmd(mxbin .. "volume-notify up"),
   { locked = true, repeating = true }
 )
 hl.bind(
   "XF86AudioLowerVolume",
-  hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"),
+  hl.dsp.exec_cmd(mxbin .. "volume-notify down"),
   { locked = true, repeating = true }
 )
 hl.bind(
   "XF86AudioMute",
-  hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"),
+  hl.dsp.exec_cmd(mxbin .. "volume-notify mute"),
   { locked = true, repeating = true }
 )
 hl.bind(

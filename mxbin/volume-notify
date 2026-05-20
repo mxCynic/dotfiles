@@ -1,0 +1,40 @@
+#!/bin/bash
+
+set -euo pipefail
+
+case "${1:-}" in
+    up)
+        wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+
+        ;;
+    down)
+        wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-
+        ;;
+    mute)
+        wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+        ;;
+    *)
+        echo "usage: volume-notify {up|down|mute}" >&2
+        exit 2
+        ;;
+esac
+
+volume_line="$(wpctl get-volume @DEFAULT_AUDIO_SINK@)"
+volume="$(awk '{ printf "%d", ($2 * 100) + 0.5 }' <<<"$volume_line")"
+
+if (( volume < 0 )); then
+    volume=0
+elif (( volume > 100 )); then
+    volume=100
+fi
+
+if grep -q '\[MUTED\]' <<<"$volume_line"; then
+    notify-send -a volume -r 91190 -u low -t 1200 \
+        -h int:value:0 \
+        -h string:x-canonical-private-synchronous:volume \
+        "Volume" "Muted"
+else
+    notify-send -a volume -r 91190 -u low -t 1200 \
+        -h int:value:"$volume" \
+        -h string:x-canonical-private-synchronous:volume \
+        "Volume" "${volume}%"
+fi
