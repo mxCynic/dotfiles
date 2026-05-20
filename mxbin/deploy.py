@@ -9,6 +9,7 @@ def deploy_dotfiles():
     MAPPING = {
         "mako": op.expanduser("~/.config/mako"),
         "hypr": op.expanduser("~/.config/hypr"),
+        "flameshot": op.expanduser("~/.config/flameshot"),
         "nvim": op.expanduser("~/.config/nvim"),
         "rofi": op.expanduser("~/.config/rofi"),
         # "waybar": op.expanduser("~/.config/waybar"),

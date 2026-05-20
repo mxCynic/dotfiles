@@ -89,13 +89,58 @@ hl.bind(mainMod .. " + A", hl.dsp.window.pin())
 hl.bind(mainMod .. " + C", hl.dsp.window.center())
 hl.bind(mainMod .. " + B", hl.dsp.exec_cmd("pkill ashell || ashell"), { locked = true })
 hl.bind(mainMod .. " + T", hl.dsp.exec_cmd("pkill pavucontrol || pavucontrol"), { locked = true })
-hl.bind(mainMod .. " + U", hl.dsp.exec_cmd(mxbin .. "chwp"))
-hl.bind(mainMod .. " + SHIFT + Q", hl.dsp.exec_cmd("pidof hyprlock || hyprlock --immediate-render --no-fade-in"), { locked = true })
+hl.bind(mainMod .. " + SHIFT + Q", hl.dsp.exec_cmd("pidof hyprlock || hyprlock --immediate-render --no-fade-in"),
+  { locked = true })
 hl.bind("ALT + TAB", hl.dsp.focus({ workspace = "e+1" }))
 hl.bind("ALT + SHIFT + TAB", hl.dsp.focus({ workspace = "e-1" }))
-hl.bind("CTRL + ALT + R", hl.dsp.exec_cmd(mxbin .. "obs-toggle"))
+local flameshotCursorPos = nil
+
+hl.bind("CTRL + ALT + A", function()
+  flameshotCursorPos = hl.get_cursor_pos()
+  hl.exec_cmd("flameshot gui --clipboard")
+  hl.dispatch(hl.dsp.submap("flameshot"))
+end)
+
+local function resetFlameshotSubmap()
+  hl.dispatch(hl.dsp.submap("reset"))
+end
+
+local function sendFlameshotShortcut(mods, key)
+  hl.dispatch(hl.dsp.send_shortcut({ mods = mods, key = key, window = "activewindow" }))
+  resetFlameshotSubmap()
+end
+
+hl.define_submap("flameshot", function()
+  hl.bind("S", function()
+    sendFlameshotShortcut("", "Return")
+  end)
+  hl.bind("Q", function()
+    sendFlameshotShortcut("", "Escape")
+  end)
+  hl.bind("Escape", function()
+    sendFlameshotShortcut("", "Escape")
+  end)
+end)
+
+hl.on("window.close", function(window)
+  if window.class == "flameshot" and hl.get_current_submap() == "flameshot" then
+    resetFlameshotSubmap()
+  end
+end)
+
+hl.on("window.open", function(window)
+  if window.class == "flameshot" and flameshotCursorPos then
+    local cursorPos = flameshotCursorPos
+    hl.timer(function()
+      hl.dispatch(hl.dsp.cursor.move(cursorPos))
+      flameshotCursorPos = nil
+    end, { timeout = 25, type = "oneshot" })
+  end
+end)
+
 hl.bind(mainMod .. " + F1", hl.dsp.exec_cmd(mxbin .. "gamemode.sh"))
-hl.bind("CTRL + ALT + A", hl.dsp.exec_cmd("grim -g \"$(slurp)\" - | wl-copy"), { locked = true })
+hl.bind(mainMod .. " + U", hl.dsp.exec_cmd(mxbin .. "chwp"))
+hl.bind("CTRL + ALT + R", hl.dsp.exec_cmd(mxbin .. "obs-toggle"))
 hl.bind("CTRL + code:47", function()
   hl.exec_cmd("pkill rofi || cliphist list | rofi -dmenu -display-columns 2 | cliphist decode | wl-copy")
 end)

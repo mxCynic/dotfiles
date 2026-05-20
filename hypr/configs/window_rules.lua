@@ -35,11 +35,11 @@ hl.window_rule({
 local float_windows_by_class = {
   "(Volume Control)",
   "All Files",
-  "satty",
   "anki",
   "aitest-tauri",
   "org.pulseaudio.pavucontrol",
-  "org.kde.dolphin"
+  "org.kde.dolphin",
+  "hyprland-share-picker",
 }
 for _, name in ipairs(float_windows_by_class) do
   hl.window_rule({ match = { class = name }, float = true, persistent_size = true })
@@ -61,3 +61,15 @@ hl.window_rule({ match = { class = "clash-verge" }, workspace = "9", no_initial_
 hl.window_rule({ match = { float = true }, border_size = 0 })    -- 浮动窗口无边框
 hl.window_rule({ match = { tag = "opacity" }, opacity = "0.8" }) -- Set opacity for tag `opacity`
 hl.window_rule({ match = { class = "cs2" }, immediate = true })
+
+hl.window_rule({
+  match = { class = "flameshot" },
+  rounding = 0,
+  border_size = 0,
+  fullscreen_state = 0,
+  float = true,
+  pin = true,
+  monitor = "eDP-1",
+  move = { 0, 0 },
+  size = { 4440, 1920 },
+})
