@@ -9,9 +9,6 @@ hl.on("window.open", function(window)
 end)
 
 hl.on("window.move_to_workspace", function(window, workspace)
-  hl.notification.create({
-    text = window.title .. " moved to workspace " .. workspace.name,
-    timeout = 4000,
-    icon = "ok",
-  })
+  local text = window.title .. " moved to workspace " .. workspace.name
+  hl.exec_cmd("notify-send " .. string.format("%q", text))
 end)
