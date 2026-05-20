@@ -1,0 +1,20 @@
+#!/bin/bash
+
+if ! pgrep -x obs >/dev/null; then
+    notify-send "OBS" "OBS Studio not running"
+    exit 0
+fi
+
+status=$(obs-cmd recording status 2>/dev/null)
+
+if echo "$status" | grep -q "Active: true"; then
+    obs-cmd recording stop
+    notify-send "OBS" "Recording stopped"
+
+elif echo "$status" | grep -q "Active: false"; then
+    obs-cmd recording start
+    notify-send "OBS" "Recording started"
+
+else
+    notify-send "OBS" "OBS Studio not running"
+fi
