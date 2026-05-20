@@ -8,3 +8,23 @@ width=420
 height=120
 padding=12
 margin=12
+background-color=#1e2030ee
+text-color=#c8d3f5ff
+border-size=2
+border-color=#39c5bbcc
+progress-color=over #39c5bbcc
+max-icon-size=48
+icon-border-radius=6
+
+[urgency=low]
+border-color=#545c7ecc
+progress-color=over #82aaffcc
+
+[urgency=normal]
+border-color=#4fd6becc
+progress-color=over #4fd6beff
+
+[urgency=high]
+border-color=#ff757fff
+progress-color=over #ff757fff
+default-timeout=8000
