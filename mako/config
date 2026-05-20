@@ -1,4 +1,6 @@
 default-timeout=5000
+history=1
+max-history=10000
 anchor=top-center
 border-radius=8
 font=Maple Mono CN Italic 13
