@@ -1,0 +1,4 @@
+interface:
+  display_name: "System Security Health"
+  short_description: "Diagnose recent system bugs and security signals"
+  default_prompt: "Use $system-security-health to run mxbin/log-health and report recent system bugs, likely causes, and fixes."
