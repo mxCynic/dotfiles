@@ -48,7 +48,7 @@ local float_windows_by_title = {
   "Friends List",
   "图片查看器",
   "视频播放器",
-  "群聊的聊天记录",
+  "的聊天记录",
 }
 for _, name in ipairs(float_windows_by_title) do
   hl.window_rule({ match = { title = name }, float = true, persistent_size = true })
@@ -71,5 +71,5 @@ hl.window_rule({
   pin = true,
   monitor = "eDP-1",
   move = { 0, 0 },
-  size = { 4440, 1920 },
+  size = { 4480, 1440 },
 })
