@@ -1,4 +1,4 @@
-position = "Top"
+# position = "Top"
 [modules]
 left = ["Workspaces", "MediaPlayer"]
 center = ["WindowTitle"]
