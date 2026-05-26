@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+sudo install -d /etc/systemd/system/-.slice.d
+sudo tee /etc/systemd/system/-.slice.d/10-oomd.conf >/dev/null <<'EOF'
+[Slice]
+ManagedOOMSwap=kill
+EOF
+
+install -d "$HOME/.config/systemd/user/app.slice.d"
+cat >"$HOME/.config/systemd/user/app.slice.d/10-oomd.conf" <<'EOF'
+[Slice]
+ManagedOOMMemoryPressure=kill
+ManagedOOMSwap=kill
+EOF
+
+sudo systemctl daemon-reload
+systemctl --user daemon-reload
+
+sudo systemctl enable --now systemd-oomd.service
+
+echo "Installed systemd-oomd config."
+echo
+echo "System status:"
+systemctl status systemd-oomd.service --no-pager
+echo
+echo "User app.slice properties:"
+systemctl --user show app.slice \
+    -p ManagedOOMMemoryPressure \
+    -p ManagedOOMSwap \
+    -p ManagedOOMMemoryPressureLimit
