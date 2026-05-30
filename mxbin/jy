@@ -76,22 +76,45 @@ def "main squashfs" [item: string] {
 }
 
 # 解压
-def "main x" [...archives: string] {
+def "main x" [
+    --output (-o): string, # 解压到指定目录
+    ...archives: string
+] {
+    if $output != null {
+        mkdir $output
+    }
+
     for archive in $archives {
         match ($archive | path parse | get extension) {
             'tar' | 'gz' | 'xz' | 'zst' | 'zip' | 'apk' => {
-                bsdtar -xvf $archive
+                if $output == null {
+                    bsdtar -xvf $archive
+                } else {
+                    bsdtar -xvf $archive -C $output
+                }
             },
-            '7z' => { 7za x $archive },
-            'rar' => { unrar x $archive },
+            '7z' => {
+                if $output == null {
+                    7za x $archive
+                } else {
+                    7za x $archive $"-o($output)"
+                }
+            },
+            'rar' => {
+                if $output == null {
+                    unrar x $archive
+                } else {
+                    unrar x $archive $output
+                }
+            },
             'deb' => {
-                let stem = $archive | path parse | get stem
-                mkdir $stem
-                ar x $archive --output $stem
+                let dest = if $output == null { $archive | path parse | get stem } else { $output }
+                mkdir $dest
+                ar x $archive --output $dest
             },
             'squashfs' => {
-                let stem = $archive | path parse | get stem
-                unsquashfs -dest $stem $archive
+                let dest = if $output == null { $archive | path parse | get stem } else { $output }
+                unsquashfs -dest $dest $archive
             }
         }
     }
