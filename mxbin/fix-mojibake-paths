@@ -1,0 +1,171 @@
+#!/usr/bin/env python3
+"""Rename path components stored in a legacy encoding to UTF-8 names.
+
+This is meant for directories copied from systems that stored Chinese file
+names as GBK/CP936 bytes. In a UTF-8 locale those paths may show as replacement
+characters and can break tools that require valid UTF-8 paths, such as jj.
+"""
+
+from __future__ import annotations
+
+import argparse
+import os
+import sys
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class Rename:
+    src: bytes
+    dst: bytes
+    old_name: bytes
+    new_text: str
+
+
+def is_valid_utf8(value: bytes) -> bool:
+    try:
+        value.decode("utf-8")
+    except UnicodeDecodeError:
+        return False
+    return True
+
+
+def display_path(value: bytes) -> str:
+    text = os.fsdecode(value)
+    return "".join(
+        f"\\x{ord(char) - 0xDC00:02x}"
+        if "\udc80" <= char <= "\udcff"
+        else char
+        for char in text
+    )
+
+
+def convert_name(name: bytes, encoding: str, include_valid: bool) -> bytes | None:
+    if not include_valid and is_valid_utf8(name):
+        return None
+
+    try:
+        text = name.decode(encoding)
+    except UnicodeDecodeError:
+        return None
+
+    converted = text.encode("utf-8")
+    if converted == name:
+        return None
+    return converted
+
+
+def collect_renames(root: bytes, encoding: str, include_valid: bool) -> list[Rename]:
+    renames: list[Rename] = []
+
+    for dirpath, dirnames, filenames in os.walk(root, topdown=False):
+        for name in filenames + dirnames:
+            new_name = convert_name(name, encoding, include_valid)
+            if new_name is None:
+                continue
+
+            src = os.path.join(dirpath, name)
+            dst = os.path.join(dirpath, new_name)
+            renames.append(
+                Rename(
+                    src=src,
+                    dst=dst,
+                    old_name=name,
+                    new_text=new_name.decode("utf-8"),
+                )
+            )
+
+    return renames
+
+
+def check_conflicts(renames: list[Rename]) -> list[str]:
+    errors: list[str] = []
+    planned_destinations: set[bytes] = set()
+
+    for item in renames:
+        if item.dst in planned_destinations:
+            errors.append(f"duplicate destination: {display_path(item.dst)}")
+        planned_destinations.add(item.dst)
+
+        if os.path.lexists(item.dst) and item.dst != item.src:
+            errors.append(f"destination exists: {display_path(item.dst)}")
+
+    return errors
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Fix non-UTF-8 mojibake path names by decoding components with a legacy encoding.",
+    )
+    parser.add_argument(
+        "paths",
+        nargs="*",
+        default=["."],
+        help="Root path(s) to scan. Defaults to the current directory.",
+    )
+    parser.add_argument(
+        "-e",
+        "--encoding",
+        default="gbk",
+        help="Legacy filename encoding to decode from. Default: gbk.",
+    )
+    parser.add_argument(
+        "--include-valid",
+        action="store_true",
+        help="Also try converting names that are already valid UTF-8.",
+    )
+    parser.add_argument(
+        "--apply",
+        action="store_true",
+        help="Actually rename files. Without this flag, only print the planned changes.",
+    )
+    return parser.parse_args()
+
+
+def main() -> int:
+    args = parse_args()
+
+    try:
+        "".encode(args.encoding)
+    except LookupError as exc:
+        print(f"unknown encoding: {args.encoding}", file=sys.stderr)
+        raise SystemExit(2) from exc
+
+    roots = [os.fsencode(path) for path in args.paths]
+    renames: list[Rename] = []
+
+    for root in roots:
+        if not os.path.isdir(root):
+            print(f"skip non-directory: {display_path(root)}", file=sys.stderr)
+            continue
+        renames.extend(collect_renames(root, args.encoding, args.include_valid))
+
+    if not renames:
+        print("No matching mojibake paths found.")
+        return 0
+
+    print("Planned renames:")
+    for item in renames:
+        print(f"  {display_path(item.src)}")
+        print(f"    -> {display_path(item.dst)}")
+
+    errors = check_conflicts(renames)
+    if errors:
+        print("\nRefusing to continue because of conflicts:", file=sys.stderr)
+        for error in errors:
+            print(f"  {error}", file=sys.stderr)
+        return 1
+
+    if not args.apply:
+        print("\nDry run only. Re-run with --apply to rename these paths.")
+        return 0
+
+    for item in renames:
+        os.rename(item.src, item.dst)
+
+    print(f"\nRenamed {len(renames)} path component(s).")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

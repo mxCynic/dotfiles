@@ -1,0 +1,138 @@
+#!/usr/bin/env bash
+set -u
+
+stamp="$(date +%Y%m%d-%H%M%S)"
+state_dir="${HYPRLOCK_CAPTURE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/hyprlock-crash}"
+if ! mkdir -p "$state_dir" 2>/dev/null; then
+  state_dir="${TMPDIR:-/tmp}/hyprlock-crash-$UID"
+  mkdir -p "$state_dir" || exit 1
+fi
+run_dir="$state_dir/$stamp"
+start_time="$(date --iso-8601=seconds)"
+
+mkdir -p "$run_dir"
+
+write_section() {
+  local title="$1"
+  shift
+
+  {
+    printf '\n## %s\n\n' "$title"
+    printf '```text\n'
+    "$@" 2>&1 || true
+    printf '```\n'
+  } >>"$run_dir/report.md"
+}
+
+write_file() {
+  local title="$1"
+  local file="$2"
+
+  {
+    printf '\n## %s\n\n' "$title"
+    printf '```text\n'
+    if [[ -e "$file" ]]; then
+      sed -n '1,260p' "$file"
+    else
+      printf 'missing: %s\n' "$file"
+    fi
+    printf '```\n'
+  } >>"$run_dir/report.md"
+}
+
+sanitized_env() {
+  env | sed -E '/(KEY|TOKEN|SECRET|PASSWORD|PASS|COOKIE|CREDENTIAL|AUTH)=/Id'
+}
+
+copy_hyprland_logs() {
+  local runtime="${XDG_RUNTIME_DIR:-/run/user/$UID}/hypr"
+  local target="$run_dir/hyprland-runtime-logs"
+
+  [[ -d "$runtime" ]] || return 0
+  mkdir -p "$target"
+
+  local log
+  for log in "$runtime"/*/hyprland.log; do
+    [[ -e "$log" ]] || continue
+    cp -f "$log" "$target/$(basename "$(dirname "$log")").log" 2>/dev/null || true
+  done
+}
+
+collect_context() {
+  local end_time
+  end_time="$(date --iso-8601=seconds)"
+  ln -sfn "$run_dir" "$state_dir/latest"
+
+  : >"$run_dir/report.md"
+  {
+    printf '# Hyprlock Crash Capture\n\n'
+    printf -- '- Generated: `%s`\n' "$end_time"
+    printf -- '- Window start: `%s`\n' "$start_time"
+    printf -- '- Host: `%s`\n' "$(hostname)"
+    printf -- '- Hyprland instance: `%s`\n' "${HYPRLAND_INSTANCE_SIGNATURE:-unset}"
+    printf -- '- Wayland display: `%s`\n' "${WAYLAND_DISPLAY:-unset}"
+    printf -- '- Log directory: `%s`\n' "$run_dir"
+  } >>"$run_dir/report.md"
+
+  write_section "Environment" sanitized_env
+  write_section "Kernel" uname -a
+  write_section "Hyprlock Version" hyprlock --version
+  write_section "Hypr Packages" pacman -Q hyprlock hyprgraphics hyprutils hyprland aquamarine hyprlang hyprsunset hyprlauncher
+  write_section "Hyprctl Version" hyprctl version
+  write_section "Hyprctl Instances" hyprctl instances
+  write_section "Hyprctl Monitors" hyprctl monitors
+  write_section "Hyprctl Active Window" hyprctl activewindow
+  write_section "Recent Hyprlock Coredumps" coredumpctl list hyprlock --no-pager
+  write_section "Current Hyprlock Coredump Info" coredumpctl info hyprlock --no-pager
+  write_section "User Journal Around Crash" journalctl --user --since "$start_time" --until "$end_time" --no-pager
+  write_section "Hypr/Wayland Journal Around Crash" journalctl --user --since "$start_time" --until "$end_time" --no-pager -g 'hypr|Hypr|Wayland|wl_display|xdg-desktop-portal|ashell|flameshot|dumped core|invalid object|Disconnected from pollfd'
+
+  write_file "Hyprlock Config" "${XDG_CONFIG_HOME:-$HOME/.config}/hypr/hyprlock.conf"
+  write_file "Hypridle Config" "${XDG_CONFIG_HOME:-$HOME/.config}/hypr/hypridle.conf"
+
+  local wallpaper="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/scripts/wallpaper.link"
+  write_section "Wallpaper Link" readlink -f "$wallpaper"
+  write_section "Wallpaper File" file "$wallpaper"
+  if command -v identify >/dev/null 2>&1; then
+    write_section "Wallpaper Identify" identify "$wallpaper"
+  fi
+
+  copy_hyprland_logs
+}
+
+if [[ "${1:-}" == "--collect-only" ]]; then
+  collect_context
+  printf '%s\n' "$run_dir"
+  exit 0
+fi
+
+if pidof hyprlock >/dev/null 2>&1; then
+  printf 'hyprlock is already running\n' >"$run_dir/hyprlock.stdout.log"
+  rm -rf "$run_dir"
+  exit 0
+fi
+
+hyprlock "$@" >"$run_dir/hyprlock.stdout.log" 2>"$run_dir/hyprlock.stderr.log"
+status=$?
+
+if [[ "$status" -eq 0 ]]; then
+  rm -rf "$run_dir"
+  exit 0
+fi
+
+collect_context
+{
+  printf '\n## Hyprlock Exit\n\n'
+  printf '```text\n'
+  printf 'status=%s\n' "$status"
+  printf 'stdout=%s\n' "$run_dir/hyprlock.stdout.log"
+  printf 'stderr=%s\n' "$run_dir/hyprlock.stderr.log"
+  printf '```\n'
+} >>"$run_dir/report.md"
+
+if command -v notify-send >/dev/null 2>&1; then
+  notify-send 'hyprlock crashed' "$run_dir"
+fi
+
+printf 'hyprlock exited with status %s; logs: %s\n' "$status" "$run_dir" >&2
+exit "$status"
