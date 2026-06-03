@@ -21,5 +21,6 @@ hl.on("hyprland.start", function()
   hl.exec_cmd("mako")
 
 
+  -- 启动时聚焦在特定屏幕
   hl.dispatch(hl.dsp.focus({ monitor = "DP-1" }))
 end)

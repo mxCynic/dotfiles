@@ -11,9 +11,9 @@ from time import time_ns
 from typing import Any, Literal, overload
 from urllib.parse import unquote, urlparse
 
-result_handler: Any = getattr(import_module("kittens.tui.handler"), "result_handler")
-
 from kitty.boss import Boss
+
+result_handler: Any = getattr(import_module("kittens.tui.handler"), "result_handler")
 
 
 def main(args: list[str]) -> None:

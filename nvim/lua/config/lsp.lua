@@ -79,10 +79,16 @@ vim.lsp.config("lua_ls", {
 -- Python
 local python_root_markers = { "pyproject.toml", "setup.py", "setup.cfg", "requirements.txt", ".git" }
 local python_lsp_server = nil
+local ty_pythonpath = "/usr/lib/kitty"
+
+if vim.env.PYTHONPATH and vim.env.PYTHONPATH ~= "" then
+  ty_pythonpath = ty_pythonpath .. ":" .. vim.env.PYTHONPATH
+end
 
 if is_executable("ty") then
   vim.lsp.config("ty", {
     cmd = { "ty", "server" },
+    cmd_env = { PYTHONPATH = ty_pythonpath },
     filetypes = { "python" },
     root_markers = python_root_markers,
     settings = {
