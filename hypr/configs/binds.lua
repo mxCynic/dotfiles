@@ -9,6 +9,46 @@ local mxbin = "/home/mx/.mxbin/"
 local cliphist_rofi = "pkill rofi || cliphist list | rofi -dmenu -display-columns 2 | cliphist decode | wl-copy"
 local hypr_shutdown = "command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"
 
+local pin_nofocus_tag = "pin_nofocus"
+local pin_nofocus_windows = {}
+
+local function restore_pin_nofocus_windows()
+  for _, window in ipairs(hl.get_windows({ tag = pin_nofocus_tag })) do
+    hl.dispatch(hl.dsp.window.set_prop({ prop = "no_focus", value = "unset", window = window }))
+    if window.pinned then
+      hl.dispatch(hl.dsp.window.pin({ window = window }))
+    end
+    hl.dispatch(hl.dsp.window.tag({ tag = "-" .. pin_nofocus_tag, window = window }))
+    pin_nofocus_windows[window.address] = nil
+  end
+end
+
+local function toggle_pin_nofocus()
+  local window = hl.get_active_window()
+  if window == nil then
+    return
+  end
+
+  if window.floating and not window.pinned and pin_nofocus_windows[window.address] == nil then
+    pin_nofocus_windows[window.address] = true
+    hl.dispatch(hl.dsp.window.tag({ tag = "+" .. pin_nofocus_tag, window = window }))
+    hl.dispatch(hl.dsp.window.pin({ window = window }))
+    hl.dispatch(hl.dsp.window.set_prop({ prop = "no_focus", value = "1", window = window }))
+    return
+  end
+
+  restore_pin_nofocus_windows()
+end
+
+local function toggle_focus_floating_tiled()
+  local window = hl.get_active_window()
+  if window ~= nil and window.floating then
+    hl.dispatch(hl.dsp.focus({ window = "tiled" }))
+  else
+    hl.dispatch(hl.dsp.focus({ window = "floating" }))
+  end
+end
+
 -- Example binds, see https://wiki.hypr.land/Configuring/Basics/Binds/ for more
 -- local closeWindowBind = hl.bind(mainMod .. "D", hl.dsp.window.close())
 -- closeWindowBind:set_enabled(true)
@@ -31,6 +71,7 @@ hl.bind(mainMod .. "SHIFT + H", hl.dsp.layout("swapcol l"))
 hl.bind(mainMod .. "SHIFT + L", hl.dsp.layout("swapcol r"))
 hl.bind(mainMod .. "SHIFT + J", hl.dsp.window.move({ workspace = "+1" }))
 hl.bind(mainMod .. "SHIFT + K", hl.dsp.window.move({ workspace = "-1" }))
+hl.bind(mainMod .. "TAB", toggle_focus_floating_tiled)
 hl.bind("ALT + TAB", hl.dsp.focus({ workspace = "e+1" }))
 hl.bind("ALT + SHIFT + TAB", hl.dsp.focus({ workspace = "e-1" }))
 
@@ -79,7 +120,7 @@ hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true 
 hl.bind(mainMod .. "O", hl.dsp.window.fullscreen({ mode = "fullscreen" }))
 hl.bind(mainMod .. "SHIFT + O", hl.dsp.window.fullscreen())
 hl.bind(mainMod .. "S", hl.dsp.window.tag({ tag = "opacity" })) -- toggle 窗口的透明
-hl.bind(mainMod .. "A", hl.dsp.window.pin())
+hl.bind(mainMod .. "A", toggle_pin_nofocus)
 hl.bind(mainMod .. "C", hl.dsp.window.center())
 hl.bind(mainMod .. "B", hl.dsp.exec_cmd("pkill ashell || ashell"))
 hl.bind(mainMod .. "T", hl.dsp.exec_cmd("pkill pavucontrol || pavucontrol"))
