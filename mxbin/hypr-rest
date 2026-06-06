@@ -1,0 +1,221 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DEFAULT_CONFIG="${HYPRIDLE_DEFAULT_CONFIG:-$HOME/.config/hypr/hypridle.conf}"
+STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/hypr-rest"
+RUNTIME_DIR="${XDG_RUNTIME_DIR:-/tmp}/hypr-rest"
+STATE_FILE="$STATE_DIR/state"
+RUNTIME_CONFIG="$RUNTIME_DIR/hypridle.conf"
+LOG_FILE="$RUNTIME_DIR/hypridle.log"
+
+usage() {
+  cat <<'EOF'
+Usage:
+  hypr-rest status
+  hypr-rest set <minutes|duration>
+  hypr-rest default
+  hypr-rest off
+  hypr-rest lock
+
+Examples:
+  hypr-rest set 5
+  hypr-rest set 25m
+  hypr-rest set 1h
+  hypr-rest default
+
+set controls the idle time before hyprlock is triggered.
+default restores the normal hypridle config.
+off stops hypridle until you enable it again.
+EOF
+}
+
+notify() {
+  if command -v notify-send >/dev/null 2>&1; then
+    notify-send "Hypr rest" "$1"
+  fi
+}
+
+duration_to_seconds() {
+  local input="${1,,}"
+  local number unit
+
+  if [[ ! "$input" =~ ^([0-9]+)([smhd]?)$ ]]; then
+    return 1
+  fi
+
+  number="${BASH_REMATCH[1]}"
+  unit="${BASH_REMATCH[2]:-m}"
+
+  case "$unit" in
+    s) printf '%s\n' "$((10#$number))" ;;
+    m) printf '%s\n' "$((10#$number * 60))" ;;
+    h) printf '%s\n' "$((10#$number * 3600))" ;;
+    d) printf '%s\n' "$((10#$number * 86400))" ;;
+  esac
+}
+
+format_duration() {
+  local seconds="$1"
+
+  if [ "$seconds" -ge 3600 ] && [ $((seconds % 3600)) -eq 0 ]; then
+    printf '%sh\n' "$((seconds / 3600))"
+  elif [ "$seconds" -ge 60 ] && [ $((seconds % 60)) -eq 0 ]; then
+    printf '%sm\n' "$((seconds / 60))"
+  else
+    printf '%ss\n' "$seconds"
+  fi
+}
+
+stop_hypridle() {
+  pkill -x hypridle >/dev/null 2>&1 || true
+}
+
+start_hypridle() {
+  local config="$1"
+
+  stop_hypridle
+  mkdir -p "$RUNTIME_DIR"
+  nohup hypridle -c "$config" >"$LOG_FILE" 2>&1 &
+}
+
+write_state() {
+  mkdir -p "$STATE_DIR"
+  printf '%s\n' "$1" >"$STATE_FILE"
+}
+
+write_runtime_config() {
+  local lock_timeout="$1"
+  local dim_timeout keyboard_timeout dpms_timeout suspend_timeout
+
+  if [ "$lock_timeout" -le 60 ]; then
+    dim_timeout="$lock_timeout"
+  else
+    dim_timeout=$((lock_timeout / 2))
+    [ "$dim_timeout" -lt 30 ] && dim_timeout=30
+  fi
+
+  keyboard_timeout="$dim_timeout"
+  # hyprlock 0.9.5 can abort when an output is removed/re-added shortly after
+  # the session lock. Keep DPMS well after the lock event to avoid that race.
+  dpms_timeout=$((lock_timeout + 600))
+  suspend_timeout=$((lock_timeout * 6))
+  [ "$suspend_timeout" -lt 1800 ] && suspend_timeout=1800
+
+  mkdir -p "$RUNTIME_DIR"
+  cat >"$RUNTIME_CONFIG" <<EOF
+general {
+    lock_cmd = /home/mx/.dotfiles/mxbin/hyprlock-capture
+    before_sleep_cmd = loginctl lock-session
+    after_sleep_cmd = hyprctl dispatch 'hl.dsp.dpms("on")'
+}
+
+listener {
+    timeout = $dim_timeout
+    on-timeout = brightnessctl -s set 10
+    on-resume = brightnessctl -r
+}
+
+listener {
+    timeout = $keyboard_timeout
+    on-timeout = brightnessctl -sd rgb:kbd_backlight set 0
+    on-resume = brightnessctl -rd rgb:kbd_backlight
+}
+
+listener {
+    timeout = $lock_timeout
+    on-timeout = loginctl lock-session
+}
+
+listener {
+    timeout = $dpms_timeout
+    on-timeout = hyprctl dispatch 'hl.dsp.dpms("off")'
+    on-resume = hyprctl dispatch 'hl.dsp.dpms("on")'
+}
+
+listener {
+    timeout = $suspend_timeout
+    on-timeout = systemctl suspend
+}
+EOF
+}
+
+status() {
+  local mode="default"
+  if [ -f "$STATE_FILE" ]; then
+    mode="$(cat "$STATE_FILE")"
+  fi
+
+  if pgrep -x hypridle >/dev/null 2>&1; then
+    printf 'hypridle: running\n'
+  else
+    printf 'hypridle: stopped\n'
+  fi
+
+  case "$mode" in
+    default)
+      printf 'mode: default\nconfig: %s\n' "$DEFAULT_CONFIG"
+      ;;
+    off)
+      printf 'mode: off\n'
+      ;;
+    lock:*)
+      local seconds="${mode#lock:}"
+      printf 'mode: custom\nlock after: %s\nconfig: %s\n' "$(format_duration "$seconds")" "$RUNTIME_CONFIG"
+      ;;
+    *)
+      printf 'mode: %s\n' "$mode"
+      ;;
+  esac
+}
+
+set_time() {
+  local seconds
+
+  if [ $# -ne 1 ] || ! seconds="$(duration_to_seconds "$1")" || [ "$seconds" -le 0 ]; then
+    usage >&2
+    exit 2
+  fi
+
+  write_runtime_config "$seconds"
+  start_hypridle "$RUNTIME_CONFIG"
+  write_state "lock:$seconds"
+  notify "Lock after $(format_duration "$seconds")"
+}
+
+restore_default() {
+  start_hypridle "$DEFAULT_CONFIG"
+  write_state "default"
+  notify "Default idle timer restored"
+}
+
+turn_off() {
+  stop_hypridle
+  write_state "off"
+  notify "hypridle stopped"
+}
+
+case "${1:-status}" in
+  status)
+    status
+    ;;
+  set)
+    shift
+    set_time "$@"
+    ;;
+  default|on|restore)
+    restore_default
+    ;;
+  off|stop)
+    turn_off
+    ;;
+  lock)
+    loginctl lock-session
+    ;;
+  -h|--help|help)
+    usage
+    ;;
+  *)
+    usage >&2
+    exit 2
+    ;;
+esac
