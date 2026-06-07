@@ -85,7 +85,7 @@ write_state() {
 
 write_runtime_config() {
   local lock_timeout="$1"
-  local dim_timeout keyboard_timeout dpms_timeout suspend_timeout
+  local dim_timeout dpms_timeout
 
   if [ "$lock_timeout" -le 60 ]; then
     dim_timeout="$lock_timeout"
@@ -94,12 +94,9 @@ write_runtime_config() {
     [ "$dim_timeout" -lt 30 ] && dim_timeout=30
   fi
 
-  keyboard_timeout="$dim_timeout"
   # hyprlock 0.9.5 can abort when an output is removed/re-added shortly after
   # the session lock. Keep DPMS well after the lock event to avoid that race.
   dpms_timeout=$((lock_timeout + 600))
-  suspend_timeout=$((lock_timeout * 6))
-  [ "$suspend_timeout" -lt 1800 ] && suspend_timeout=1800
 
   mkdir -p "$RUNTIME_DIR"
   cat >"$RUNTIME_CONFIG" <<EOF
@@ -116,12 +113,6 @@ listener {
 }
 
 listener {
-    timeout = $keyboard_timeout
-    on-timeout = brightnessctl -sd rgb:kbd_backlight set 0
-    on-resume = brightnessctl -rd rgb:kbd_backlight
-}
-
-listener {
     timeout = $lock_timeout
     on-timeout = loginctl lock-session
 }
@@ -130,11 +121,6 @@ listener {
     timeout = $dpms_timeout
     on-timeout = hyprctl dispatch 'hl.dsp.dpms("off")'
     on-resume = hyprctl dispatch 'hl.dsp.dpms("on")'
-}
-
-listener {
-    timeout = $suspend_timeout
-    on-timeout = systemctl suspend
 }
 EOF
 }
