@@ -1,4 +1,6 @@
 hl.env("HYPRLAND_TRACE", "1")
+hl.env("XCURSOR_THEME", "catppuccin-frappe-blue-cursors")
+hl.env("HYPRCURSOR_THEME", "catppuccin-frappe-blue-cursors")
 hl.env("XCURSOR_SIZE", "24")
 hl.env("HYPRCURSOR_SIZE", "24")
 hl.env("GDK_BACKEND", "wayland")
