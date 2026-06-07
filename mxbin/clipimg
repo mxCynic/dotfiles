@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# 查看剪切板，如果是图片就用 imv 打开
+
+# 获取剪切板中所有可用的 MIME 类型
+types=$(wl-paste --list-types 2>/dev/null)
+
+if [[ -z "$types" ]]; then
+    notify-send "clipimg" "剪切板为空" 2>/dev/null || echo "剪切板为空"
+    exit 1
+fi
+
+# 检查是否有图片类型
+image_type=""
+for t in image/png image/jpeg image/jpg image/gif image/webp image/bmp image/tiff image/avif image/svg+xml; do
+    if echo "$types" | grep -qFx "$t"; then
+        image_type="$t"
+        break
+    fi
+done
+
+if [[ -z "$image_type" ]]; then
+    notify-send "clipimg" "剪切板中没有图片" 2>/dev/null || echo "剪切板中没有图片"
+    exit 1
+fi
+
+# 根据 MIME 确定后缀
+case "$image_type" in
+    image/png)      ext="png" ;;
+    image/jpeg)     ext="jpg" ;;
+    image/jpg)      ext="jpg" ;;
+    image/gif)      ext="gif" ;;
+    image/webp)     ext="webp" ;;
+    image/bmp)      ext="bmp" ;;
+    image/tiff)     ext="tiff" ;;
+    image/avif)     ext="avif" ;;
+    image/svg+xml)  ext="svg" ;;
+    *)              ext="png" ;;
+esac
+
+# 保存到临时文件
+tmpfile=$(mktemp /tmp/clipimg-XXXXXX."$ext")
+wl-paste --type "$image_type" > "$tmpfile"
+
+if [[ ! -s "$tmpfile" ]]; then
+    rm -f "$tmpfile"
+    notify-send "clipimg" "无法读取剪切板图片" 2>/dev/null || echo "无法读取剪切板图片"
+    exit 1
+fi
+
+# 用 imv 打开，关闭后自动清理
+imv "$tmpfile"
+rm -f "$tmpfile"
