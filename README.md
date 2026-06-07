@@ -23,7 +23,7 @@ git clone <your-repo-url> ~/.dotfiles
 cd ~/.dotfiles
 
 # Run the deployment script
-python3 mxbin/deploy.py
+uv run mxbin/deploy.py
 ```
 
 The deployment script will create symlinks from `~/.dotfiles` to the appropriate locations in your home directory.

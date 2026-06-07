@@ -39,3 +39,6 @@ export ANTHROPIC_BASE_URL="https://api.aicodemirror.com/api/claudecode"
 export ANTHROPIC_API_KEY="sk-ant-api03-rCJW2o0tUAV2zqKBUXf_GC-kSTztZI6_ot3jDTVg7yTfoMHQVf-g-xq5_PVtgRMq7RtOFZ13ZLCj0TlPTtOhkg"
 export ANTHROPIC_AUTH_TOKEN="sk-ant-api03-rCJW2o0tUAV2zqKBUXf_GC-kSTztZI6_ot3jDTVg7yTfoMHQVf-g-xq5_PVtgRMq7RtOFZ13ZLCj0TlPTtOhkg"
 # End Claude Code Environment Variables
+
+# Hermes Agent — ensure ~/.local/bin is on PATH
+export PATH="$HOME/.local/bin:$PATH"
