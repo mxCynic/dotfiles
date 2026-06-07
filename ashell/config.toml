@@ -1,11 +1,17 @@
 # position = "Top"
 [modules]
-left = ["Workspaces", "MediaPlayer"]
-center = ["WindowTitle"]
-right = ["Tray", "SystemInfo", ["Privacy", "Settings"], "Clock"]
+left = ["Os_logo", "Workspaces", ]
+center = ["WindowTitle","MediaPlayer" ]
+right = ["Tray", "SystemInfo", "Privacy", "Settings", "Tempo" ]
+
 
 
 [appearance]
+font_name = "Maple Mono CN"
+scale_factor = 1.0
+style = "Gradient"
+opacity = 0.6
+
 
 primary_color = "#7aa2f7"
 success_color = "#9ece6a"
@@ -24,3 +30,10 @@ strong = "#414868"
 
 [appearance.secondary_color]
 base = "#0c0d14"
+
+[[CustomModule]]
+name = "Os_logo"
+icon = "\uf303\n"
+
+[tempo]
+clock_format = "%R %d %b %a"
