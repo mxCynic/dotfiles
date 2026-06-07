@@ -41,6 +41,7 @@ local float_windows_by_class = {
   "org.kde.dolphin",
   "hyprland-share-picker",
   "org.freedesktop.impl.portal.desktop.kde",
+  "imv",
 }
 for _, name in ipairs(float_windows_by_class) do
   hl.window_rule({ match = { class = name }, float = true, persistent_size = true })
@@ -58,12 +59,12 @@ end
 
 hl.window_rule({ match = { title = "反恐精英：全球攻势" }, fullscreen = true, persistent_size = true })
 
-hl.window_rule({ match = { class = "SPlayer" }, workspace = "name:DP", no_initial_focus = true })
+hl.window_rule({ match = { class = "splayer" }, workspace = "10", no_initial_focus = true })
 hl.window_rule({ match = { class = "clash-verge" }, workspace = "9", no_initial_focus = true })
 hl.window_rule({ match = { float = true }, border_size = 0 })    -- 浮动窗口无边框
 hl.window_rule({ match = { tag = "opacity" }, opacity = "0.8" }) -- Set opacity for tag `opacity`
 hl.window_rule({ match = { class = "cs2" }, immediate = true })
-hl.window_rule({ match = { title = "SPlayer - 桌面歌词" }, no_blur = true })
+hl.window_rule({ match = { title = "SPlayer - 桌面歌词" }, float = true, no_blur = true })
 
 hl.window_rule({
   match = { class = "flameshot" },
