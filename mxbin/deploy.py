@@ -23,6 +23,7 @@ def deploy_dotfiles():
         "jj/config.toml": op.expanduser("~/.config/jj/config.toml"),
         "latex/latexmkrc": op.expanduser("~/.latexmkrc"),
         "zed": op.expanduser("~/.config/zed"),
+        "cava": op.expanduser("~/.config/cava"),
         "ashell": op.expanduser("~/.config/ashell/"),
     }
 
