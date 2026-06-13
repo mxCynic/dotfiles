@@ -85,18 +85,6 @@ write_state() {
 
 write_runtime_config() {
   local lock_timeout="$1"
-  local dim_timeout dpms_timeout
-
-  if [ "$lock_timeout" -le 60 ]; then
-    dim_timeout="$lock_timeout"
-  else
-    dim_timeout=$((lock_timeout / 2))
-    [ "$dim_timeout" -lt 30 ] && dim_timeout=30
-  fi
-
-  # hyprlock 0.9.5 can abort when an output is removed/re-added shortly after
-  # the session lock. Keep DPMS well after the lock event to avoid that race.
-  dpms_timeout=$((lock_timeout + 600))
 
   mkdir -p "$RUNTIME_DIR"
   cat >"$RUNTIME_CONFIG" <<EOF
@@ -107,20 +95,8 @@ general {
 }
 
 listener {
-    timeout = $dim_timeout
-    on-timeout = brightnessctl -s set 10
-    on-resume = brightnessctl -r
-}
-
-listener {
     timeout = $lock_timeout
     on-timeout = loginctl lock-session
-}
-
-listener {
-    timeout = $dpms_timeout
-    on-timeout = hyprctl dispatch 'hl.dsp.dpms("off")'
-    on-resume = hyprctl dispatch 'hl.dsp.dpms("on")'
 }
 EOF
 }
