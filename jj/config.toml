@@ -1,8 +1,8 @@
 #:schema https://jj-vcs.github.io/jj/latest/config-schema.json
 
 [user]
-name = "xuqiwang"
-email = "xuqi.wang@stepai.cn"
+name = "mxcynic"
+email = "mx1545814198@gmail.com"
 
 [ui]
 pager = "less -FR" # 设置为空字符串以禁用分页器

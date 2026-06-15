@@ -25,6 +25,7 @@ def deploy_dotfiles():
         "zed": op.expanduser("~/.config/zed"),
         "cava": op.expanduser("~/.config/cava"),
         "ashell": op.expanduser("~/.config/ashell/"),
+        "systemd/user": op.expanduser("~/.config/systemd/user"),
     }
 
     for src_name, tgt_path in MAPPING.items():
