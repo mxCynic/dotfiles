@@ -8,6 +8,15 @@ vim.filetype.add({
 
 -- 关闭保存时自动格式化
 vim.g.autoformat = false
+
+-- Use the Wayland clipboard for normal yanks, deletes, changes, and puts.
+vim.opt.clipboard = "unnamedplus"
+vim.api.nvim_create_autocmd("User", {
+  pattern = "VeryLazy",
+  callback = function()
+    vim.opt.clipboard = "unnamedplus"
+  end,
+})
 --   -- vim.filetype.add({
 --   extension = {
 --     tsx = "typescriptreact",
