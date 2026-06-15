@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# 这个脚本是让falameshot在hyprland中的体验更好,直接截图所有屏幕并保存到实现储存好的目录
+filename=$(date "+%Y%m%d-%H%M%S")
+path="$HOME/Pictures/Screenshots/$filename.png"
+log=$(flameshot full -p "$path" 2>&1)
+notify-send "Screenshot:" "$log"

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
--- 这个脚本是让falameshot在hyprland中的体验更好,在启动截图时,鼠标的位置不会改变,默认是跟随窗口的聚焦
+# 这个脚本是让falameshot在hyprland中的体验更好,在启动截图时,鼠标的位置不会改变,默认是跟随窗口的聚焦
 
 hyprctl eval 'hl.config({ cursor = { no_warps = true } })'
 flameshot gui --clipboard "$@"
