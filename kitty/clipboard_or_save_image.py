@@ -11,6 +11,7 @@ from typing import Any
 from urllib.parse import unquote, urlparse
 
 from kitty.boss import Boss
+from kitty.clipboard import get_clipboard_string
 
 result_handler: Any = getattr(import_module("kittens.tui.handler"), "result_handler")
 
@@ -58,17 +59,16 @@ def save_image_mime(boss: Boss, mime: str, out_dir: Path) -> Path:
 
 
 def html_file_image(boss: Boss, types: list[str]) -> Path | None:
-    for mime in ("text/html", "text/plain"):
-        if mime not in types:
-            continue
-        try:
-            html = clipboard_mime_data(boss, mime).decode("utf-8", "replace")
-        except RuntimeError:
-            continue
-        match = re.search(r'<img\b[^>]*\bsrc=["\'](file:[^"\']+)["\']', html, re.I)
-        if match:
-            path = unquote(urlparse(match.group(1)).path)
-            return Path("/" + path.lstrip("/") if path.startswith("//") else path)
+    if "text/html" not in types:
+        return None
+    try:
+        html = clipboard_mime_data(boss, "text/html").decode("utf-8", "replace")
+    except RuntimeError:
+        return None
+    match = re.search(r'<img\b[^>]*\bsrc=["\'](file:[^"\']+)["\']', html, re.I)
+    if match:
+        path = unquote(urlparse(match.group(1)).path)
+        return Path("/" + path.lstrip("/") if path.startswith("//") else path)
     return None
 
 
@@ -79,6 +79,15 @@ def save_html_file_image(boss: Boss, types: list[str], out_dir: Path) -> Path | 
     out_file = output_path(out_dir, source.suffix.removeprefix(".") or "img")
     out_file.write_bytes(source.read_bytes())
     return out_file
+
+
+def paste_clipboard_text(boss: Boss, window: Any) -> None:
+    if window is None:
+        boss.paste_from_clipboard()
+        return
+    text = get_clipboard_string()
+    if text:
+        window.paste_with_actions(text)
 
 
 def notify(summary: str, body: str = "") -> None:
@@ -105,7 +114,7 @@ def handle_result(
     )
     types = clipboard_mime_types(boss)
     if types is None:
-        boss.paste_from_clipboard()
+        paste_clipboard_text(boss, window)
         return
 
     mime = image_mime_type(types)
@@ -120,6 +129,6 @@ def handle_result(
         notify("Clipboard image", f"Failed to handle clipboard: {err}")
     else:
         if out_file is None:
-            boss.paste_from_clipboard()
+            paste_clipboard_text(boss, window)
         else:
             notify("Clipboard image saved", str(out_file))
