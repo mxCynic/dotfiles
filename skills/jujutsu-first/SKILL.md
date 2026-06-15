@@ -1,11 +1,24 @@
 ---
 name: jujutsu-first
-description: "Use for any work in a Jujutsu-managed repository (`.jj/` present or `jj root` succeeds) — status, log, diff, new/describe/squash/split/rebase, bookmark work, conflicts, recovery, and syncing with Git remotes. Default to `jj` over `git`; fall back to `git` only when `jj` cannot do the job. Workflow is describe-first with strict bookmark control (never auto-push). Also covers this dotfiles repo's `scope: summary` commit convention and common jj pitfalls (immutable, abandoned, divergent)."
+description: "Use for any work in a Jujutsu-managed repository (`.jj/` present or `jj root` succeeds) — status, log, diff, new/describe/squash/split/rebase, repository tidying, bookmark work, conflicts, recovery, and syncing with Git remotes. Default to `jj` over `git`; fall back to `git` only when `jj` cannot do the job. Workflow requires checking `jj log` before each new coding task, using `jj describe` when the current commit is empty and `jj new` when it already has work, and keeping strict bookmark control (never auto-push). Also covers Conventional Commits-style `type(scope): summary` messages with directory scopes, this dotfiles repo's commit convention, and common jj pitfalls (immutable, abandoned, divergent)."
 ---
 
 # Jujutsu First
 
 Default VCS interface for any repo where `.jj/` exists or `jj root` succeeds. Prefer `jj` over `git`; use `git` only when `jj` cannot do it.
+
+## Mandatory pre-edit checkpoint
+
+Before editing files for any new coding task, inspect the current jj revision and either reuse an empty `@` or create a fresh child revision. This keeps each task isolated without leaving unnecessary empty commits.
+
+1. Run `jj log` first to understand where `@` sits in the local stack.
+2. Run `jj status` to see whether `@` already contains work.
+3. If `@` is empty, reuse it: run `jj describe` (or `jj desc`) with `type(scope): what I intend to do`; do **not** create another empty child with `jj new -m`.
+4. If `@` contains existing work, treat it as belonging to the previous task unless the user explicitly says otherwise. Run `jj new -m "type(scope): what I intend to do"` on the right parent before making code changes.
+5. If the task is not clear enough for a real message, use a conservative `chore(scope): summary` and refine with `jj describe` once the intent is clearer.
+6. Skip this only when the user explicitly asks to amend, continue, or edit an existing revision; in that case, name the target revision and use `jj edit <rev>` or keep working on `@` deliberately.
+
+Follow the commit message convention below when choosing the `jj new -m` or `jj describe` message.
 
 ## Workflow: describe-first, flexible mid-flight
 
@@ -13,7 +26,7 @@ The user writes the change description **before** the code, then keeps `@` focus
 
 Typical shape:
 
-1. `jj new -m "scope: what I intend to do"` on top of the right parent.
+1. Check `jj log` and `jj status`; use `jj describe` on an empty `@`, or `jj new -m "type(scope): what I intend to do"` when `@` already contains work.
 2. Edit files. `@` auto-snapshots.
 3. If the work drifts:
    - description no longer matches → `jj describe` to rewrite it.
@@ -21,6 +34,36 @@ Typical shape:
    - accidental scratch work ended up in `@` → `jj split` then `jj abandon` the scratch revision.
    - small fix for an earlier change → edit on `@`, then `jj squash --into <rev>` (or `jj absorb` to auto-distribute hunks across the mutable stack).
 4. Before pushing, re-read `jj log` and tidy with `jj squash`/`jj split`/`jj rebase` as needed.
+
+## Repository tidying workflow
+
+Use this when the user asks to clean up, organize, prepare, or make sense of a jj repository or local stack.
+
+1. Snapshot orientation:
+   - Run `jj status`.
+   - Run `jj log -r '::@ | @::'` or the repo's local log alias to see parents, descendants, bookmarks, conflicts, and empty revisions.
+   - If bookmarks matter, run `jj bookmark list`.
+2. Classify the stack:
+   - Identify which revisions are unrelated user work and must be left untouched.
+   - Identify empty, duplicate, divergent, conflicted, misdescribed, or mixed-concern revisions.
+   - Inspect suspicious revisions with `jj show <rev>` or `jj diff -r <rev>`.
+3. Clean descriptions first:
+   - Use `jj describe -r <rev>` for messages that are wrong or too vague.
+   - Use `type(scope): summary` and one scope per commit unless the repository already documents a different convention.
+4. Separate or combine content:
+   - Use `jj split -r <rev>` when one revision contains multiple concerns.
+   - Use `jj squash --into <rev>` for a small fix that belongs in an earlier mutable revision.
+   - Use `jj absorb` when several working-copy hunks clearly belong to earlier mutable commits.
+   - Abandon only revisions confirmed as scratch or unwanted: `jj abandon <rev>`.
+5. Reorder or reconnect only when needed:
+   - Use `jj rebase -s <src> -d <dst>` to move a stack onto the intended base.
+   - Do not rewrite immutable revisions silently; rebase on top of them instead.
+6. Verify before stopping:
+   - Run `jj status`.
+   - Re-read `jj log -r '::@ | @::'`.
+   - Ensure the organized stack has no empty revisions created by the cleanup; either squash useful content into the right commit or abandon confirmed scratch/placeholder empties.
+   - Report remaining conflicts, divergent changes, and bookmark state.
+   - Do not push unless the user explicitly asks.
 
 ## Bookmarks and pushing — strict, never automatic
 
@@ -67,7 +110,7 @@ Jujutsu records conflicts inside commits instead of halting the operation. This 
 | show a rev | `jj log -r <rev>` / `jj show <rev>` |
 | current diff | `jj diff` |
 | annotate | `jj file annotate <path>` |
-| start a change | `jj new -m "<desc>"` |
+| start a change | `jj log` + `jj status`, then `jj describe` if `@` is empty or `jj new -m "type(scope): <desc>"` if `@` has work |
 | edit description | `jj describe` (alias `jj desc`) |
 | split current | `jj split` |
 | squash into parent | `jj squash` |
@@ -142,23 +185,55 @@ When falling back: prefer read-only `git` commands; never `git reset --hard`, `g
 - If you fell back to `git`, state the concrete reason.
 - When you finish a local change stack, report bookmark state and **stop** — do not push.
 
+## Commit message convention
+
+Prefer the repository's documented convention. If none is documented, use Conventional Commits-style messages:
+
+```text
+type(scope): summary
+```
+
+- `type` describes the purpose of the change. Prefer: `feat`, `fix`, `docs`, `refactor`, `perf`, `test`, `build`, `ci`, `style`, `chore`, `revert`.
+- Use `refactor`, not nonstandard aliases such as `refact`.
+- `scope` describes the affected package, module, or directory. In config/dotfiles repos, use the top-level directory name as the scope.
+- Summary is short English, imperative/present tense, lower-case first word unless it is a proper noun, and has no trailing period.
+- One type and one scope per commit. Split unrelated purposes or unrelated directory groups into separate commits.
+- If a change spans multiple directories for one coherent purpose, choose the owner/feature scope when obvious; otherwise use a broad repo-local scope such as `config`, `workspace`, or `repo`.
+- Avoid `update`, `wip`, `fix`, or `changes` as the whole summary.
+
+Type guide:
+
+- `feat`: new user-visible or developer-facing behavior.
+- `fix`: bug fix.
+- `docs`: documentation, comments, prose, or skill instruction changes.
+- `refactor`: restructuring that neither fixes a bug nor adds a feature.
+- `perf`: performance improvement.
+- `test`: adding or correcting tests.
+- `build`: build system or dependency changes.
+- `ci`: CI configuration or scripts.
+- `style`: formatting or naming-only changes that do not affect behavior.
+- `chore`: maintenance that does not fit the other types.
+- `revert`: revert a previous change; include the reverted commit in the body when possible.
+
 ## Dotfiles commit convention (`~/.dotfiles`)
 
-In this repository, write commit messages (and `jj describe` bodies) as `scope: summary`.
+In this repository, write commit messages (and `jj describe` bodies) as `type(scope): summary`.
 
 - Scope is the top-level config directory: `hypr`, `nvim`, `zsh`, `zed`, `kitty`, `yazi`, `rofi`, `mpv`, `starship`, `ashell`, `mxbin`, `jj`, `latex`, `skills`, etc.
 - Hyprland-related changes → `hypr`, even when they touch supporting scripts that only exist for the Hyprland config.
 - Neovim-related changes → `nvim`.
+- Skill instruction changes → `docs(skills): ...`.
+- Pure reorganization of existing files without behavior changes → `refactor(scope): ...`.
 - Summary is short English, describes *what* changed, not *why*.
-- One scope per commit. Split unrelated directory groups into separate commits; don't combine under a generic message.
-- Avoid `update`, `wip`, `fix` as the whole message.
+- One type and one scope per commit. Split unrelated directory groups into separate commits; don't combine under a generic message.
+- Avoid `update`, `wip`, `fix`, or `changes` as the whole message.
 
 Examples:
 
-- `hypr: migrate Hyprland config to Lua modules`
-- `nvim: improve LSP server detection and restart commands`
-- `zsh: add atuin history keybindings`
-- `skills: rewrite jujutsu-first for describe-first workflow`
+- `refactor(hypr): migrate Hyprland config to Lua modules`
+- `fix(nvim): improve LSP server detection and restart commands`
+- `feat(zsh): add atuin history keybindings`
+- `docs(skills): rewrite jujutsu-first workflow guidance`
 
 ## Minimal translation guide
 
