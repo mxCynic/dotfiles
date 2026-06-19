@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+notify() {
+  notify-send "Hyprland" "$1" >/dev/null 2>&1 || true
+}
+
+delta="${1:-}"
+if [[ "$delta" != "+1" && "$delta" != "-1" ]]; then
+  notify "Usage: hypr-swap-workspace +1|-1"
+  exit 2
+fi
+
+active_json="$(hyprctl -j activeworkspace)"
+current_id="$(jq -r '.id' <<<"$active_json")"
+
+if ! [[ "$current_id" =~ ^-?[0-9]+$ ]] || (( current_id <= 0 )); then
+  notify "Cannot swap special workspace"
+  exit 1
+fi
+
+target_id=$((current_id + delta))
+if (( target_id <= 0 )); then
+  notify "No previous workspace to swap"
+  exit 1
+fi
+
+workspaces_json="$(hyprctl -j workspaces)"
+temp_id=9999
+while
+  (( temp_id == current_id || temp_id == target_id )) ||
+    jq -e --argjson id "$temp_id" '.[] | select(.id == $id)' <<<"$workspaces_json" >/dev/null
+do
+  temp_id=$((temp_id - 1))
+  if (( temp_id <= 1000 )); then
+    notify "No temporary workspace available"
+    exit 1
+  fi
+done
+
+clients_json="$(hyprctl -j clients)"
+window_query='.[] | select(.workspace.id == $id and .pid != null) | [.pid, .address] | @tsv'
+mapfile -t current_windows < <(jq -r --argjson id "$current_id" "$window_query" <<<"$clients_json")
+mapfile -t target_windows < <(jq -r --argjson id "$target_id" "$window_query" <<<"$clients_json")
+
+if (( ${#current_windows[@]} == 0 && ${#target_windows[@]} == 0 )); then
+  notify "No windows to swap"
+  exit 0
+fi
+
+move_windows() {
+  local destination="$1"
+  shift
+
+  local window pid address
+  for window in "$@"; do
+    IFS=$'\t' read -r pid address <<<"$window"
+    if [[ -z "$pid" || -z "$address" ]]; then
+      continue
+    fi
+    hyprctl dispatch "hl.dsp.window.move({ workspace = ${destination}, window = \"address:${address}\" })" >/dev/null
+  done
+}
+
+move_windows "$temp_id" "${current_windows[@]}"
+move_windows "$current_id" "${target_windows[@]}"
+move_windows "$target_id" "${current_windows[@]}"
+hyprctl dispatch "hl.dsp.focus({ workspace = ${target_id} })" >/dev/null
