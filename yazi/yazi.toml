@@ -43,7 +43,21 @@ play = [
   { run = '''mediainfo "$1"; echo "Press enter to exit"; read''', block = true, desc = "Show media info", for = "unix" },
 ]
 image = [
-  { run = 'awww img "$@" --transition-fps 90 --transition-duration 5 --transition-type any && ln -sf "$@" ~/.config/hypr/scripts/wallpaper.link' },
+  { run = '''
+wallpaper_dir="$HOME/Pictures/wallpapers/wallpapers"
+wallpaper_dir="$(cd -- "$wallpaper_dir" && pwd -P)"
+
+for file in "$@"; do
+  file_dir="$(cd -- "$(dirname -- "$file")" && pwd -P)" || continue
+
+  if [ "$file_dir" = "$wallpaper_dir" ]; then
+    awww img "$file" --transition-fps 90 --transition-duration 5 --transition-type any &&
+      ln -sf "$file" ~/.config/hypr/scripts/wallpaper.link
+  else
+    imv "$file"
+  fi
+done
+''' },
 ]
 read = [{ run = 'sioyek  "$@" ', orphan = true }]
 
