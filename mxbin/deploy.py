@@ -26,6 +26,7 @@ def deploy_dotfiles():
         "cava": op.expanduser("~/.config/cava"),
         "ashell": op.expanduser("~/.config/ashell/"),
         "systemd/user": op.expanduser("~/.config/systemd/user"),
+        "applications": op.expanduser("~/.local/share/applications"),
     }
 
     for src_name, tgt_path in MAPPING.items():
