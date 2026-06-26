@@ -16,6 +16,7 @@ configuration {
     display-filebrowser:        "";
     display-window:             "";
 	drun-display-format:        "<b><i>{name}</i></b>";
+	drun-match-fields:          "name,generic,keywords";
 	window-format:              "{w} · {c} · {t}";
   kb-remove-to-eol: "";
   kb-accept-entry: "Control+m,Return,KP_Enter";
