@@ -12,7 +12,7 @@ hl.on("hyprland.start", function()
   hl.exec_cmd("nwg-look -a")
   hl.exec_cmd("/usr/lib/mate-polkit/polkit-mate-authentication-agent-1")
   --hl.exec_cmd("sleep 2 && $HOME/.mxbin/clipboard.sh")
-  hl.exec_cmd("hyprsunset")
+  hl.exec_cmd("/home/mx/.mxbin/hyprsunsetctl start")
   hl.exec_cmd("hyprlauncher -d")
   -- 先给mako.service加入这些环境变量
   hl.exec_cmd(

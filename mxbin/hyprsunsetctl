@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+set -u
+
+runtime_dir="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+instance="${HYPRLAND_INSTANCE_SIGNATURE:-}"
+socket=""
+log_file="${HYPRSUNSETCTL_LOG:-/tmp/hyprsunsetctl.log}"
+
+log() {
+  printf '%s %s\n' "$(date '+%F %T')" "$*" >>"$log_file"
+}
+
+if [[ -n "$instance" ]]; then
+  socket="$runtime_dir/hypr/$instance/.hyprsunset.sock"
+fi
+
+start_hyprsunset() {
+  log "start requested instance=${instance:-unset} socket=${socket:-unset}"
+
+  if [[ -z "${WAYLAND_DISPLAY:-}" ]]; then
+    log "refusing to start without WAYLAND_DISPLAY"
+    return 1
+  fi
+
+  if pgrep -u "$(id -u)" -x hyprsunset >/dev/null 2>&1; then
+    if hyprctl hyprsunset gamma +0 >/dev/null 2>&1; then
+      log "hyprsunset already running"
+      return 0
+    fi
+
+    log "stopping unresponsive hyprsunset"
+    pkill -u "$(id -u)" -x hyprsunset || true
+    sleep 0.2
+  fi
+
+  if [[ -n "$socket" && -e "$socket" ]]; then
+    log "removing stale socket $socket"
+    rm -f "$socket"
+  fi
+
+  log "exec hyprsunset"
+  hyprsunset
+  local status=$?
+  log "hyprsunset exited status=$status"
+  return "$status"
+}
+
+if [[ $# -eq 0 || "${1:-}" == "start" ]]; then
+  start_hyprsunset
+  exit $?
+fi
+
+if hyprctl hyprsunset "$@"; then
+  exit 0
+fi
+
+"$0" start >/tmp/hyprsunset.log 2>&1 &
+
+for _ in {1..20}; do
+  sleep 0.1
+  if hyprctl hyprsunset "$@"; then
+    exit 0
+  fi
+done
+
+exit 1
