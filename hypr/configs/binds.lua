@@ -90,10 +90,10 @@ hl.bind(mainMod .. "W", hl.dsp.workspace.toggle_special("magic"))
 hl.bind(mainMod .. "SHIFT + W", hl.dsp.window.move({ workspace = "special:magic" }))
 
 -- Scroll through existing workspaces with mainMod + scroll
-hl.bind(mainMod .. "mouse_down", hl.dsp.focus({ workspace = "-1" }))
-hl.bind(mainMod .. "mouse_up", hl.dsp.focus({ workspace = "+1" }))
-hl.bind(mainMod .. "SHIFT + mouse_down", hl.dsp.window.move({ workspace = "-1" }))
-hl.bind(mainMod .. "SHIFT + mouse_up", hl.dsp.window.move({ workspace = "+1" }))
+hl.bind(mainMod .. "mouse_down", hl.dsp.focus({ workspace = "+1" }))
+hl.bind(mainMod .. "mouse_up", hl.dsp.focus({ workspace = "-1" }))
+hl.bind(mainMod .. "SHIFT + mouse_down", hl.dsp.window.move({ workspace = "+1" }))
+hl.bind(mainMod .. "SHIFT + mouse_up", hl.dsp.window.move({ workspace = "-1" }))
 
 -- Move/resize windows with mainMod + LMB/RMB and dragging
 hl.bind(mainMod .. "mouse:272", hl.dsp.window.drag(), { mouse = true })
@@ -124,7 +124,7 @@ hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"), { locked = tru
 hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true })
 
 
-hl.bind(mainMod .. "O", hl.dsp.window.fullscreen({ mode = "fullscreen" }))
+hl.bind(mainMod .. "O", hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle", layout_aware = false }))
 hl.bind(mainMod .. "SHIFT + O", hl.dsp.window.fullscreen())
 hl.bind(mainMod .. "S", hl.dsp.window.tag({ tag = "opacity" })) -- toggle 窗口的透明
 hl.bind(mainMod .. "A", toggle_pin_nofocus)

@@ -2,15 +2,55 @@
 
 set -euo pipefail
 
+target_sink() {
+    local sink
+
+    sink="$(
+        pactl list sink-inputs 2>/dev/null | awk '
+            /^Sink Input #/ {
+                sink = ""
+                corked = "yes"
+            }
+            /^[[:space:]]*Sink:/ {
+                sink = $2
+            }
+            /^[[:space:]]*Corked:/ {
+                corked = $2
+            }
+            /^$/ {
+                if (sink != "" && corked == "no") {
+                    chosen = sink
+                }
+            }
+            END {
+                if (sink != "" && corked == "no") {
+                    chosen = sink
+                }
+                if (chosen != "") {
+                    print chosen
+                }
+            }
+        '
+    )"
+
+    if [[ -n "$sink" ]]; then
+        printf '%s\n' "$sink"
+    else
+        printf '%s\n' '@DEFAULT_AUDIO_SINK@'
+    fi
+}
+
+sink="$(target_sink)"
+
 case "${1:-}" in
     up)
-        wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+
+        wpctl set-volume -l 1 "$sink" 5%+
         ;;
     down)
-        wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-
+        wpctl set-volume "$sink" 5%-
         ;;
     mute)
-        wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+        wpctl set-mute "$sink" toggle
         ;;
     *)
         echo "usage: volume-notify {up|down|mute}" >&2
@@ -18,7 +58,7 @@ case "${1:-}" in
         ;;
 esac
 
-volume_line="$(wpctl get-volume @DEFAULT_AUDIO_SINK@)"
+volume_line="$(wpctl get-volume "$sink")"
 volume="$(awk '{ printf "%d", ($2 * 100) + 0.5 }' <<<"$volume_line")"
 
 if (( volume < 0 )); then
