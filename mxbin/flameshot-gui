@@ -1,6 +1,16 @@
 #!/usr/bin/env bash
-# 这个脚本是让falameshot在hyprland中的体验更好,在启动截图时,鼠标的位置不会改变,默认是跟随窗口的聚焦
+# 让 flameshot 在 hyprland 中更好用:
+# 1. 截图时鼠标位置不变(不跟随窗口焦点)
+# 2. 用 --raw 输出 + wl-copy 写入剪贴板,避免 Qt 剪贴板在 Wayland 下更新有延迟
 
 hyprctl eval 'hl.config({ cursor = { no_warps = true } })'
-flameshot gui --clipboard "$@"
+
+tmp="$(mktemp --suffix=.png)"
+trap 'rm -f "$tmp"' EXIT
+
+flameshot gui --raw "$@" > "$tmp"
+if [ -s "$tmp" ]; then
+  wl-copy -t image/png < "$tmp"
+fi
+
 hyprctl eval 'hl.config({ cursor = { no_warps = false} })'
