@@ -71,9 +71,7 @@ hl.window_rule({
   match = { class = "flameshot" },
   rounding = 0,
   border_size = 0,
-  no_initial_focus = true,
-  -- focus_on_activate = false,
-  suppress_event = "activate activatefocus",
+  -- 不要禁用初始焦点/activate,否则截图界面拿不到键盘焦点,快捷键会失效
   fullscreen_state = 0,
   float = true,
   pin = true,
