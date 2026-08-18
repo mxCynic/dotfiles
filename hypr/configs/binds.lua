@@ -124,7 +124,7 @@ hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"), { locked = tru
 hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true })
 
 
-hl.bind(mainMod .. "O", hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle", layout_aware = false }))
+hl.bind(mainMod .. "O", hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle", layout_aware = true }))
 hl.bind(mainMod .. "SHIFT + O", hl.dsp.window.fullscreen())
 hl.bind(mainMod .. "S", hl.dsp.window.tag({ tag = "opacity" })) -- toggle 窗口的透明
 hl.bind(mainMod .. "A", toggle_pin_nofocus)

@@ -59,6 +59,33 @@ The deployment script will create symlinks from `~/.dotfiles` to the appropriate
 - `caps_use_for_shurufa.sh` - Caps Lock remapping for input methods
 - `chwp` - Wallpaper changer
 - `jy` - Utility script
+- `rime-clipboard-learn.py` - Boosts frequently copied words in the Rime
+  user dictionary (runs via systemd timer, see below)
+
+## 🀄 Rime Input Method
+
+The base config lives in the system directory (`/usr/share/rime-data`, default
+朙月拼音) and the user data in `~/.local/share/fcitx5/rime`. Rime already
+learns from what you type (user dictionary), but it knows nothing about what
+you copy. Two ways to make it smarter:
+
+1. **Manual pinned phrases** - create `~/.local/share/fcitx5/rime/custom_phrase.txt`
+   with lines `文字<Tab>编码<Tab>权重` (weight optional, larger ranks first),
+   then redeploy (input method tray menu "重新部署", or `fcitx5-remote -r`).
+2. **Clipboard learning** - `rime-clipboard-learn.py` scans cliphist history,
+   counts frequent words, and imports them into `luna_pinyin.userdb` with a
+   boosted weight. Enable it with:
+
+   ```bash
+   uv run mxbin/deploy.py          # symlinks mxbin/ and systemd/user/
+   systemctl --user daemon-reload
+   systemctl --user enable --now rime-clipboard-learn.timer
+   ```
+
+   The timer scans every 30 minutes; on login the Hyprland autostart applies
+   any pending words before fcitx5 starts, so imports never interrupt typing.
+   Tune behavior via env vars documented in the script header
+   (`RIME_LEARN_THRESHOLD`, `RIME_LEARN_STATE_DIR`, ...).
 
 ## ⚙️ Configuration Details
 

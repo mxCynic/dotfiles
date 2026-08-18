@@ -20,6 +20,7 @@ method = ncurses
 style = stereo
 
 [color]
+theme = "noctalia"
 # Color gradient: 底部冷色 -> 顶部暖色（短柱不红）
 gradient = 1
 gradient_count = 8
