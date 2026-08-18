@@ -1,0 +1,13 @@
+[Unit]
+Description=Learn Rime words from clipboard history
+After=graphical-session.target
+PartOf=hyprland-session.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/.mxbin/rime-clipboard-learn.py --scan
+ExecStart=%h/.mxbin/rime-clipboard-learn.py --import
+TimeoutStartSec=300
+
+[Install]
+WantedBy=timers.target
