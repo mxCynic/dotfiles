@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Toggle the built-in touchpad on/off.
+# Both devices belong to the same ELAN I2C controller (dell0a6e:00-04f3:317e):
+#   -touchpad : the touch surface
+#   -mouse    : its companion pointer/button interface
+TOUCHPAD="dell0a6e:00-04f3:317e-touchpad"
+TOUCHPAD_MOUSE="dell0a6e:00-04f3:317e-mouse"
+
+STATE_FILE="${XDG_CACHE_HOME:-$HOME/.cache}/touchpad-toggle-state"
+
+notify() {
+  notify-send "Touchpad" "$1" >/dev/null 2>&1 || true
+}
+
+# Default state is off, matching the persistent config in
+# hypr/configs/common.lua (enabled = false).
+state="$(cat "$STATE_FILE" 2>/dev/null || echo off)"
+
+if [[ "$state" == "on" ]]; then
+  new_state="off"
+  enabled=false
+else
+  new_state="on"
+  enabled=true
+fi
+
+for dev in "$TOUCHPAD" "$TOUCHPAD_MOUSE"; do
+  hyprctl eval "hl.device({ name = \"$dev\", enabled = $enabled })" >/dev/null
+done
+
+printf '%s\n' "$new_state" > "$STATE_FILE"
+
+if [[ "$enabled" == "true" ]]; then
+  notify "触摸板已开启"
+else
+  notify "触摸板已关闭"
+fi
