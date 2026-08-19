@@ -117,6 +117,12 @@ hl.device({
   sensitivity = 0.5,
 })
 
+-- Disable the built-in touchpad; an external mouse is used instead.
+hl.device({
+  name = "dell0a6e:00-04f3:317e-touchpad",
+  enabled = false,
+})
+
 -- keyd may expose a virtual pointer device even when no mouse remapping is
 -- configured. Disabling it avoids duplicate/swapped pointer events in Hyprland.
 hl.device({
