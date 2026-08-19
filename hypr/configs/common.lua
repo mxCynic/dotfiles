@@ -117,10 +117,32 @@ hl.device({
   sensitivity = 0.5,
 })
 
--- Disable the built-in touchpad; an external mouse is used instead.
+-- The built-in touchpad is enabled by default; an external mouse is used instead.
+-- The hotkey (SUPER + X) toggles it by flipping ~/.cache/touchpad-toggle-state
+-- and reloading this config. We deliberately avoid runtime hl.device()
+-- toggling: re-enabling a device disabled at runtime can leave libinput's
+-- gesture state broken (single-finger pointer motion stops while multi-finger
+-- gestures keep working), whereas a reload re-applies the device config cleanly.
+local touchpad_state = "on"
+do
+  local cache_dir = os.getenv("XDG_CACHE_HOME") or (os.getenv("HOME") .. "/.cache")
+  local state_file = io.open(cache_dir .. "/touchpad-toggle-state", "r")
+  if state_file then
+    touchpad_state = state_file:read("*l") or "on"
+    state_file:close()
+  end
+end
+local touchpad_enabled = touchpad_state == "on"
+
+-- The companion -mouse node belongs to the same ELAN I2C controller; keep it
+-- in sync so both halves of the device follow the same state.
 hl.device({
   name = "dell0a6e:00-04f3:317e-touchpad",
-  enabled = false,
+  enabled = touchpad_enabled,
+})
+hl.device({
+  name = "dell0a6e:00-04f3:317e-mouse",
+  enabled = touchpad_enabled,
 })
 
 -- keyd may expose a virtual pointer device even when no mouse remapping is
