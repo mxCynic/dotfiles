@@ -106,11 +106,8 @@ hl.config({
     no_donation_nag = true,
   }
 })
-hl.gesture({
-  fingers = 3,
-  direction = "horizontal",
-  action = "workspace",
-})
+-- 三指手势统一在 configs/gesture.lua 配置:
+-- 上下滑切 workspace,左右滑聚焦相邻窗口。
 
 hl.device({
   name = "epic-mouse-v1",
@@ -139,6 +136,10 @@ local touchpad_enabled = touchpad_state == "on"
 hl.device({
   name = "dell0a6e:00-04f3:317e-touchpad",
   enabled = touchpad_enabled,
+  -- tap_button_map "lrm": 1-finger tap = left, 2-finger tap = right,
+  -- 3-finger tap = middle. Requires tap_to_click.
+  tap_to_click = true,
+  tap_button_map = "lrm",
 })
 hl.device({
   name = "dell0a6e:00-04f3:317e-mouse",
