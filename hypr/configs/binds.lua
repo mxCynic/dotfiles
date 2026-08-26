@@ -128,6 +128,7 @@ hl.bind(mainMod .. "O", hl.dsp.window.fullscreen({ mode = "fullscreen", action =
 hl.bind(mainMod .. "SHIFT + O", hl.dsp.window.fullscreen())
 hl.bind(mainMod .. "S", hl.dsp.window.tag({ tag = "opacity" })) -- toggle 窗口的透明
 hl.bind(mainMod .. "A", toggle_pin_nofocus)
+hl.bind(mainMod .. "Z", hl.dsp.focus({ workspace = "empty" }))
 hl.bind(mainMod .. "C", hl.dsp.window.center())
 hl.bind(mainMod .. "B", hl.dsp.exec_cmd("pkill ashell || ashell"))
 hl.bind(mainMod .. "T", hl.dsp.exec_cmd("pkill pavucontrol || pavucontrol"))
@@ -136,6 +137,9 @@ hl.bind(mainMod .. "SHIFT + Q", hl.dsp.exec_cmd("/home/mx/.dotfiles/mxbin/hyprlo
 hl.bind(mainMod .. "TAB", toggle_focus_floating_tiled)
 hl.bind("CTRL + code:47", hl.dsp.exec_cmd(cliphist_rofi))
 hl.bind("CTRL + ALT + A", hl.dsp.exec_cmd("omasnap" .. " --capture-window"))
+hl.bind("PRINT", hl.dsp.exec_cmd("omasnap"))
+hl.bind("SHIFT + PRINT", hl.dsp.exec_cmd("omasnap" .. " --capture-fullscreen"))
+hl.bind("ALT + PRINT", hl.dsp.exec_cmd("omasnap" .. " --capture-window"))
 hl.bind("CTRL + ALT + R", hl.dsp.exec_cmd(mxbin .. "obs-toggle"))
 hl.bind(mainMod .. "F1", hl.dsp.exec_cmd(mxbin .. "gamemode.sh"))
 hl.bind(mainMod .. "U", hl.dsp.exec_cmd(mxbin .. "chwp"))

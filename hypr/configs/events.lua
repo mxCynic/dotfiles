@@ -36,3 +36,29 @@ hl.on("workspace.active", function(workspace)
   local text = "active workspace " .. workspace.name
   hl.exec_cmd("notify-send " .. string.format("%q", text))
 end)
+
+-- confine_pointer 的游戏重新获得焦点时,把鼠标拉回窗口中心:
+-- 避免切走工作区/弹窗抢焦点后,鼠标停在窗口外,被 confine 钳在窗口边缘导致"卡鼠标"。
+local confine_pointer_games = {
+  ["cs2"]  = "class",
+  ["原神"] = "title",
+}
+
+hl.on("window.active", function(window)
+  if not window then
+    return
+  end
+
+  local by = confine_pointer_games[window.class] or confine_pointer_games[window.title]
+  if not by then
+    return
+  end
+
+  local pos  = window.at
+  local size = window.size
+  if not pos or not size then
+    return
+  end
+
+  hl.dispatch(hl.dsp.cursor.move({ x = pos.x + size.x / 2, y = pos.y + size.y / 2 }))
+end)

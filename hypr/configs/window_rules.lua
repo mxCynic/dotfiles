@@ -63,7 +63,7 @@ hl.window_rule({ match = { class = "splayer" }, workspace = "10", no_initial_foc
 hl.window_rule({ match = { class = "clash-verge" }, workspace = "9", no_initial_focus = true })
 hl.window_rule({ match = { float = true }, border_size = 0 })    -- 浮动窗口无边框
 hl.window_rule({ match = { tag = "opacity" }, opacity = "0.8" }) -- Set opacity for tag `opacity`
-hl.window_rule({ match = { class = "cs2" }, immediate = true, confine_pointer = true })
+hl.window_rule({ match = { class = "cs2", focus = true }, immediate = true, confine_pointer = true })
 hl.window_rule({ match = { title = "SPlayer - 桌面歌词" }, float = true, no_blur = true })
 hl.window_rule({ match = { title = "flameshot" }, float = true, no_blur = true })
 
