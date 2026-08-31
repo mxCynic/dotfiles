@@ -125,7 +125,8 @@ hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true 
 
 
 hl.bind(mainMod .. "O", hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle", layout_aware = true }))
-hl.bind(mainMod .. "SHIFT + O", hl.dsp.window.fullscreen())
+-- 伪全屏:窗口铺满工作区,但 bar 所在区域仍然保留
+hl.bind(mainMod .. "SHIFT + O", hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" }))
 hl.bind(mainMod .. "S", hl.dsp.window.tag({ tag = "opacity" })) -- toggle 窗口的透明
 hl.bind(mainMod .. "A", toggle_pin_nofocus)
 hl.bind(mainMod .. "Z", hl.dsp.focus({ workspace = "empty" }))
