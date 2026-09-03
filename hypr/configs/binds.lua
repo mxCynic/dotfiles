@@ -1,5 +1,6 @@
 local terminal = "kitty"
 local fileManager = "pkill dolphin || dolphin"
+local functions = require("configs.function")
 -- local menu = "hyprlauncher"
 local menu = "pkill rofi || rofi -show drun"
 local mainMod = "SUPER + " -- Sets "Windows" key as main modifier
@@ -133,7 +134,7 @@ hl.bind(mainMod .. "Z", hl.dsp.focus({ workspace = "empty" }))
 hl.bind(mainMod .. "C", hl.dsp.window.center())
 hl.bind(mainMod .. "B", hl.dsp.exec_cmd("pkill ashell || ashell"))
 hl.bind(mainMod .. "T", hl.dsp.exec_cmd("pkill pavucontrol || pavucontrol"))
-hl.bind(mainMod .. "X", hl.dsp.exec_cmd(mxbin .. "toggle-touchpad")) -- toggle 内置触摸板开关
+hl.bind(mainMod .. "X", functions.toggle_touchpad) -- toggle 内置触摸板开关
 hl.bind(mainMod .. "SHIFT + Q", hl.dsp.exec_cmd("/home/mx/.dotfiles/mxbin/hyprlock-capture"))
 hl.bind(mainMod .. "TAB", toggle_focus_floating_tiled)
 hl.bind("CTRL + code:47", hl.dsp.exec_cmd(cliphist_rofi))

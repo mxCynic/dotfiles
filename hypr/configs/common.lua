@@ -1,3 +1,6 @@
+-- 可复用的函数与共享状态(内置触控板开关等),见 configs/function.lua
+local functions = require("configs.function")
+
 hl.config({
   general = {
     gaps_in = 5,
@@ -114,22 +117,10 @@ hl.device({
   sensitivity = 0.5,
 })
 
--- The built-in touchpad is enabled by default; an external mouse is used instead.
--- The hotkey (SUPER + X) toggles it by flipping ~/.cache/touchpad-toggle-state
--- and reloading this config. We deliberately avoid runtime hl.device()
--- toggling: re-enabling a device disabled at runtime can leave libinput's
--- gesture state broken (single-finger pointer motion stops while multi-finger
--- gestures keep working), whereas a reload re-applies the device config cleanly.
-local touchpad_state = "on"
-do
-  local cache_dir = os.getenv("XDG_CACHE_HOME") or (os.getenv("HOME") .. "/.cache")
-  local state_file = io.open(cache_dir .. "/touchpad-toggle-state", "r")
-  if state_file then
-    touchpad_state = state_file:read("*l") or "on"
-    state_file:close()
-  end
-end
-local touchpad_enabled = touchpad_state == "on"
+-- 内置触控板默认开启,状态变量在 configs/function.lua;
+-- SUPER + X 由 binds.lua 调 functions.toggle_touchpad() 运行时切换。
+-- 注意:该 bool 只存在于本次配置上下文,reload/重启后回到默认开启。
+local touchpad_enabled = functions.touchpad_enabled
 
 -- The companion -mouse node belongs to the same ELAN I2C controller; keep it
 -- in sync so both halves of the device follow the same state.
