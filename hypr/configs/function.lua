@@ -70,13 +70,53 @@ function functions.pin_nofocus.toggle()
   restore_pin_nofocus_windows()
 end
 
--- 焦点在悬浮窗口与平铺窗口之间切换
+-- 焦点在悬浮窗口与平铺窗口之间切换(仅限当前工作区)。
+-- 不能直接依赖 focus({ window = "floating"/"tiled" }):它按全局顺序找第一个匹配窗口,
+-- 可能跳到别的 workspace;而 no_focus 的窗口会被 Hyprland 拒绝聚焦(包括显式请求),
+-- 所以这里自行枚举同工作区的窗口,并对 pin_nofocus 浮层做临时解除来完成显式切换。
+local function window_has_tag(window, tag)
+  for _, t in ipairs(window.tags or {}) do
+    if t == tag then
+      return true
+    end
+  end
+  return false
+end
+
 function functions.focus.toggle_floating_tiled()
-  local window = hl.get_active_window()
-  if window ~= nil and window.floating then
-    hl.dispatch(hl.dsp.focus({ window = "tiled" }))
+  local active = hl.get_active_window()
+  if active == nil or active.workspace == nil then
+    return
+  end
+
+  local want_floating = not active.floating
+  local target = nil
+  local nofocus_target = nil -- 若只剩 pin_nofocus 常驻浮层,显式切换也允许聚焦它
+
+  -- get_windows 按窗口顺序返回;不断覆盖可保留同类型里较新的那个窗口。
+  for _, window in ipairs(hl.get_windows({ workspace = active.workspace.id })) do
+    if window.address ~= active.address and not window.hidden and window.floating == want_floating then
+      if window_has_tag(window, pin_nofocus_tag) then
+        nofocus_target = window
+      else
+        target = window
+      end
+    end
+  end
+
+  target = target or nofocus_target
+  if target == nil then
+    return
+  end
+
+  if target == nofocus_target then
+    -- no_focus 让一切聚焦请求无效(实测包括显式按地址聚焦)。按键属于显式请求,
+    -- 先临时解除、聚焦成功后再恢复,窗口之后仍不会自动抢焦点。
+    hl.dispatch(hl.dsp.window.set_prop({ prop = "no_focus", value = "unset", window = target }))
+    hl.dispatch(hl.dsp.focus({ window = target }))
+    hl.dispatch(hl.dsp.window.set_prop({ prop = "no_focus", value = "1", window = target }))
   else
-    hl.dispatch(hl.dsp.focus({ window = "floating" }))
+    hl.dispatch(hl.dsp.focus({ window = target }))
   end
 end
 
