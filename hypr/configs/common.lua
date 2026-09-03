@@ -117,10 +117,10 @@ hl.device({
   sensitivity = 0.5,
 })
 
--- 内置触控板默认开启,状态变量在 configs/function.lua;
--- SUPER + X 由 binds.lua 调 functions.toggle_touchpad() 运行时切换。
+-- 内置触控板默认开启,状态变量在 configs/function.lua 的 functions.touchpad.enabled;
+-- SUPER + X 由 binds.lua 调 functions.touchpad.toggle() 运行时切换。
 -- 注意:该 bool 只存在于本次配置上下文,reload/重启后回到默认开启。
-local touchpad_enabled = functions.touchpad_enabled
+local touchpad_enabled = functions.touchpad.enabled
 
 -- The companion -mouse node belongs to the same ELAN I2C controller; keep it
 -- in sync so both halves of the device follow the same state.
