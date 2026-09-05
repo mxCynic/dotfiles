@@ -1,7 +1,6 @@
 hl.on("hyprland.start", function()
   hl.exec_cmd("clash-verge")
   hl.exec_cmd("SPlayer")
-  hl.exec_cmd("awww-daemon")
   hl.exec_cmd("/home/mx/.dotfiles/mxbin/hypr-rest default")
   hl.exec_cmd("noctalia")
   hl.exec_cmd("udiskie")
