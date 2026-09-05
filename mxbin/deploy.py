@@ -24,6 +24,7 @@ def deploy_dotfiles():
         "latex/latexmkrc": op.expanduser("~/.latexmkrc"),
         "zed": op.expanduser("~/.config/zed"),
         "cava": op.expanduser("~/.config/cava"),
+        "noctalia/config.toml": op.expanduser("~/.config/noctalia/config.toml"),
         "ashell": op.expanduser("~/.config/ashell/"),
         "systemd/user": op.expanduser("~/.config/systemd/user"),
         "applications": op.expanduser("~/.local/share/applications"),

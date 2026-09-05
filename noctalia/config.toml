@@ -1,0 +1,32 @@
+[bar]
+order = ["main"]              # layer-shell creation order
+
+[bar.main]
+position           = "top"       # top | bottom | left | right
+enabled            = true
+font_family        = "Maple Mono CN"          # typeface for this bar's widgets; empty inherits the global font
+start  = ["launcher",  "workspaces"]
+center = ["clock","media"]
+end    = ["tray", "notifications", "network", "bluetooth", "volume", "brightness", "ram_used", "temp", "battery", "control-center", "session"]
+
+[widget.temp]
+type = "sysmon"
+stat = "cpu_temp"
+
+[widget.ram_used]
+type = "sysmon"
+stat = "ram_used"
+
+[shell.panel]
+transparency_mode = "glass"
+
+[widget.wallpaper]
+enabled             = false
+
+[wallpaper]
+enabled = true
+directory = "/home/mx/Pictures/wallpapers/wallpapers"
+transition_on_startup = true
+
+[wallpaper.automation]
+enabled = true
