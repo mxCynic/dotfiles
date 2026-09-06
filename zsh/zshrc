@@ -42,3 +42,6 @@ export ANTHROPIC_AUTH_TOKEN="sk-ant-api03-rCJW2o0tUAV2zqKBUXf_GC-kSTztZI6_ot3jDT
 
 # Hermes Agent — ensure ~/.local/bin is on PATH
 export PATH="$HOME/.local/bin:$PATH"
+
+# Added by the Hunk installer (https://hunk.dev)
+export PATH='/home/mx/.hunk/bin':"$PATH"

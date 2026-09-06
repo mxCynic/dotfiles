@@ -1,32 +1,316 @@
 [bar]
-order = ["main"]              # layer-shell creation order
+order = [ "main" ]
 
-[bar.main]
-position           = "top"       # top | bottom | left | right
-enabled            = true
-font_family        = "Maple Mono CN"          # typeface for this bar's widgets; empty inherits the global font
-start  = ["launcher",  "workspaces"]
-center = ["clock","media"]
-end    = ["tray", "notifications", "network", "bluetooth", "volume", "brightness", "ram_used", "temp", "battery", "control-center", "session"]
+    [bar.main]
+    background_opacity = 0.39999999105930328
+    border = "on_tertiary"
+    border_width = 1.5
+    capsule = true
+    capsule_fill = "on_surface"
+    capsule_opacity = 0.69999998435378075
+    capsule_thickness = 0.82999998517334461
+    center = [ "clock", "media" ]
+    color = "on_primary"
+    enabled = true
+    end = [
+        "tray",
+        "notifications",
+        "network",
+        "bluetooth",
+        "volume",
+        "brightness",
+        "ram_used",
+        "temp",
+        "battery",
+        "control-center",
+        "session"
+    ]
+    font_family = "Maple Mono CN"
+    font_weight = 700
+    position = "top"
+    start = [ "workspaces" ]
+    widget_spacing = 10
 
-[widget.temp]
-type = "sysmon"
-stat = "cpu_temp"
+        [bar.main.monitor.dp-1]
 
-[widget.ram_used]
-type = "sysmon"
-stat = "ram_used"
+[calendar]
 
-[shell.panel]
-transparency_mode = "glass"
+[control_center.calendar]
+show_events_card = false
 
-[widget.wallpaper]
-enabled             = false
+[[control_center.shortcuts]]
+type = "bluetooth"
+
+[[control_center.shortcuts]]
+type = "wifi"
+
+[[control_center.shortcuts]]
+type = "caffeine"
+
+[[control_center.shortcuts]]
+type = "nightlight"
+
+[[control_center.shortcuts]]
+type = "notification"
+
+[[control_center.shortcuts]]
+type = "power_profile"
+
+[desktop_widgets]
+schema_version = 2
+widget_order = [ "desktop-widget-0000000000000001" ]
+
+    [desktop_widgets.grid]
+    cell_size = 16
+    major_interval = 4
+    visible = true
+
+    [desktop_widgets.widget.desktop-widget-0000000000000001]
+    box_height = 0.0
+    box_width = 0.0
+    cx = 1839.0
+    cy = 543.5
+    output = "HDMI-A-1"
+    placement_height = 1440.0
+    placement_width = 2560.0
+    rotation = 0.0
+    type = "clock"
+
+[dock]
+position = "top"
+smart_auto_hide = true
+
+[location]
+auto_locate = true
+
+[lockscreen_widgets]
+enabled = true
+schema_version = 2
+widget_order = [
+    "lockscreen-widget-0000000000000002",
+    "lockscreen-login-box@HDMI-A-1",
+    "lockscreen-login-box@eDP-1",
+    "lockscreen-widget-0000000000000001",
+    "lockscreen-widget-0000000000000003",
+    "lockscreen-widget-0000000000000004",
+    "lockscreen-widget-0000000000000005",
+    "lockscreen-widget-0000000000000006"
+]
+
+    [lockscreen_widgets.grid]
+    cell_size = 16
+    major_interval = 4
+    visible = true
+
+    [lockscreen_widgets.widget."lockscreen-login-box@HDMI-A-1"]
+    box_height = 196.0
+    box_width = 810.0
+    cx = 1280.0
+    cy = 1282.0
+    output = "HDMI-A-1"
+    placement_height = 1440.0
+    placement_width = 2560.0
+    rotation = 0.0
+    type = "login_box"
+
+        [lockscreen_widgets.widget."lockscreen-login-box@HDMI-A-1".settings]
+        background_color = "surface_variant"
+        background_opacity = 0.88
+        background_radius = 12.0
+        center_password_text = false
+        input_opacity = 1.0
+        input_radius = 6.0
+        layout = "regular"
+        show_caps_lock = true
+        show_keyboard_layout = true
+        show_login_button = true
+        show_media = true
+        show_session_buttons = true
+        show_unlock_hint = true
+        show_weather = true
+
+    [lockscreen_widgets.widget."lockscreen-login-box@eDP-1"]
+    box_height = 196.0
+    box_width = 720.0
+    cx = 960.0
+    cy = 961.0
+    output = "eDP-1"
+    placement_height = 1080.0
+    placement_width = 1920.0
+    rotation = 0.0
+    type = "login_box"
+
+        [lockscreen_widgets.widget."lockscreen-login-box@eDP-1".settings]
+        background_color = "surface_variant"
+        background_opacity = 0.88
+        background_radius = 12.0
+        center_password_text = false
+        input_opacity = 1.0
+        input_radius = 6.0
+        layout = "regular"
+        show_caps_lock = true
+        show_keyboard_layout = true
+        show_login_button = true
+        show_media = true
+        show_session_buttons = true
+        show_unlock_hint = true
+        show_weather = true
+
+    [lockscreen_widgets.widget.lockscreen-widget-0000000000000001]
+    box_height = 832.0
+    box_width = 736.0
+    cx = 1952.0
+    cy = 304.0
+    output = "HDMI-A-1"
+    placement_height = 1440.0
+    placement_width = 2560.0
+    rotation = 0.0
+    type = "fancy_audio_visualizer"
+
+        [lockscreen_widgets.widget.lockscreen-widget-0000000000000001.settings]
+        background = false
+
+    [lockscreen_widgets.widget.lockscreen-widget-0000000000000002]
+    box_height = 0.0
+    box_width = 0.0
+    cx = 1280.0
+    cy = 662.5
+    output = "HDMI-A-1"
+    placement_height = 1440.0
+    placement_width = 2560.0
+    rotation = -0.0
+    type = "clock"
+
+    [lockscreen_widgets.widget.lockscreen-widget-0000000000000003]
+    box_height = 208.0
+    box_width = 272.0
+    cx = 2288.0
+    cy = 1016.0
+    output = "HDMI-A-1"
+    placement_height = 1440.0
+    placement_width = 2560.0
+    rotation = 0.0
+    type = "button"
+
+        [lockscreen_widgets.widget.lockscreen-widget-0000000000000003.settings]
+        background = true
+        glyph = "heart"
+        variant = "default"
+
+    [lockscreen_widgets.widget.lockscreen-widget-0000000000000004]
+    box_height = 0.0
+    box_width = 0.0
+    cx = 1965.0
+    cy = 598.0
+    output = "HDMI-A-1"
+    placement_height = 1440.0
+    placement_width = 2560.0
+    rotation = -0.0
+    type = "media_player"
+
+    [lockscreen_widgets.widget.lockscreen-widget-0000000000000005]
+    box_height = 144.0
+    box_width = 320.0
+    cx = 1965.0
+    cy = 744.0
+    output = "HDMI-A-1"
+    placement_height = 1440.0
+    placement_width = 2560.0
+    rotation = 0.0
+    type = "audio_visualizer"
+
+        [lockscreen_widgets.widget.lockscreen-widget-0000000000000005.settings]
+        bands = 32
+        show_when_idle = true
+
+    [lockscreen_widgets.widget.lockscreen-widget-0000000000000006]
+    box_height = 0.0
+    box_width = 0.0
+    cx = 1280.0
+    cy = 915.0
+    output = "HDMI-A-1"
+    placement_height = 1440.0
+    placement_width = 2560.0
+    rotation = 0.0
+    type = "calendar"
+
+[notification]
+offset_y = 9
+position = "top_center"
+
+[plugins]
+auto_update = "official"
+
+[shell]
+avatar_path = "/home/mx/Pictures/wallpapers/wallpapers/00030.png"
+corner_radius_scale = 0.5000000074505806
+font_family = "Maple Mono"
+lang = "zh-Hans"
+polkit_agent = true
+screen_time_enabled = true
+settings_window_translucent = true
+
+    [shell.panel]
+    control_center_placement = "floating"
+    list_item_background = true
+    transparency_mode = "glass"
+
+    [shell.shadow]
+    direction = "center"
+
+[theme]
+builtin = "Tokyo-Night"
+community_palette = "Oxocarbon"
+mode = "dark"
+source = "builtin"
+wallpaper_scheme = "soft"
+
+    [theme.templates]
+    builtin_ids = [ "cava" ]
 
 [wallpaper]
-enabled = true
 directory = "/home/mx/Pictures/wallpapers/wallpapers"
+enabled = true
 transition_on_startup = true
 
-[wallpaper.automation]
-enabled = true
+    [wallpaper.automation]
+    enabled = true
+
+    [wallpaper.default]
+    path = "/home/mx/Pictures/wallpapers/wallpapers/00009.png"
+
+    [wallpaper.last]
+    path = "/home/mx/Pictures/wallpapers/wallpapers/00009.png"
+
+    [wallpaper.monitors.HDMI-A-1]
+    path = "/home/mx/Pictures/wallpapers/wallpapers/00009.png"
+
+    [wallpaper.monitors.eDP-1]
+    path = "color:#39C5BB"
+
+[widget.clock]
+capsule = true
+
+[widget.media]
+album_art_only = true
+anchor = true
+art_size = 20
+hide_when_no_media = true
+show_progress = true
+
+[widget.ram_used]
+highlight_color = "on_secondary"
+stat = "ram_used"
+type = "sysmon"
+
+[widget.temp]
+highlight_color = "on_tertiary"
+stat = "cpu_temp"
+type = "sysmon"
+
+[widget.wallpaper]
+enabled = false
+
+[widget.workspaces]
+font_family = "Maple Mono CN SemiBold"
+font_weight = 600

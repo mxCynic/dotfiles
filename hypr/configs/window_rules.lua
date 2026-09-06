@@ -57,15 +57,17 @@ for _, name in ipairs(float_windows_by_title) do
   hl.window_rule({ match = { title = name }, float = true, persistent_size = true })
 end
 
-hl.window_rule({ match = { title = "反恐精英：全球攻势" }, fullscreen = true, persistent_size = true })
+hl.window_rule({ match = { float = true }, border_size = 0 })    -- 浮动窗口无边框
+hl.window_rule({ match = { tag = "opacity" }, opacity = "0.8" }) -- Set opacity for tag `opacity`
 
 hl.window_rule({ match = { class = "splayer" }, workspace = "10", no_initial_focus = true })
 hl.window_rule({ match = { class = "clash-verge" }, workspace = "9", no_initial_focus = true })
-hl.window_rule({ match = { float = true }, border_size = 0 })    -- 浮动窗口无边框
-hl.window_rule({ match = { tag = "opacity" }, opacity = "0.8" }) -- Set opacity for tag `opacity`
 hl.window_rule({ match = { class = "cs2", focus = true }, immediate = true, confine_pointer = true })
+
 hl.window_rule({ match = { title = "SPlayer - 桌面歌词" }, float = true, no_blur = true })
+hl.window_rule({ match = { title = "反恐精英：全球攻势" }, fullscreen = true, persistent_size = true })
 hl.window_rule({ match = { title = "flameshot" }, float = true, no_blur = true })
+hl.window_rule({ match = { title = "Noctalia 设置" }, float = true })
 
 hl.window_rule({
   match = { class = "flameshot" },

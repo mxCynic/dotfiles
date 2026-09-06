@@ -92,7 +92,7 @@ hl.bind(mainMod .. "S", hl.dsp.window.tag({ tag = "opacity" })) -- toggle 窗口
 hl.bind(mainMod .. "A", functions.pin_nofocus.toggle)
 hl.bind(mainMod .. "Z", hl.dsp.focus({ workspace = "empty" }))
 hl.bind(mainMod .. "C", hl.dsp.window.center())
-hl.bind(mainMod .. "B", hl.dsp.exec_cmd("pkill ashell || ashell"))
+hl.bind(mainMod .. "B", hl.dsp.exec_cmd("noctalia msg bar-toggle"))
 hl.bind(mainMod .. "T", hl.dsp.exec_cmd("pkill pavucontrol || pavucontrol"))
 hl.bind(mainMod .. "X", functions.touchpad.toggle) -- toggle 内置触摸板开关
 hl.bind(mainMod .. "SHIFT + Q", hl.dsp.exec_cmd("/home/mx/.dotfiles/mxbin/hyprlock-capture"))
