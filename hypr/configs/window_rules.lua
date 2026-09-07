@@ -57,8 +57,9 @@ for _, name in ipairs(float_windows_by_title) do
   hl.window_rule({ match = { title = name }, float = true, persistent_size = true })
 end
 
-hl.window_rule({ match = { float = true }, border_size = 0 })    -- 浮动窗口无边框
-hl.window_rule({ match = { tag = "opacity" }, opacity = "0.8" }) -- Set opacity for tag `opacity`
+hl.window_rule({ match = { float = true }, border_size = 2 }) -- 浮动窗口有边框(聚焦时可见)
+hl.window_rule({ match = { float = true, focus = false }, border_size = 0 }) -- 未聚焦浮窗无边框
+hl.window_rule({ match = { tag = "opacity" }, opacity = "0.8" })                          -- Set opacity for tag `opacity`
 
 hl.window_rule({ match = { class = "splayer" }, workspace = "10", no_initial_focus = true })
 hl.window_rule({ match = { class = "clash-verge" }, workspace = "9", no_initial_focus = true })
