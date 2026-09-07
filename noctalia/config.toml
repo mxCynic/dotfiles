@@ -242,7 +242,7 @@ position = "top_center"
 auto_update = "official"
 
 [shell]
-avatar_path = "/home/mx/Pictures/wallpapers/wallpapers/00030.png"
+avatar_path = "/home/mx/Pictures/wallpapers/00030.png"
 corner_radius_scale = 0.5000000074505806
 font_family = "Maple Mono"
 lang = "zh-Hans"
@@ -269,7 +269,7 @@ wallpaper_scheme = "soft"
     builtin_ids = [ "cava" ]
 
 [wallpaper]
-directory = "/home/mx/Pictures/wallpapers/wallpapers"
+directory = "/home/mx/Pictures/wallpapers"
 enabled = true
 transition_on_startup = true
 
@@ -277,13 +277,13 @@ transition_on_startup = true
     enabled = true
 
     [wallpaper.default]
-    path = "/home/mx/Pictures/wallpapers/wallpapers/00009.png"
+    path = "/home/mx/Pictures/wallpapers/00009.png"
 
     [wallpaper.last]
-    path = "/home/mx/Pictures/wallpapers/wallpapers/00009.png"
+    path = "/home/mx/Pictures/wallpapers/00009.png"
 
     [wallpaper.monitors.HDMI-A-1]
-    path = "/home/mx/Pictures/wallpapers/wallpapers/00009.png"
+    path = "/home/mx/Pictures/wallpapers/00009.png"
 
     [wallpaper.monitors.eDP-1]
     path = "color:#39C5BB"
