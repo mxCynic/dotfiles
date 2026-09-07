@@ -20,50 +20,48 @@ ueberzug_offset = [0, 0, 0, 0]
 
 [opener]
 edit = [
-  { run = 'nvim "$@"', block = true, for = "unix" },
-  { run = 'code "%*"', orphan = true, for = "windows" },
+  { run = 'nvim %s', block = true, for = "unix" },
+  { run = 'code %s', orphan = true, for = "windows" },
 ]
 open = [
-  # { run = 'nvim "$@"', desc = "Open", for = "linux" },
-  { run = 'open "$@"', desc = "Open", for = "macos" },
-  { run = 'start "%1"', orphan = true, desc = "Open", for = "windows" },
+  # { run = 'nvim %s', desc = "Open", for = "linux" },
+  { run = 'open %s', desc = "Open", for = "macos" },
+  { run = 'start "" %s1', orphan = true, desc = "Open", for = "windows" },
 ]
 reveal = [
-  { run = 'open -R "$1"', desc = "Reveal", for = "macos" },
-  { run = 'explorer /select,%1', orphan = true, desc = "Reveal", for = "windows" },
-  { run = '''exiftool "$1"; echo "Press enter to exit"; read''', block = true, desc = "Show EXIF", for = "unix" },
+  { run = 'open -R %s1', desc = "Reveal", for = "macos" },
+  { run = 'explorer /select,%s1', orphan = true, desc = "Reveal", for = "windows" },
+  { run = 'clear; exiftool %s1; echo "Press enter to exit"; read _', block = true, desc = "Show EXIF", for = "unix" },
 ]
 extract = [
-  { run = 'unar "$1"', desc = "Extract here", for = "unix" },
-  { run = 'unar "%1"', desc = "Extract here", for = "windows" },
+  { run = 'unar %s1', desc = "Extract here", for = "unix" },
+  { run = 'unar %s1', desc = "Extract here", for = "windows" },
 ]
 play = [
-  { run = 'mpv "$@"', orphan = true, for = "unix" },
-  { run = 'mpv "%1"', orphan = true, for = "windows" },
-  { run = '''mediainfo "$1"; echo "Press enter to exit"; read''', block = true, desc = "Show media info", for = "unix" },
+  { run = 'mpv %s', orphan = true, for = "unix" },
+  { run = 'mpv %s1', orphan = true, for = "windows" },
+  { run = 'mediainfo %s1; echo "Press enter to exit"; read _', block = true, desc = "Show media info", for = "unix" },
 ]
 image = [
   { run = '''
-wallpaper_dir="$HOME/Pictures/wallpapers/wallpapers"
+wallpaper_dir="$HOME/Pictures/wallpapers"
 wallpaper_dir="$(cd -- "$wallpaper_dir" && pwd -P)"
+file="%s1"
+file_dir="$(cd -- "$(dirname -- "$file")" && pwd -P)"
 
-for file in "$@"; do
-  file_dir="$(cd -- "$(dirname -- "$file")" && pwd -P)" || continue
-
-  if [ "$file_dir" = "$wallpaper_dir" ]; then
-    awww img "$file" --transition-fps 90 --transition-duration 5 --transition-type any &&
-      ln -sf "$file" ~/.config/hypr/scripts/wallpaper.link
-  else
-    imv "$file"
-  fi
-done
+if [ "$file_dir" = "$wallpaper_dir" ]; then
+  noctalia msg wallpaper-set "$file" ||
+    notify-send -u critical "设置壁纸失败" "noctalia 未运行?"
+else
+  imv "$file"
+fi
 ''' },
 ]
-read = [{ run = 'sioyek  "$@" ', orphan = true }]
+read = [{ run = 'sioyek %s', orphan = true }]
 
-wps-word = [{ run = 'wps "$@"', orphan = true }]
-wps-ppt = [{ run = 'wpp "$@"', orphan = true }]
-wps-excel = [{ run = 'et "$@"', orphan = true }]
+wps-word = [{ run = 'wps %s1', orphan = true }]
+wps-ppt = [{ run = 'wpp %s1', orphan = true }]
+wps-excel = [{ run = 'et %s1', orphan = true }]
 
 [open]
 rules = [
