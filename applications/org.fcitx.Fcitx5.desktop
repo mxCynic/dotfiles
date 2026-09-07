@@ -1,0 +1,13 @@
+[Desktop Entry]
+Name=Fcitx 5
+Name[zh_CN]=Fcitx 5
+GenericName=Input Method
+GenericName[zh_CN]=输入法
+Comment=Start Input Method
+Comment[zh_CN]=启动输入法
+Exec=/usr/bin/fcitx5
+Icon=fcitx
+Terminal=false
+Type=Application
+Categories=System;Utility;
+StartupNotify=false
