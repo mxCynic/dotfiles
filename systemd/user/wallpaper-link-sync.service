@@ -1,0 +1,11 @@
+[Unit]
+Description=Point hypr wallpaper.link at noctalia's current wallpaper
+After=graphical-session.target
+PartOf=hyprland-session.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/.mxbin/noctalia-wallpaper-sync
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,10 @@
+[Unit]
+Description=Watch noctalia wallpaper state changes
+
+[Path]
+PathChanged=%h/.local/state/noctalia/settings.toml
+PathChanged=%h/.local/state/noctalia/wallpaper_shuffle.json
+Unit=wallpaper-link-sync.service
+
+[Install]
+WantedBy=default.target
