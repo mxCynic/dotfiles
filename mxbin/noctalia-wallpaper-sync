@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# Point ~/.config/hypr/scripts/wallpaper.link at noctalia's current wallpaper.
+#
+# rofi's config.rasi and hyprlock.conf read this link as their background.
+# Since the desktop migrated to noctalia, wallpaper changes no longer touch
+# the link, so this helper repoints it from noctalia's current state.
+set -euo pipefail
+
+link="${WALLPAPER_LINK:-$HOME/.config/hypr/scripts/wallpaper.link}"
+state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/noctalia"
+settings="$state_dir/settings.toml"
+
+current=""
+
+# Ask the running daemon first; this is authoritative for IPC and automation.
+if command -v noctalia >/dev/null 2>&1; then
+  current="$(noctalia msg wallpaper-get 2>/dev/null || true)"
+fi
+
+# Fall back to the wallpaper.last.path that noctalia persists in settings.toml.
+if [[ "$current" != /* ]] && [[ -f "$settings" ]]; then
+  current="$(awk '
+    /^[[:space:]]*\[[^]]*\]/ { section = $0 }
+    section ~ /\[wallpaper\.last\]/ && /path[[:space:]]*=[[:space:]]*"/ {
+      line = $0
+      sub(/^[^"]*"/, "", line)
+      sub(/".*$/, "", line)
+      print line
+      exit
+    }
+  ' "$settings" 2>/dev/null || true)"
+fi
+
+# Only existing image files are usable as a rofi/hyprlock background.
+if [[ "$current" != /* || ! -f "$current" ]]; then
+  exit 0
+fi
+
+if [[ "$(readlink "$link" 2>/dev/null || true)" == "$current" ]]; then
+  exit 0
+fi
+
+mkdir -p "$(dirname "$link")"
+ln -sfn "$current" "$link"
