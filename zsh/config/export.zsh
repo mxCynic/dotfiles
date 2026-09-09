@@ -5,7 +5,6 @@ export PATH=$PATH:~/.cargo/bin/
 export PATH=$PATH:~/.local/bin/
 export PATH=$PATH:~/.ghcup/bin/
 export PATH=$PATH:/opt/cuda/bin/:$PATH
-export PATH=$PATH:~/.config/hypr/scripts/
 export PATH=$PATH:/opt/nvidia/hpc_sdk/Linux_x86_64/2025/compilers/bin
 export PATH=$HOME/.elan/bin:$PATH
 # export PATH="$HOME/.elan/env:$PATH"

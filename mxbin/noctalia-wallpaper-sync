@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Point ~/.config/hypr/scripts/wallpaper.link at noctalia's current wallpaper.
 #
-# rofi's config.rasi and hyprlock.conf read this link as their background.
+# rofi's config.rasi reads this link as its background.
 # Since the desktop migrated to noctalia, wallpaper changes no longer touch
 # the link, so this helper repoints it from noctalia's current state.
 set -euo pipefail

@@ -7,7 +7,6 @@ import os.path as op
 def deploy_dotfiles():
     DOTFILE_DIR = op.expanduser("~/.dotfiles")
     MAPPING = {
-        "mako": op.expanduser("~/.config/mako"),
         "hypr": op.expanduser("~/.config/hypr"),
         "flameshot": op.expanduser("~/.config/flameshot"),
         "nvim": op.expanduser("~/.config/nvim"),
@@ -26,7 +25,6 @@ def deploy_dotfiles():
         "cava": op.expanduser("~/.config/cava"),
         "noctalia/config.toml": op.expanduser("~/.config/noctalia/config.toml"),
         "patch/qq-flags.conf": op.expanduser("~/.config/qq-flags.conf"),
-        "ashell": op.expanduser("~/.config/ashell/"),
         "systemd/user": op.expanduser("~/.config/systemd/user"),
         "patch/applications": op.expanduser("~/.local/share/applications"),
     }

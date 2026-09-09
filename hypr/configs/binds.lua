@@ -95,7 +95,6 @@ hl.bind(mainMod .. "C", hl.dsp.window.center())
 hl.bind(mainMod .. "B", hl.dsp.exec_cmd("noctalia msg bar-toggle"))
 hl.bind(mainMod .. "T", hl.dsp.exec_cmd("pkill pavucontrol || pavucontrol"))
 hl.bind(mainMod .. "X", functions.touchpad.toggle) -- toggle 内置触摸板开关
-hl.bind(mainMod .. "SHIFT + Q", hl.dsp.exec_cmd("/home/mx/.dotfiles/mxbin/hyprlock-capture"))
 hl.bind(mainMod .. "TAB", functions.focus.toggle_floating_tiled)
 hl.bind("CTRL + code:47", hl.dsp.exec_cmd(cliphist_rofi))
 hl.bind("CTRL + ALT + A", hl.dsp.exec_cmd("omasnap" .. " --capture-window"))

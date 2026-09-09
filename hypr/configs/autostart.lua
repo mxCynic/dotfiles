@@ -1,7 +1,6 @@
 hl.on("hyprland.start", function()
   hl.exec_cmd("clash-verge")
   hl.exec_cmd("SPlayer")
-  hl.exec_cmd("/home/mx/.dotfiles/mxbin/hypr-rest default")
   hl.exec_cmd("noctalia")
   hl.exec_cmd("udiskie")
   hl.exec_cmd("/home/mx/.mxbin/rime-clipboard-learn.py --import")
@@ -12,16 +11,7 @@ hl.on("hyprland.start", function()
   hl.exec_cmd("/home/mx/.cargo/bin/xwayclip")
   hl.exec_cmd("xrdb -merge ~/.Xresources")
   hl.exec_cmd("nwg-look -a")
-  --hl.exec_cmd("/usr/lib/mate-polkit/polkit-mate-authentication-agent-1")
-  --hl.exec_cmd("sleep 2 && $HOME/.mxbin/clipboard.sh")
   hl.exec_cmd("/home/mx/.mxbin/hyprsunsetctl start")
-  --hl.exec_cmd("hyprlauncher -d")
-  -- 先给mako.service加入这些环境变量
-  --hl.exec_cmd( "dbus-update-activation-environment --systemd WAYLAND_DISPLAY DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE XDG_SESSION_DESKTOP QT_QPA_PLATFORMTHEME HYPRLAND_INSTANCE_SIGNATURE DBUS_SESSION_BUS_ADDRESS XCURSOR_THEME XCURSOR_SIZE")
-  --hl.exec_cmd( " systemctl --user import-environment WAYLAND_DISPLAY DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE XDG_SESSION_DESKTOP QT_QPA_PLATFORMTHEME HYPRLAND_INSTANCE_SIGNATURE DBUS_SESSION_BUS_ADDRESS XCURSOR_THEME XCURSOR_SIZE")
-  --hl.exec_cmd("systemctl --user start hyprland-session.target")
-  --hl.exec_cmd("mako")
-
 
   -- 启动时聚焦在特定屏幕
   hl.dispatch(hl.dsp.focus({ monitor = "DP-1" }))

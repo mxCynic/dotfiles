@@ -1,7 +1,6 @@
 [Unit]
 Description=Learn Rime words from clipboard history
 After=graphical-session.target
-PartOf=hyprland-session.target
 
 [Service]
 Type=oneshot
