@@ -4,6 +4,7 @@
 --                toggle()      由 binds.lua 绑定
 --   pin_nofocus: 悬浮窗固定并禁止自动聚焦(SUPER + A),主要用于浮动歌词不抢聚焦
 --   focus      : 焦点在悬浮/平铺窗口间切换(SUPER + TAB)
+--   workspace  : 空工作区/上一工作区切换(SUPER + Z)
 
 local functions = {
   touchpad = {
@@ -11,6 +12,7 @@ local functions = {
   },
   pin_nofocus = {},
   focus = {},
+  workspace = {},
 }
 
 local TOUCHPAD_NAME = "dell0a6e:00-04f3:317e-touchpad"
@@ -117,6 +119,20 @@ function functions.focus.toggle_floating_tiled()
     hl.dispatch(hl.dsp.window.set_prop({ prop = "no_focus", value = "1", window = target }))
   else
     hl.dispatch(hl.dsp.focus({ window = target }))
+  end
+end
+
+-- MOD+Z:当前工作区非空 → 切到空工作区;当前已是空工作区 → 回到上一个工作区。
+function functions.workspace.toggle_empty()
+  local ws = hl.get_active_workspace()
+  if ws == nil then
+    return
+  end
+
+  if ws.windows == 0 then
+    hl.dispatch(hl.dsp.focus({ workspace = "previous" }))
+  else
+    hl.dispatch(hl.dsp.focus({ workspace = "empty" }))
   end
 end
 

@@ -90,7 +90,7 @@ hl.bind(mainMod .. "O", hl.dsp.window.fullscreen({ mode = "fullscreen", action =
 hl.bind(mainMod .. "SHIFT + O", hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" }))
 hl.bind(mainMod .. "S", hl.dsp.window.tag({ tag = "opacity" })) -- toggle 窗口的透明
 hl.bind(mainMod .. "A", functions.pin_nofocus.toggle)
-hl.bind(mainMod .. "Z", hl.dsp.focus({ workspace = "empty" }))
+hl.bind(mainMod .. "Z", functions.workspace.toggle_empty)
 hl.bind(mainMod .. "C", hl.dsp.window.center())
 hl.bind(mainMod .. "B", hl.dsp.exec_cmd("noctalia msg bar-toggle"))
 hl.bind(mainMod .. "T", hl.dsp.exec_cmd("pkill pavucontrol || pavucontrol"))
