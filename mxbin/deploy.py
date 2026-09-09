@@ -25,9 +25,10 @@ def deploy_dotfiles():
         "zed": op.expanduser("~/.config/zed"),
         "cava": op.expanduser("~/.config/cava"),
         "noctalia/config.toml": op.expanduser("~/.config/noctalia/config.toml"),
+        "patch/qq-flags.conf": op.expanduser("~/.config/qq-flags.conf"),
         "ashell": op.expanduser("~/.config/ashell/"),
         "systemd/user": op.expanduser("~/.config/systemd/user"),
-        "applications": op.expanduser("~/.local/share/applications"),
+        "patch/applications": op.expanduser("~/.local/share/applications"),
     }
 
     for src_name, tgt_path in MAPPING.items():
