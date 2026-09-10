@@ -4,8 +4,12 @@ After=graphical-session.target
 
 [Service]
 Type=oneshot
+# Scan only.  The pending import runs once at login (Hyprland autostart,
+# before "fcitx5 -d").  Restarting fcitx5 in the middle of a session pulls
+# the XIM server out from under running clients, which then segfault in
+# libX11's XCreateIC() -- Steam's steamwebhelper and WeChat both crashed
+# this way on 2026-09-05..09-10.
 ExecStart=%h/.mxbin/rime-clipboard-learn.py --scan
-ExecStart=%h/.mxbin/rime-clipboard-learn.py --import
 TimeoutStartSec=300
 
 [Install]

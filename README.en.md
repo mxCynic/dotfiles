@@ -139,7 +139,7 @@ Units under `systemd/user/` are symlinked to `~/.config/systemd/user` by
 | Unit | Type | Purpose |
 |---|---|---|
 | `rime-clipboard-learn.timer` | timer | Runs 15 minutes after boot, then every 30 minutes; `Persistent=true` catches up on missed triggers |
-| `rime-clipboard-learn.service` | oneshot | Runs `--scan` over cliphist history, then `--import` boosts frequent words in the Rime user dictionary (see “Rime input method” below) |
+| `rime-clipboard-learn.service` | oneshot | Runs `--scan` over cliphist history only, recording frequent words as a pending import; the import itself happens at login (see “Rime input method” below) |
 | `wallpaper-link-sync.path` | path | Watches Noctalia state files (`~/.local/state/noctalia/settings.toml`, `wallpaper_shuffle.json`) for changes |
 | `wallpaper-link-sync.service` | oneshot | Runs `noctalia-wallpaper-sync` on change to point Hyprland’s `wallpaper.link` at Noctalia’s current wallpaper |
 
@@ -171,9 +171,12 @@ you copy. Two ways to make it smarter:
    systemctl --user enable --now rime-clipboard-learn.timer
    ```
 
-   The timer scans every 30 minutes; on login the Hyprland autostart applies
-   any pending words before fcitx5 starts, so imports never interrupt typing.
-   Tune behavior via env vars documented in the script header
+   The timer only scans every 30 minutes; on login the Hyprland autostart
+   applies any pending words before fcitx5 starts, so imports never interrupt
+   typing.  Never schedule `--import` while fcitx5 is running: restarting the
+   XIM server mid-session makes connected XIM clients (Steam's
+   `steamwebhelper`, WeChat) segfault inside libX11's `XCreateIC`.  Tune
+   behavior via env vars documented in the script header
    (`RIME_LEARN_THRESHOLD`, `RIME_LEARN_STATE_DIR`, ...).
 
 ## Configuration details

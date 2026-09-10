@@ -126,7 +126,7 @@ uv run mxbin/deploy.py
 | 单元 | 类型 | 作用 |
 |---|---|---|
 | `rime-clipboard-learn.timer` | timer | 开机 15 分钟后运行一次，之后每 30 分钟一次；`Persistent=true` 保证错过的触发会在下次开机补跑 |
-| `rime-clipboard-learn.service` | oneshot | 先 `--scan` 扫描 cliphist 历史，再 `--import` 把高频复制词导入 Rime 用户词典（见下文「Rime 输入法」） |
+| `rime-clipboard-learn.service` | oneshot | 只 `--scan` 扫描 cliphist 历史，把高频复制词记入待导入文件；导入在登录时完成（见下文「Rime 输入法」） |
 | `wallpaper-link-sync.path` | path | 监听 Noctalia 状态文件（`~/.local/state/noctalia/settings.toml`、`wallpaper_shuffle.json`）的变化 |
 | `wallpaper-link-sync.service` | oneshot | 状态变化时运行 `noctalia-wallpaper-sync`，把 Hyprland 的 `wallpaper.link` 指向 Noctalia 当前壁纸 |
 
@@ -155,9 +155,11 @@ systemctl --user enable --now wallpaper-link-sync.path
    systemctl --user enable --now rime-clipboard-learn.timer
    ```
 
-   timer 每 30 分钟扫描一次；登录时 Hyprland autostart 会在 fcitx5 启动前应用
-   待导入的词，因此不会打断输入。可用脚本头部注释中的环境变量调节行为
-   （`RIME_LEARN_THRESHOLD`、`RIME_LEARN_STATE_DIR` 等）。
+   timer 每 30 分钟只做扫描；导入由登录时的 Hyprland autostart 在 fcitx5
+   启动前执行一次。不要在会话中途导入——停掉 fcitx5 会切断所有客户端的
+   XIM 连接，它们下次创建输入上下文时会在 libX11 的 `XCreateIC` 里崩溃
+   （Steam 的 `steamwebhelper`、微信都属于这种情况）。可用脚本头部注释中的
+   环境变量调节行为（`RIME_LEARN_THRESHOLD`、`RIME_LEARN_STATE_DIR` 等）。
 
 ## 配置细节
 

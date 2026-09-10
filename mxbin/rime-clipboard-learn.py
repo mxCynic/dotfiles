@@ -19,10 +19,14 @@ Two modes:
             running, it is briefly stopped and restarted (LevelDB locks make
             concurrent writes unsafe); otherwise the import happens directly.
 
-The systemd timer (systemd/user/rime-clipboard-learn.timer) runs both steps
-periodically, and the Hyprland autostart also runs --import before fcitx5
-starts, so words learned in a session apply on the next login without
-interrupting anything.
+The systemd timer (systemd/user/rime-clipboard-learn.timer) runs --scan only;
+the Hyprland autostart runs --import before fcitx5 starts, so words learned in
+a session apply on the next login without interrupting anything.
+
+Do not schedule --import while fcitx5 is running.  Stopping fcitx5 kills the
+XIM server for every connected client, and those clients then segfault inside
+libX11's XCreateIC() when they next build an input context (Steam's
+steamwebhelper, WeChat and other XWayland apps all crashed this way).
 
 State and pending files live under ~/.local/state; override with
 RIME_USER_DIR / RIME_LEARN_STATE_DIR / RIME_LEARN_THRESHOLD if needed.
