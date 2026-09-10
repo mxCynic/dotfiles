@@ -92,7 +92,7 @@ This repo contributes the clipboard-learning script and its timer — see
 | `mxbin/` | `~/.mxbin` | Personal scripts and tools (deploy.py, rime-clipboard-learn.py, …) |
 | `systemd/` | `~/.config/systemd/user` | systemd user units (see “systemd user units” below) |
 | `patch/` | `~/.config/qq-flags.conf` + `~/.local/share/applications` | Program patches: launch flags and `.desktop` overrides (see below) |
-| `skills/` | installed via `mxbin/deploy-skills` | Codex/agent skill packages (jujutsu-first, obsidian, system-security-health) |
+| `skills/` | installed via `mxbin/deploy-skills` | Codex/agent skill packages (jujutsu-first, obsidian, system-security-health, image-ocr) |
 | `jj/` | `~/.config/jj/config.toml` | Jujutsu version-control config |
 | `latex/` | `~/.latexmkrc` | LaTeX build settings (latexmk) |
 

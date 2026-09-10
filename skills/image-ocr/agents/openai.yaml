@@ -1,0 +1,4 @@
+interface:
+  display_name: "Image OCR"
+  short_description: "Transcribe text from screenshots and images"
+  default_prompt: "Use $image-ocr to read text out of an image or screenshot and write it into the note or file I ask for."

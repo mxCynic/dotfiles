@@ -84,7 +84,7 @@ uv run mxbin/deploy.py
 | `mxbin/` | `~/.mxbin` | 自用脚本与工具（deploy.py、rime-clipboard-learn.py 等） |
 | `systemd/` | `~/.config/systemd/user` | systemd 用户单元（见下文「systemd 用户单元」） |
 | `patch/` | `~/.config/qq-flags.conf` + `~/.local/share/applications` | 程序补丁：启动参数与 `.desktop` 覆盖（见下） |
-| `skills/` | 由 `mxbin/deploy-skills` 安装 | Codex 技能包（jujutsu-first、obsidian、system-security-health） |
+| `skills/` | 由 `mxbin/deploy-skills` 安装 | Codex 技能包（jujutsu-first、obsidian、system-security-health、image-ocr） |
 | `jj/` | `~/.config/jj/config.toml` | Jujutsu 版本控制配置 |
 | `latex/` | `~/.latexmkrc` | LaTeX 编译设置（latexmk） |
 
