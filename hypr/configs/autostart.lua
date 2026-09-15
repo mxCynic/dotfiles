@@ -1,6 +1,7 @@
 hl.on("hyprland.start", function()
   hl.exec_cmd("clash-verge")
   hl.exec_cmd("SPlayer")
+  hl.exec_cmd("/home/mx/.mxbin/hypr-rest default --quiet")
   hl.exec_cmd("noctalia")
   hl.exec_cmd("udiskie")
   hl.exec_cmd("/home/mx/.mxbin/rime-clipboard-learn.py --import")

@@ -102,8 +102,9 @@ uv run mxbin/deploy.py
 
 不再使用的配置放在这里留作参考而不是直接删除：通知守护进程 `dunst`、
 状态栏 `waybar`、旧的 Hyprland 配置结构、`ashell` shell 脚本库配置、
-`mako` 通知守护进程配置，以及 hypridle/hyprlock/hyprlauncher 三个组件
-（锁屏/待机/启动器功能已由 Noctalia 提供）。它们刻意**不**在 `deploy.py` 里。
+`mako` 通知守护进程配置，以及 hyprlock/hyprlauncher 两个组件（锁屏与启动器
+功能已由 Noctalia 提供）。空闲锁屏的计时仍由 hypridle 负责，其配置在
+`hypr/hypridle.conf`。上面这些弃用文件刻意**不**在 `deploy.py` 里。
 
 ## 自用脚本（mxbin）
 

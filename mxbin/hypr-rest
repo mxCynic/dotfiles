@@ -1,6 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+QUIET=0
+hypr_rest_args=()
+for arg in "$@"; do
+  case "$arg" in
+    -q|--quiet) QUIET=1 ;;
+    *) hypr_rest_args+=("$arg") ;;
+  esac
+done
+set -- "${hypr_rest_args[@]}"
+
 DEFAULT_CONFIG="${HYPRIDLE_DEFAULT_CONFIG:-$HOME/.config/hypr/hypridle.conf}"
 STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/hypr-rest"
 RUNTIME_DIR="${XDG_RUNTIME_DIR:-/tmp}/hypr-rest"
@@ -23,13 +33,16 @@ Examples:
   hypr-rest set 1h
   hypr-rest default
 
-set controls the idle time before hyprlock is triggered.
+  set controls the idle time before the session lock is triggered.
 default restores the normal hypridle config.
 off stops hypridle until you enable it again.
 EOF
 }
 
 notify() {
+  if [ "$QUIET" -eq 1 ]; then
+    return 0
+  fi
   if command -v notify-send >/dev/null 2>&1; then
     notify-send "Hypr rest" "$1"
   fi
@@ -89,14 +102,15 @@ write_runtime_config() {
   mkdir -p "$RUNTIME_DIR"
   cat >"$RUNTIME_CONFIG" <<EOF
 general {
-    lock_cmd = /home/mx/.dotfiles/mxbin/hyprlock-capture
+    lock_cmd = true
     before_sleep_cmd = loginctl lock-session
-    after_sleep_cmd = hyprctl dispatch 'hl.dsp.dpms("on")'
+    after_sleep_cmd = hyprctl dispatch 'hl.dsp.dpms({action = "on"})'
 }
 
 listener {
     timeout = $lock_timeout
     on-timeout = loginctl lock-session
+    ignore_inhibit = true
 }
 EOF
 }
