@@ -112,11 +112,11 @@ instead of holding their full config trees:
 
 Configs that are no longer used live here for reference instead of being
 deleted: notification daemon `dunst`, status bar `waybar`, an older Hyprland
-config layout, the `ashell` shell-scripting library config, the `mako`
-notification daemon config, and the hyprlock/hyprlauncher pair (screen lock
-and launcher are provided by Noctalia). The idle lock timer is still driven
-by hypridle, configured in `hypr/hypridle.conf`. These deprecated files are
-intentionally **not** in `deploy.py`.
+config layout, the `ashell` shell-scripting library config, and the
+hyprlock/hyprlauncher pair (screen lock, notifications, and launcher are
+provided by Noctalia). The idle lock timer is still driven by hypridle,
+configured in `hypr/hypridle.conf`. These deprecated files are intentionally
+**not** in `deploy.py`.
 
 ## Custom scripts (mxbin)
 
