@@ -27,20 +27,20 @@ hl.on("window.open", function(window)
   end
 end)
 
-hl.on("window.move_to_workspace", function(window, workspace)
-  local text = window.title .. " moved to workspace " .. workspace.name
-  hl.exec_cmd("notify-send " .. string.format("%q", text))
-end)
+--hl.on("window.move_to_workspace", function(window, workspace)
+-- local text = window.title .. " moved to workspace " .. workspace.name
+--  hl.exec_cmd("notify-send " .. string.format("%q", text))
+--end)
 
-hl.on("workspace.active", function(workspace)
-  local text = "active workspace " .. workspace.name
-  hl.exec_cmd("notify-send " .. string.format("%q", text))
-end)
+--hl.on("workspace.active", function(workspace)
+--  local text = "active workspace " .. workspace.name
+--  hl.exec_cmd("notify-send " .. string.format("%q", text))
+--end)
 
 -- confine_pointer 的游戏重新获得焦点时,把鼠标拉回窗口中心:
 -- 避免切走工作区/弹窗抢焦点后,鼠标停在窗口外,被 confine 钳在窗口边缘导致"卡鼠标"。
 local confine_pointer_games = {
-  ["cs2"]  = "class",
+  ["cs2"] = "class",
   ["原神"] = "title",
 }
 
