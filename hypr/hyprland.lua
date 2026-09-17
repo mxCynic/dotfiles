@@ -5,7 +5,7 @@
 -- Please note not all available settings / options are set here.
 -- For a full list, see the wiki
 require("configs.environment")
-require("configs.monitor")
+require("configs.device")
 require("configs.window_rules")
 require("configs.workspace_rule")
 require("configs.events")

@@ -1,6 +1,6 @@
 -- 配置中可复用的函数与共享状态,统一放在这里,按功能分组:
 --   touchpad   : 内置触控板开关(SUPER + X)
---                enabled(bool) 由 common.lua 读取做启动设备配置
+--                enabled(bool) 由 device.lua 读取做启动设备配置
 --                toggle()      由 binds.lua 绑定
 --   pin_nofocus: 悬浮窗固定并禁止自动聚焦(SUPER + A),主要用于浮动歌词不抢聚焦
 --   focus      : 焦点在悬浮/平铺窗口间切换(SUPER + TAB)

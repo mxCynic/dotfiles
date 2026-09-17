@@ -1,6 +1,3 @@
--- 可复用的函数与共享状态(内置触控板开关等),见 configs/function.lua
-local functions = require("configs.function")
-
 hl.config({
   general = {
     gaps_in = 5,
@@ -72,29 +69,6 @@ hl.config({
     enabled = true,
   },
 
-  input = {
-    kb_layout = "us",
-    kb_variant = "",
-    kb_model = "",
-    kb_options = "",
-    kb_rules = "",
-
-    follow_mouse = 1,
-    left_handed = false,
-    scroll_factor = 1.0,
-
-    sensitivity = 0, -- -1.0 - 1.0, 0 means no modification.
-
-    touchpad = {
-      natural_scroll = false,
-    },
-  },
-
-  cursor = {
-    no_warps = false,
-  },
-
-
   misc = {
     force_default_wallpaper = -1,  -- Set to 0 or 1 to disable the anime mascot wallpapers
     disable_hyprland_logo = false, -- If true disables the random hyprland logo / anime girl background. :(
@@ -111,38 +85,3 @@ hl.config({
 })
 -- 三指手势统一在 configs/gesture.lua 配置:
 -- 上下滑切 workspace,左右滑聚焦相邻窗口。
-
-hl.device({
-  name = "epic-mouse-v1",
-  sensitivity = 0.5,
-})
-
--- 内置触控板默认开启,状态变量在 configs/function.lua 的 functions.touchpad.enabled;
--- SUPER + X 由 binds.lua 调 functions.touchpad.toggle() 运行时切换。
--- 注意:该 bool 只存在于本次配置上下文,reload/重启后回到默认开启。
-local touchpad_enabled = functions.touchpad.enabled
-
--- The companion -mouse node belongs to the same ELAN I2C controller; keep it
--- in sync so both halves of the device follow the same state.
-hl.device({
-  name = "dell0a6e:00-04f3:317e-touchpad",
-  enabled = touchpad_enabled,
-  -- tap_button_map "lrm": 1-finger tap = left, 2-finger tap = right,
-  -- 3-finger tap = middle. Requires tap_to_click.
-  tap_to_click = true,
-  tap_button_map = "lrm",
-})
-hl.device({
-  name = "dell0a6e:00-04f3:317e-mouse",
-  enabled = touchpad_enabled,
-})
-
--- keyd may expose a virtual pointer device even when no mouse remapping is
--- configured. Disabling it avoids duplicate/swapped pointer events in Hyprland.
-hl.device({
-  name = "keyd-virtual-pointer",
-  enabled = false,
-  left_handed = false,
-  natural_scroll = false,
-  scroll_factor = 1.0,
-})
