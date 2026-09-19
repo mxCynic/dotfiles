@@ -42,8 +42,17 @@ end
 
 -- pin_nofocus:把当前悬浮窗口固定并禁止自动聚焦,再按一次恢复
 local pin_nofocus_tag = "pin_nofocus"
-local pin_nofocus_windows = {}
 
+local function window_has_tag(window, tag)
+  for _, t in ipairs(window.tags or {}) do
+    if t == tag then
+      return true
+    end
+  end
+  return false
+end
+
+-- tag 本身就是状态,不再单独维护窗口表。
 local function restore_pin_nofocus_windows()
   for _, window in ipairs(hl.get_windows({ tag = pin_nofocus_tag })) do
     hl.dispatch(hl.dsp.window.set_prop({ prop = "no_focus", value = "unset", window = window }))
@@ -51,7 +60,6 @@ local function restore_pin_nofocus_windows()
       hl.dispatch(hl.dsp.window.pin({ window = window }))
     end
     hl.dispatch(hl.dsp.window.tag({ tag = "-" .. pin_nofocus_tag, window = window }))
-    pin_nofocus_windows[window.address] = nil
   end
 end
 
@@ -61,8 +69,7 @@ function functions.pin_nofocus.toggle()
     return
   end
 
-  if window.floating and not window.pinned and pin_nofocus_windows[window.address] == nil then
-    pin_nofocus_windows[window.address] = true
+  if window.floating and not window.pinned and not window_has_tag(window, pin_nofocus_tag) then
     hl.dispatch(hl.dsp.window.tag({ tag = "+" .. pin_nofocus_tag, window = window }))
     hl.dispatch(hl.dsp.window.pin({ window = window }))
     hl.dispatch(hl.dsp.window.set_prop({ prop = "no_focus", value = "1", window = window }))
@@ -76,15 +83,6 @@ end
 -- 不能直接依赖 focus({ window = "floating"/"tiled" }):它按全局顺序找第一个匹配窗口,
 -- 可能跳到别的 workspace;而 no_focus 的窗口会被 Hyprland 拒绝聚焦(包括显式请求),
 -- 所以这里自行枚举同工作区的窗口,并对 pin_nofocus 浮层做临时解除来完成显式切换。
-local function window_has_tag(window, tag)
-  for _, t in ipairs(window.tags or {}) do
-    if t == tag then
-      return true
-    end
-  end
-  return false
-end
-
 function functions.focus.toggle_floating_tiled()
   local active = hl.get_active_window()
   if active == nil or active.workspace == nil then
