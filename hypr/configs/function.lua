@@ -52,10 +52,15 @@ local function window_has_tag(window, tag)
   return false
 end
 
+-- pin_nofocus 只设置 no_focus 这一个 prop,统一从这里走。
+local function set_no_focus(window, value)
+  hl.dispatch(hl.dsp.window.set_prop({ prop = "no_focus", value = value, window = window }))
+end
+
 -- tag 本身就是状态,不再单独维护窗口表。
 local function restore_pin_nofocus_windows()
   for _, window in ipairs(hl.get_windows({ tag = pin_nofocus_tag })) do
-    hl.dispatch(hl.dsp.window.set_prop({ prop = "no_focus", value = "unset", window = window }))
+    set_no_focus(window, "unset")
     if window.pinned then
       hl.dispatch(hl.dsp.window.pin({ window = window }))
     end
@@ -72,7 +77,7 @@ function functions.pin_nofocus.toggle()
   if window.floating and not window.pinned and not window_has_tag(window, pin_nofocus_tag) then
     hl.dispatch(hl.dsp.window.tag({ tag = "+" .. pin_nofocus_tag, window = window }))
     hl.dispatch(hl.dsp.window.pin({ window = window }))
-    hl.dispatch(hl.dsp.window.set_prop({ prop = "no_focus", value = "1", window = window }))
+    set_no_focus(window, "1")
     return
   end
 
@@ -112,9 +117,9 @@ function functions.focus.toggle_floating_tiled()
   if target == nofocus_target then
     -- no_focus 让一切聚焦请求无效(实测包括显式按地址聚焦)。按键属于显式请求,
     -- 先临时解除、聚焦成功后再恢复,窗口之后仍不会自动抢焦点。
-    hl.dispatch(hl.dsp.window.set_prop({ prop = "no_focus", value = "unset", window = target }))
+    set_no_focus(target, "unset")
     hl.dispatch(hl.dsp.focus({ window = target }))
-    hl.dispatch(hl.dsp.window.set_prop({ prop = "no_focus", value = "1", window = target }))
+    set_no_focus(target, "1")
   else
     hl.dispatch(hl.dsp.focus({ window = target }))
   end
