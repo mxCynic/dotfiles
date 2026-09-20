@@ -1,3 +1,9 @@
+hl.config({
+  animations = {
+    enabled = true,
+  },
+})
+
 hl.curve("md3Decel", { type = "bezier", points = { { 0.05, 0.7 }, { 0.1, 1 } } })
 hl.curve("md3Accel", { type = "bezier", points = { { 0.3, 0 }, { 0.8, 0.15 } } })
 hl.curve("softAcDecel", { type = "bezier", points = { { 0.26, 0.26 }, { 0.15, 1 } } })

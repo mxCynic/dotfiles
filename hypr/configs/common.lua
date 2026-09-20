@@ -60,14 +60,14 @@ hl.config({
       range = 10,
       render_power = 1,
       color = "rgba(39c5bbee)",
-      color_inactive = 0,
+      --color_inactive = 1,
 
-    }
+    },
+    -- wobble = {
+    --   enabled = true,
+    -- }
   },
 
-  animations = {
-    enabled = true,
-  },
 
   misc = {
     force_default_wallpaper = -1,  -- Set to 0 or 1 to disable the anime mascot wallpapers
@@ -83,5 +83,3 @@ hl.config({
     no_donation_nag = true,
   }
 })
--- 三指手势统一在 configs/gesture.lua 配置:
--- 上下滑切 workspace,左右滑聚焦相邻窗口。
