@@ -24,6 +24,7 @@ def deploy_dotfiles():
         "zed": op.expanduser("~/.config/zed"),
         "cava": op.expanduser("~/.config/cava"),
         "noctalia/config.toml": op.expanduser("~/.config/noctalia/config.toml"),
+        "noctalia/settings.toml": op.expanduser("~/.local/state/noctalia/settings.toml"),
         "patch/qq-flags.conf": op.expanduser("~/.config/qq-flags.conf"),
         "systemd/user": op.expanduser("~/.config/systemd/user"),
         "patch/applications": op.expanduser("~/.local/share/applications"),
