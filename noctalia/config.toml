@@ -28,7 +28,7 @@ order = [ "main" ]
     font_family = "Maple Mono CN"
     font_weight = 700
     position = "top"
-    start = [ "workspaces" ]
+    start = [ "arch-logo", "workspaces" ]
     widget_spacing = 10
 
         [bar.main.monitor.dp-1]
@@ -287,6 +287,13 @@ transition_on_startup = true
 
     [wallpaper.monitors.eDP-1]
     path = "color:#39C5BB"
+
+[widget.arch-logo]
+custom_image = "/usr/share/pixmaps/archlinux-logo.svg"
+custom_image_colorize = false
+interactive = false
+type = "custom_button"
+scale = 1.3
 
 [widget.clock]
 capsule = true
