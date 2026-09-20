@@ -187,8 +187,7 @@ you copy. Two ways to make it smarter:
 - Located in `hypr/`
 - Main config is Lua-driven (`hyprland.lua` + `configs/*.lua`), covering
   autostart, binds, monitors, window rules, workspaces, and gestures
-- Autostart includes fcitx5, cliphist watchers, and the `xwayclip` bridge that
-  makes Linux QQ's clipboard work under native Wayland
+- Autostart includes fcitx5 and the cliphist text/image watchers
 
 ### Neovim
 

@@ -169,8 +169,7 @@ systemctl --user enable --now wallpaper-link-sync.path
 - 位于 `hypr/`
 - 主配置由 Lua 驱动（`hyprland.lua` + `configs/*.lua`），覆盖 autostart、按键、
   显示器、窗口规则、工作区与手势
-- autostart 包含 fcitx5、cliphist 监听，以及让 Linux QQ 在原生 Wayland 下
-  剪贴板可用的 `xwayclip` 桥接
+- autostart 包含 fcitx5 与 cliphist 的文本/图片剪贴板监听
 
 ### Neovim
 
