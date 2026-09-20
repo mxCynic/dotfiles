@@ -3,7 +3,7 @@
 --                enabled(bool) 由 device.lua 读取做启动设备配置
 --                toggle()      由 binds.lua 绑定
 --   pin_nofocus: 悬浮窗固定并禁止自动聚焦(SUPER + A),主要用于浮动歌词不抢聚焦
---   focus      : 焦点在悬浮/平铺窗口间切换(SUPER + TAB)
+--   focus      : 焦点在悬浮/平铺窗口间切换(SUPER + TAB,不含 pin_nofocus 浮层)
 --   workspace  : 空工作区/上一工作区切换(SUPER + Z)
 
 local functions = {
@@ -85,44 +85,17 @@ function functions.pin_nofocus.toggle()
 end
 
 -- 焦点在悬浮窗口与平铺窗口之间切换(仅限当前工作区)。
--- 不能直接依赖 focus({ window = "floating"/"tiled" }):它按全局顺序找第一个匹配窗口,
--- 可能跳到别的 workspace;而 no_focus 的窗口会被 Hyprland 拒绝聚焦(包括显式请求),
--- 所以这里自行枚举同工作区的窗口,并对 pin_nofocus 浮层做临时解除来完成显式切换。
+-- cycle_next 内部用 isWorkspaceMatches(anyWorkspace = false) 限定同一工作区,不会跳到别的
+-- workspace;floating 传 true 时只在当前工作区里找悬浮窗口,传 false 时不做类型过滤。
+-- cycle 只考虑可聚焦窗口,带 no_focus 规则的 pin_nofocus 浮层因此不会被选中。
+-- 这是预期行为:浮层只做展示,不参与 SUPER + TAB 的焦点循环。
 function functions.focus.toggle_floating_tiled()
   local active = hl.get_active_window()
-  if active == nil or active.workspace == nil then
+  if active == nil then
     return
   end
 
-  local want_floating = not active.floating
-  local target = nil
-  local nofocus_target = nil -- 若只剩 pin_nofocus 常驻浮层,显式切换也允许聚焦它
-
-  -- get_windows 按窗口顺序返回;不断覆盖可保留同类型里较新的那个窗口。
-  for _, window in ipairs(hl.get_windows({ workspace = active.workspace.id })) do
-    if window.address ~= active.address and not window.hidden and window.floating == want_floating then
-      if window_has_tag(window, pin_nofocus_tag) then
-        nofocus_target = window
-      else
-        target = window
-      end
-    end
-  end
-
-  target = target or nofocus_target
-  if target == nil then
-    return
-  end
-
-  if target == nofocus_target then
-    -- no_focus 让一切聚焦请求无效(实测包括显式按地址聚焦)。按键属于显式请求,
-    -- 先临时解除、聚焦成功后再恢复,窗口之后仍不会自动抢焦点。
-    set_no_focus(target, "unset")
-    hl.dispatch(hl.dsp.focus({ window = target }))
-    set_no_focus(target, "1")
-  else
-    hl.dispatch(hl.dsp.focus({ window = target }))
-  end
+  hl.dispatch(hl.dsp.window.cycle_next({ floating = not active.floating }))
 end
 
 -- MOD+Z:当前工作区非空 → 切到空工作区;当前已是空工作区 → 回到上一个工作区。
