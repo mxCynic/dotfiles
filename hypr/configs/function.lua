@@ -5,6 +5,9 @@
 --   pin_nofocus: 悬浮窗固定并禁止自动聚焦(SUPER + A),主要用于浮动歌词不抢聚焦
 --   focus      : 焦点在悬浮/平铺窗口间切换(SUPER + TAB,不含 pin_nofocus 浮层)
 --   workspace  : 空工作区/上一工作区切换(SUPER + Z)
+--
+-- 每个函数都写成 `(function() ... end)()`:私有辅助函数、常量与捕获的状态都收在闭包
+-- 里,文件级作用域只剩 functions 一张表;binds.lua 里因此统一写成不带括号的函数引用。
 
 local functions = {
   touchpad = {
@@ -15,34 +18,36 @@ local functions = {
   workspace = {},
 }
 
-local TOUCHPAD_NAME = "dell0a6e:00-04f3:317e-touchpad"
-local TOUCHPAD_MOUSE_NAME = "dell0a6e:00-04f3:317e-mouse"
-
 -- 翻转 bool 后直接调用 hl.device() 运行时启停,不需要 bash/状态文件/reload。
-function functions.touchpad.toggle()
-  functions.touchpad.enabled = not functions.touchpad.enabled
+functions.touchpad.toggle = (function()
+  -- enabled 是跨文件共享状态:device.lua 启动时读它做初始设备配置。
+  local touchpad = functions.touchpad
+  local TOUCHPAD_NAME = "dell0a6e:00-04f3:317e-touchpad"
+  local TOUCHPAD_MOUSE_NAME = "dell0a6e:00-04f3:317e-mouse"
 
-  hl.device({
-    name = TOUCHPAD_NAME,
-    enabled = functions.touchpad.enabled,
-  })
-  -- The companion -mouse node belongs to the same ELAN I2C controller; keep it
-  -- in sync so both halves of the device follow the same state.
-  hl.device({
-    name = TOUCHPAD_MOUSE_NAME,
-    enabled = functions.touchpad.enabled,
-  })
+  return function()
+    touchpad.enabled = not touchpad.enabled
 
-  hl.notification.create({
-    text = functions.touchpad.enabled and "触控板已开启" or "触控板已关闭",
-    timeout = 1500,
-    icon = "ok",
-  })
-end
+    hl.device({
+      name = TOUCHPAD_NAME,
+      enabled = touchpad.enabled,
+    })
+    -- The companion -mouse node belongs to the same ELAN I2C controller; keep it
+    -- in sync so both halves of the device follow the same state.
+    hl.device({
+      name = TOUCHPAD_MOUSE_NAME,
+      enabled = touchpad.enabled,
+    })
+
+    hl.notification.create({
+      text = touchpad.enabled and "触控板已开启" or "触控板已关闭",
+      timeout = 1500,
+      icon = "ok",
+    })
+  end
+end)()
 
 -- pin_nofocus:把当前悬浮窗口固定并禁止自动聚焦,再按一次恢复。
--- tag 名与两个辅助函数都收在闭包里,只有返回的 toggle 能访问到,
--- 文件级作用域里不再留下 pin_nofocus 专属的名字。
 functions.pin_nofocus.toggle = (function()
   local tag = "pin_nofocus"
 
@@ -88,27 +93,34 @@ end)()
 -- workspace;floating 传 true 时只在当前工作区里找悬浮窗口,传 false 时不做类型过滤。
 -- cycle 只考虑可聚焦窗口,带 no_focus 规则的 pin_nofocus 浮层因此不会被选中。
 -- 这是预期行为:浮层只做展示,不参与 SUPER + TAB 的焦点循环。
-function functions.focus.toggle_floating_tiled()
-  local active = hl.get_active_window()
-  if active == nil then
-    return
-  end
+functions.focus.toggle_floating_tiled = (function()
+  return function()
+    local active = hl.get_active_window()
+    if active == nil then
+      return
+    end
 
-  hl.dispatch(hl.dsp.window.cycle_next({ floating = not active.floating }))
-end
+    hl.dispatch(hl.dsp.window.cycle_next({ floating = not active.floating }))
+  end
+end)()
 
 -- MOD+Z:当前工作区非空 → 切到空工作区;当前已是空工作区 → 回到上一个工作区。
-function functions.workspace.toggle_empty()
-  local ws = hl.get_active_workspace()
-  if ws == nil then
-    return
-  end
+functions.workspace.toggle_empty = (function()
+  local PREVIOUS = "previous"
+  local EMPTY = "empty"
 
-  if ws.windows == 0 then
-    hl.dispatch(hl.dsp.focus({ workspace = "previous" }))
-  else
-    hl.dispatch(hl.dsp.focus({ workspace = "empty" }))
+  return function()
+    local ws = hl.get_active_workspace()
+    if ws == nil then
+      return
+    end
+
+    if ws.windows == 0 then
+      hl.dispatch(hl.dsp.focus({ workspace = PREVIOUS }))
+    else
+      hl.dispatch(hl.dsp.focus({ workspace = EMPTY }))
+    end
   end
-end
+end)()
 
 return functions
