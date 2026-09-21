@@ -361,13 +361,13 @@ transition_on_startup = true
     enabled = true
 
     [wallpaper.default]
-    path = "/home/mx/Pictures/wallpapers/00018.jpg"
+    path = "/home/mx/Pictures/wallpapers/00020.png"
 
     [wallpaper.last]
-    path = "/home/mx/Pictures/wallpapers/00018.jpg"
+    path = "/home/mx/Pictures/wallpapers/00020.png"
 
     [wallpaper.monitors.HDMI-A-1]
-    path = "/home/mx/Pictures/wallpapers/00018.jpg"
+    path = "/home/mx/Pictures/wallpapers/00020.png"
 
     [wallpaper.monitors.eDP-1]
     path = "color:#39C5BB"
