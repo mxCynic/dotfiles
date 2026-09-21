@@ -47,7 +47,7 @@ sidebar = "full"
 
 [desktop_widgets]
 schema_version = 2
-widget_order = [ "desktop-widget-0000000000000001", "desktop-widget-0000000000000002", "desktop-widget-0000000000000004" ]
+widget_order = [ "desktop-widget-0000000000000001", "desktop-widget-0000000000000002", "desktop-widget-0000000000000003" ]
 
     [desktop_widgets.grid]
     cell_size = 16
@@ -94,21 +94,20 @@ widget_order = [ "desktop-widget-0000000000000001", "desktop-widget-000000000000
         background = false
         clock_style = "digital"
 
-    [desktop_widgets.widget.desktop-widget-0000000000000004]
-    box_height = 0.0
-    box_width = 0.0
-    cx = 1872.0
-    cy = 419.0
+    [desktop_widgets.widget.desktop-widget-0000000000000003]
+    box_height = 604.46319580078125
+    box_width = 563.5830078125
+    cx = 2051.158203125
+    cy = 437.847412109375
     output = "HDMI-A-1"
     placement_height = 1440.0
     placement_width = 2560.0
-    rotation = 0.0
-    type = "calendar"
+    rotation = -0.0083936452865600586
+    type = "clock"
 
-        [desktop_widgets.widget.desktop-widget-0000000000000004.settings]
+        [desktop_widgets.widget.desktop-widget-0000000000000003.settings]
         background = false
-        font_family = "Maple Mono CN SemiBold"
-        show_week_numbers = true
+        clock_style = "analog"
 
 [dock]
 position = "top"
@@ -215,11 +214,11 @@ widget_order = [
     [lockscreen_widgets.widget."lockscreen-login-box@eDP-1"]
     box_height = 196.0
     box_width = 720.0
-    cx = 640.0
-    cy = 640.66668701171875
+    cx = 960.0
+    cy = 961.0
     output = "eDP-1"
-    placement_height = 720.0
-    placement_width = 1280.0
+    placement_height = 1080.0
+    placement_width = 1920.0
     rotation = 0.0
     type = "login_box"
 
@@ -336,7 +335,7 @@ settings_window_translucent = true
     list_item_background = true
 
     [shell.screen_corners]
-    size = 44
+    size = 28
 
     [shell.shadow]
     direction = "center"
@@ -361,16 +360,16 @@ transition_on_startup = true
     enabled = true
 
     [wallpaper.default]
-    path = "/home/mx/Pictures/wallpapers/00020.png"
+    path = "/home/mx/Pictures/wallpapers/00037.jpg"
 
     [wallpaper.last]
-    path = "/home/mx/Pictures/wallpapers/00020.png"
+    path = "/home/mx/Pictures/wallpapers/00037.jpg"
 
     [wallpaper.monitors.HDMI-A-1]
-    path = "/home/mx/Pictures/wallpapers/00020.png"
+    path = "/home/mx/Pictures/wallpapers/00037.jpg"
 
     [wallpaper.monitors.eDP-1]
-    path = "color:#39C5BB"
+    path = "/home/mx/Pictures/wallpapers/00035.png"
 
 [widget.clock]
 capsule = true

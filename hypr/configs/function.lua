@@ -60,47 +60,44 @@ functions.pin_nofocus.toggle = (function()
     return false
   end
 
-  -- tag 本身就是状态,不再单独维护窗口表。
-  local function restore()
-    for _, window in ipairs(hl.get_windows({ tag = tag })) do
-      hl.dispatch(hl.dsp.window.set_prop({ prop = "no_focus", value = "unset", window = window }))
-      if window.pinned then
-        hl.dispatch(hl.dsp.window.pin({ window = window }))
-      end
-      hl.dispatch(hl.dsp.window.tag({ tag = "-" .. tag, window = window }))
-    end
-  end
-
   return function()
     local window = hl.get_active_window()
-    if window == nil then
-      return
-    end
+    if not window then return end
 
-    if window.floating and not window.pinned and not has_tag(window) then
+    if window.floating and window.fullscreen == 0 and not window.pinned and not has_tag(window) then
+      -- Tag the window and mark it as pinned with no_focus
       hl.dispatch(hl.dsp.window.tag({ tag = "+" .. tag, window = window }))
       hl.dispatch(hl.dsp.window.pin({ window = window }))
       hl.dispatch(hl.dsp.window.set_prop({ prop = "no_focus", value = "1", window = window }))
-      return
+    else
+      -- Restore all windows that were marked this way
+      for _, marked_window in ipairs(hl.get_windows({ tag = tag })) do
+        hl.dispatch(hl.dsp.window.set_prop({ prop = "no_focus", value = "unset", window = marked_window }))
+        if window.pinned then
+          hl.dispatch(hl.dsp.window.pin({ window = marked_window }))
+        end
+        hl.dispatch(hl.dsp.window.tag({ tag = "-" .. tag, window = marked_window }))
+      end
     end
-
-    restore()
   end
 end)()
 
 -- 焦点在悬浮窗口与平铺窗口之间切换(仅限当前工作区)。
 -- cycle_next 内部用 isWorkspaceMatches(anyWorkspace = false) 限定同一工作区,不会跳到别的
--- workspace;floating 传 true 时只在当前工作区里找悬浮窗口,传 false 时不做类型过滤。
+-- workspace;floating / tiled 互斥地传一个,只挑“对面那一类”窗口,否则会在同类窗口之间打转。
 -- cycle 只考虑可聚焦窗口,带 no_focus 规则的 pin_nofocus 浮层因此不会被选中。
 -- 这是预期行为:浮层只做展示,不参与 SUPER + TAB 的焦点循环。
 functions.focus.toggle_floating_tiled = (function()
   return function()
-    local active = hl.get_active_window()
-    if active == nil then
+    local window = hl.get_active_window()
+    if not window then
       return
     end
 
-    hl.dispatch(hl.dsp.window.cycle_next({ floating = not active.floating }))
+    hl.dispatch(hl.dsp.window.cycle_next({
+      floating = not window.floating,
+      tiled = window.floating,
+    }))
   end
 end)()
 

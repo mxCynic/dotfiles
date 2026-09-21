@@ -4,7 +4,7 @@ local functions = require("configs.function")
 
 -- 显示器
 hl.monitor({ output = "eDP-1", mode = "1920x1080@165", position = "0x0", scale = "1", disabled = true })
-hl.monitor({ output = "HDMI-A-1", mode = "2560x1440@144", position = "1920x0", scale = "1", })
+hl.monitor({ output = "HDMI-A-1", mode = "2560x1440@144", position = "1920x-20", scale = "1", })
 
 -- 键盘/指针/触控板的全局默认值
 hl.config({

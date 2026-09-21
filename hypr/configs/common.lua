@@ -49,10 +49,11 @@ hl.config({
 
     blur = {
       enabled = true,
-      size = 0,
+      size = 5,
       passes = 1,
       vibrancy = 0.1696,
       xray = false,
+      variant = "drops",
     },
 
     glow = {
@@ -63,9 +64,9 @@ hl.config({
       --color_inactive = 1,
 
     },
-    -- wobble = {
-    --   enabled = true,
-    -- }
+    wobble = {
+      enabled = true,
+    }
   },
 
 
