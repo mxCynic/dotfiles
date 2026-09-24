@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# 用 zram 给这台 16G 内存、没有磁盘 swap 的机器兜底：
+# 把冷页压缩后留在内存里，避免内存打满时卡顿或直接被 oomd 杀进程。
+# 参考 https://wiki.archlinux.org/title/Zram
+
+if ! pacman -Qq zram-generator >/dev/null 2>&1; then
+    echo "==> 安装 zram-generator"
+    sudo pacman -S --needed --noconfirm zram-generator
+fi
+
+echo "==> 写入 /etc/systemd/zram-generator.conf"
+sudo tee /etc/systemd/zram-generator.conf >/dev/null <<'EOF'
+# 由 ~/.mxbin/install-zram 安装，修改后需要重新运行该脚本
+# 16G 内存取一半（8G）做 zram：zstd 压缩后实际占用远小于 8G
+[zram0]
+zram-size = ram / 2
+compression-algorithm = zstd
+fs-type = swap
+swap-priority = 100
+EOF
+
+echo "==> 写入 /etc/sysctl.d/99-zram.conf"
+sudo tee /etc/sysctl.d/99-zram.conf >/dev/null <<'EOF'
+# 由 ~/.mxbin/install-zram 安装
+
+# zram 是内存里的 swap，换出没有寻道代价，可以比默认的 60 更积极，
+# 但不取 Arch Wiki 推荐的 180：这台机器 CPU 常年 90C+ 在降频，压缩太猛反而不划算。
+vm.swappiness = 120
+
+# 关掉 swap 预读放大，换入按单页进行（zram 没有磁盘顺序读的优势）
+vm.page-cluster = 0
+EOF
+
+sudo sysctl --system >/dev/null
+sudo systemctl daemon-reload
+
+if systemctl is-active --quiet systemd-zram-setup@zram0.service; then
+    echo "==> zram0 已在运行，重启以应用配置"
+    sudo systemctl restart systemd-zram-setup@zram0.service
+else
+    echo "==> 启动 zram0"
+    sudo systemctl start systemd-zram-setup@zram0.service
+fi
+
+echo
+echo "zram 设备:"
+zramctl
+echo
+echo "swap:"
+swapon --show
+echo
+echo "内存:"
+free -h
+echo
+sysctl vm.swappiness vm.page-cluster
+echo
+
+# systemctl start 返回时 swap 可能还没注册完，最多等 10 秒再判定
+for _ in $(seq 1 20); do
+    if swapon --show=NAME --noheadings 2>/dev/null | grep -qw /dev/zram0; then
+        break
+    fi
+    sleep 0.5
+done
+
+if swapon --show=NAME --noheadings 2>/dev/null | grep -qw /dev/zram0; then
+    echo "✅ /dev/zram0 已作为 swap 启用，重启后由 systemd generator 自动生效。"
+else
+    echo "⚠️  /dev/zram0 没有出现在 swap 里，检查：systemctl status systemd-zram-setup@zram0.service"
+    exit 1
+fi
