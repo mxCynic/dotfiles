@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# Hyprland 启动垫片（shim）。~/.local/bin/Hyprland 是指向本脚本的软链，
+# 由 deploy.py 部署。
+#
+# /usr/bin/start-hyprland 是用 execvp("Hyprland") 从 PATH 里找合成器的，
+# 而会话的 PATH 里 ~/.local/bin 排在 /usr/bin 前面，所以真正被拉起的是这个
+# 垫片，而不是 /usr/bin/Hyprland。
+#
+# 为什么需要垫一层：greetd 会把会话进程的 stdin/stdout/stderr 直接接到 VT
+# 控制台（/dev/tty1），于是 Hyprland 的启动日志、以及它派生的每个进程的输出
+# 都会被画到那块屏上——登录后那段约 2 秒的"纯 TTY"画面就是这么来的。SDDM 用
+# [Wayland] SessionLogFile 把会话输出写进日志文件，这里做同样的事，并顺带清
+# 掉 VT 上残留的文字（对应 SDDM 的 "clear VT"）。
+
+set -u
+
+log_dir="${XDG_DATA_HOME:-${HOME:-/home/mx}/.local/share}/hyprland"
+log_file="${log_dir}/session.log"
+
+# 清掉活动 VT 上残留的控制台文字。
+vt_dev="/dev/$(cat /sys/class/tty/tty0/active 2>/dev/null || echo tty1)"
+printf '\033[2J\033[H' >"$vt_dev" 2>/dev/null || true
+
+if mkdir -p "$log_dir" 2>/dev/null && : >"$log_file" 2>/dev/null; then
+  exec /usr/bin/Hyprland "$@" >>"$log_file" 2>&1
+fi
+
+exec /usr/bin/Hyprland "$@" >/dev/null 2>&1

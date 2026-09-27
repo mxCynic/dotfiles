@@ -16,6 +16,8 @@ def deploy_dotfiles():
         "kitty": op.expanduser("~/.config/kitty"),
         "mpv": op.expanduser("~/.config/mpv"),
         "mxbin": op.expanduser("~/.mxbin"),
+        # 垫片：会话 PATH 里 ~/.local/bin 在 /usr/bin 之前，用它接管 Hyprland 启动
+        "mxbin/hyprland": op.expanduser("~/.local/bin/Hyprland"),
         "starship": op.expanduser("~/.config/starship"),
         "zsh/zshrc": op.expanduser("~/.zshrc"),
         "zsh/config": op.expanduser("~/.config/zsh"),
@@ -39,6 +41,7 @@ def deploy_dotfiles():
 
         # 处理文件类型配置
         if op.isfile(src_path):
+            os.makedirs(op.dirname(tgt_path), exist_ok=True)
             if op.exists(tgt_path):
                 if op.islink(tgt_path):
                     current_src = os.readlink(tgt_path)
