@@ -1,0 +1,31 @@
+# noctalia-greeter 的声明式配置(greeter.toml)。
+#
+# 安装位置:/var/lib/noctalia-greeter/greeter.toml,属 greetd 会话用户,需要 sudo。
+# sync.toml(登录界面 + Shell Sync 写的)优先级更低,这里设置的值会覆盖它。
+# 文档:https://docs.noctalia.dev/greeter/configuration/
+#
+# 为什么要写这一整份 palette:
+#   greeter 没有透明度开关,UI 颜色全部取自 palette 角色,而颜色解析支持 8 位
+#   #RRGGBBAA(最后两位是 alpha:cc≈80%、b3≈70%、80≈50%)。给 surface /
+#   surface_variant 加 alpha,登录面板就能透出后面的壁纸。
+#   代价:palette 必须 16 个角色齐全,否则整块被判无效、静默回落到 sync.toml;
+#   而且 greeter.toml 的 palette 优先于 Sync,以后 shell 换配色不会再同步到
+#   greeter 的颜色(壁纸、屏幕布局仍照常同步)。
+
+[appearance.palette]
+primary            = "#7AA2F7"
+on_primary         = "#16161E"
+secondary          = "#BB9AF7"
+on_secondary       = "#16161E"
+tertiary           = "#9ECE6A"
+on_tertiary        = "#16161E"
+error              = "#F7768E"
+on_error           = "#16161E"
+surface            = "#1A1B26B3"   # 70% 不透明:背景、输入框
+on_surface         = "#C0CAF5"
+surface_variant    = "#24283BCC"   # 80% 不透明:登录面板本体
+on_surface_variant = "#9AA5CE"
+outline            = "#3D4355"
+shadow             = "#15161E"
+hover              = "#9ECE6A"
+on_hover           = "#16161E"
