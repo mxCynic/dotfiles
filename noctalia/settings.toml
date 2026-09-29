@@ -1,4 +1,4 @@
-config_version = 14
+config_version = 15
 
 [audio]
 enable_overdrive = true
@@ -364,13 +364,13 @@ transition_on_startup = true
     enabled = true
 
     [wallpaper.default]
-    path = "/home/mx/Pictures/wallpapers/00003.jpg"
+    path = "/home/mx/Pictures/wallpapers/00046.png"
 
     [wallpaper.last]
-    path = "/home/mx/Pictures/wallpapers/00003.jpg"
+    path = "/home/mx/Pictures/wallpapers/00046.png"
 
     [wallpaper.monitors.HDMI-A-1]
-    path = "/home/mx/Pictures/wallpapers/00003.jpg"
+    path = "/home/mx/Pictures/wallpapers/00046.png"
 
     [wallpaper.monitors.eDP-1]
     path = "/home/mx/Pictures/wallpapers/00035.png"

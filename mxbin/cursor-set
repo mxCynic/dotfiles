@@ -1,0 +1,563 @@
+#!/usr/bin/env python3
+"""Switch the cursor theme and size everywhere this desktop reads them.
+
+Hyprland resolves the cursor from several independent places, and whichever one
+a toolkit reads wins for that app:
+
+    hypr env (Hyprland itself, Xwayland, most Wayland apps)
+    GSettings                   GTK / Electron apps (e.g. Linux QQ)
+    gtk-3.0|4.0/settings.ini    GTK apps, overrides GSettings
+    xsettingsd.conf             XSETTINGS daemon, overrides GSettings
+    ~/.Xresources + xrdb        the X resource database pure X11 apps read
+    icons/default/index.theme   clients that ask for the "default" theme
+
+Editing only the hypr env leaves GTK/Electron/X11 apps on the old theme, so this
+script writes all of them, applies what can be applied live, and says what still
+needs an app or session restart.
+
+    cursor-set size 48
+    cursor-set theme Miku-Hatsune-Cursors --size 32
+    cursor-set 48                        # bare number means size
+    cursor-set Miku-Hatsune-Cursors      # bare name means theme
+    cursor-set status
+    cursor-set list
+"""
+
+from __future__ import annotations
+
+import argparse
+import os
+import re
+import signal
+import struct
+import subprocess
+import sys
+from pathlib import Path
+
+HOME = Path.home()
+DOTFILES = HOME / ".dotfiles"
+
+THEME_SEARCH_DIRS = [
+    HOME / ".icons",
+    HOME / ".local/share/icons",
+    Path("/usr/local/share/icons"),
+    Path("/usr/share/icons"),
+]
+
+GTK_INIS = [HOME / ".config/gtk-3.0/settings.ini", HOME / ".config/gtk-4.0/settings.ini"]
+XSETTINGSD = HOME / ".config/xsettingsd/xsettingsd.conf"
+XRESOURCES = HOME / ".Xresources"
+DEFAULT_THEMES = [
+    HOME / ".icons/default/index.theme",
+    HOME / ".local/share/icons/default/index.theme",
+]
+
+
+# ------------------------------------------------------------------ helpers --
+
+def sh(cmd: list[str], merge: bool = True) -> tuple[int, str]:
+    try:
+        done = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
+        out = (done.stdout + done.stderr).strip() if merge else done.stdout.strip()
+        return done.returncode, out
+    except FileNotFoundError:
+        return 127, f"{cmd[0]}: not found"
+    except subprocess.TimeoutExpired:
+        return 124, "timed out"
+
+
+def read(path: Path) -> str:
+    try:
+        return path.read_text()
+    except OSError:
+        return ""
+
+
+def write(path: Path, text: str, dry_run: bool) -> None:
+    if dry_run:
+        return
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_name(path.name + ".cursor-set.tmp")
+    tmp.write_text(text)
+    os.replace(tmp, path)
+
+
+def sub_line(text: str, pattern: str, repl: str,
+             flags=re.MULTILINE) -> tuple[str, bool, str | None]:
+    """Replace the first line matching `pattern`.
+
+    Returns (text, matched, change).  `matched` is True when the key exists,
+    which matters because "already has the value we want" must not be treated
+    as "key missing" and appended a second time.
+    """
+    rx = re.compile(pattern, flags)
+    m = rx.search(text)
+    if not m:
+        return text, False, None
+    new_line = rx.sub(repl, m.group(0), count=1)
+    if new_line == m.group(0):
+        return text, True, None
+    return (text[: m.start()] + new_line + text[m.end():], True,
+            f"{m.group(0).strip()} -> {new_line.strip()}")
+
+
+def append_block(text: str, block: str) -> str:
+    if text and not text.endswith("\n"):
+        text += "\n"
+    return text + block
+
+
+# ------------------------------------------------------------- file writers --
+
+def hypr_env_keys() -> dict[str, Path]:
+    """Locate the hypr env file that defines the cursor variables."""
+    default = DOTFILES / "hypr/configs/environment.lua"
+    keys = {
+        "HYPRCURSOR_THEME": default,
+        "XCURSOR_THEME": default,
+        "HYPRCURSOR_SIZE": default,
+        "XCURSOR_SIZE": default,
+    }
+    root = DOTFILES / "hypr"
+    if not root.is_dir():
+        return keys
+    found: dict[str, Path] = {}
+    for path in root.rglob("*.lua"):
+        text = read(path)
+        for key in keys:
+            if re.search(rf'hl\.env\(\s*["\']{key}["\']', text):
+                found.setdefault(key, path)
+    for key, path in found.items():
+        keys[key] = path
+    return keys
+
+
+def set_hypr_env(theme: str | None, size: int | None, dry_run: bool) -> list[str]:
+    out: list[str] = []
+    targets = hypr_env_keys()
+    touched: set[Path] = set()
+    for key, value in (("HYPRCURSOR_THEME", theme), ("XCURSOR_THEME", theme),
+                       ("HYPRCURSOR_SIZE", str(size) if size else None),
+                       ("XCURSOR_SIZE", str(size) if size else None)):
+        if value is None:
+            continue
+        path = targets.get(key)
+        if path is None or not path.exists():
+            out.append(f"  ! {key}: no hypr env file found")
+            continue
+        text = read(path)
+        pattern = rf'^(\s*hl\.env\(\s*["\']{key}["\']\s*,\s*["\'])([^"\']*)(["\']\s*\))'
+        new_text, matched, change = sub_line(text, pattern, rf'\g<1>{value}\g<3>')
+        if change is None:
+            if matched:
+                continue
+            new_text = append_block(text, f'hl.env("{key}", "{value}")\n')
+            change = f'appended hl.env("{key}", "{value}")'
+        write(path, new_text, dry_run)
+        touched.add(path)
+        out.append(f"  {key}: {change}")
+    for path in touched:
+        out.append(f"  ({path.relative_to(HOME)})")
+    return out
+
+
+def set_gtk_ini(theme: str | None, size: int | None, dry_run: bool) -> list[str]:
+    out: list[str] = []
+    for path in GTK_INIS:
+        text = read(path)
+        if not text:
+            text = "[Settings]\n"
+        changes = []
+        if theme:
+            text, matched, c = sub_line(text, r"^gtk-cursor-theme-name\s*=.*$",
+                                        f"gtk-cursor-theme-name={theme}")
+            if c:
+                changes.append(c)
+            elif not matched:
+                text = append_block(text, f"gtk-cursor-theme-name={theme}\n")
+                changes.append(f"added gtk-cursor-theme-name={theme}")
+        if size:
+            text, matched, c = sub_line(text, r"^gtk-cursor-theme-size\s*=.*$",
+                                        f"gtk-cursor-theme-size={size}")
+            if c:
+                changes.append(c)
+            elif not matched:
+                text = append_block(text, f"gtk-cursor-theme-size={size}\n")
+                changes.append(f"added gtk-cursor-theme-size={size}")
+        if changes:
+            write(path, text, dry_run)
+            out.append(f"  {path.name}: " + "; ".join(changes))
+    return out
+
+
+def set_xsettingsd(theme: str | None, size: int | None, dry_run: bool) -> list[str]:
+    text = read(XSETTINGSD)
+    if not text:
+        return []
+    changes = []
+    if theme:
+        text, matched, c = sub_line(text, r'^Gtk/CursorThemeName\s+.*$',
+                                    f'Gtk/CursorThemeName "{theme}"')
+        if c:
+            changes.append(c)
+        elif not matched:
+            text = append_block(text, f'Gtk/CursorThemeName "{theme}"\n')
+            changes.append(f'added Gtk/CursorThemeName "{theme}"')
+    if size:
+        text, matched, c = sub_line(text, r"^Gtk/CursorThemeSize\s+.*$",
+                                    f"Gtk/CursorThemeSize {size}")
+        if c:
+            changes.append(c)
+        elif not matched:
+            text = append_block(text, f"Gtk/CursorThemeSize {size}\n")
+            changes.append(f"added Gtk/CursorThemeSize {size}")
+    if changes:
+        write(XSETTINGSD, text, dry_run)
+        return ["  xsettingsd.conf: " + "; ".join(changes)]
+    return []
+
+
+def set_xresources(theme: str | None, size: int | None, dry_run: bool) -> list[str]:
+    text = read(XRESOURCES)
+    changes = []
+    if theme:
+        text, matched, c = sub_line(text, r"^Xcursor\.theme\s*:.*$", f"Xcursor.theme: {theme}")
+        if c:
+            changes.append(c)
+        elif not matched:
+            text = append_block(text, f"Xcursor.theme: {theme}\n")
+            changes.append(f"added Xcursor.theme: {theme}")
+    if size:
+        text, matched, c = sub_line(text, r"^Xcursor\.size\s*:.*$", f"Xcursor.size: {size}")
+        if c:
+            changes.append(c)
+        elif not matched:
+            text = append_block(text, f"Xcursor.size: {size}\n")
+            changes.append(f"added Xcursor.size: {size}")
+    if changes:
+        write(XRESOURCES, text, dry_run)
+        return ["  .Xresources: " + "; ".join(changes)]
+    return []
+
+
+def set_default_themes(theme: str | None, size: int | None, dry_run: bool) -> list[str]:
+    if not theme:
+        return []
+    out = []
+    for path in DEFAULT_THEMES:
+        text = read(path)
+        if not text:
+            text = "[Icon Theme]\nName=Default\nComment=Default Cursor Theme\n"
+        text, matched, c = sub_line(text, r"^Inherits\s*=.*$", f"Inherits={theme}")
+        if c:
+            pass
+        elif not matched:
+            text = append_block(text, f"Inherits={theme}\n")
+            c = f"added Inherits={theme}"
+        else:
+            continue
+        write(path, text, dry_run)
+        out.append(f"  {path.relative_to(HOME)}: {c}")
+    return out
+
+
+# ------------------------------------------------------------------- themes --
+
+def is_theme_dir(path: Path) -> bool:
+    return any((path / marker).exists() for marker in
+               ("cursors", "hyprcursors", "cursors_scalable", "manifest.hl"))
+
+
+def theme_path(name: str) -> Path | None:
+    for base in THEME_SEARCH_DIRS:
+        cand = base / name
+        if cand.is_dir() and is_theme_dir(cand):
+            return cand
+    return None
+
+
+def available_themes() -> dict[str, Path]:
+    found: dict[str, Path] = {}
+    for base in THEME_SEARCH_DIRS:
+        if not base.is_dir():
+            continue
+        for entry in sorted(base.iterdir()):
+            if entry.is_dir() and entry.name != "default" and is_theme_dir(entry):
+                found.setdefault(entry.name, entry)
+    return found
+
+
+def xcursor_sizes(theme_dir: Path) -> list[int]:
+    for name in ("left_ptr", "default", "arrow", "pointer"):
+        path = theme_dir / "cursors" / name
+        if not path.exists():
+            continue
+        try:
+            data = path.read_bytes()
+        except OSError:
+            continue
+        if data[:4] != b"Xcur":
+            continue
+        ntoc = struct.unpack_from("<I", data, 12)[0]
+        return sorted({struct.unpack_from("<I", data, 16 + 12 * i + 4)[0]
+                       for i in range(ntoc)})
+    return []
+
+
+def hypr_sizes(theme_dir: Path) -> list[int]:
+    for name in ("left_ptr", "default", "arrow"):
+        meta = theme_dir / "hyprcursors" / name / "meta.hl"
+        if meta.exists():
+            return sorted({int(m) for m in re.findall(r"^define_size\s*=\s*(\d+)",
+                                                       read(meta), re.MULTILINE)})
+    return []
+
+
+def native_sizes(theme_dir: Path) -> list[int]:
+    return sorted(set(xcursor_sizes(theme_dir)) | set(hypr_sizes(theme_dir)))
+
+
+# --------------------------------------------------------------- live apply --
+
+def apply_live(theme: str | None, size: int | None, quiet: bool = False) -> list[str]:
+    out: list[str] = []
+    cur_theme, cur_size = current_values()
+    theme = theme or cur_theme
+    size = size or (int(cur_size) if cur_size and cur_size.isdigit() else 32)
+
+    if os.environ.get("HYPRLAND_INSTANCE_SIGNATURE"):
+        code, msg = sh(["hyprctl", "setcursor", theme, str(size)])
+        out.append(f"  hyprctl setcursor {theme} {size}: {'ok' if code == 0 else msg}")
+    else:
+        out.append("  hyprctl: skipped (not inside a Hyprland session)")
+
+    if shutil_which("gsettings"):
+        code, msg = sh(["gsettings", "set", "org.gnome.desktop.interface", "cursor-theme", theme])
+        if code != 0:
+            out.append(f"  gsettings 主题: {msg}")
+        else:
+            sh(["gsettings", "set", "org.gnome.desktop.interface", "cursor-size", str(size)])
+            out.append(f"  gsettings: {theme} / {size}")
+
+    if os.environ.get("DISPLAY"):
+        code, msg = sh(["xrdb", "-merge", str(XRESOURCES)])
+        out.append(f"  xrdb -merge: {'ok' if code == 0 else msg}")
+    else:
+        out.append("  xrdb: skipped (no DISPLAY)")
+
+    code, _ = sh(["pgrep", "-x", "xsettingsd"])
+    if code == 0:
+        code, msg = sh(["pkill", "-HUP", "-x", "xsettingsd"])
+        out.append(f"  xsettingsd reload: {'ok' if code == 0 else msg}")
+    return out
+
+
+def shutil_which(cmd: str) -> str | None:
+    import shutil
+    return shutil.which(cmd)
+
+
+# ------------------------------------------------------------------ status ---
+
+def parse_line(text: str, pattern: str) -> str:
+    m = re.search(pattern, text, re.MULTILINE)
+    if not m:
+        return "-"
+    return (m.group(1) or "").strip().strip('"')
+
+
+def current_values() -> tuple[str | None, str | None]:
+    env = hypr_env_keys()
+    text = read(env["HYPRCURSOR_THEME"])
+    theme = parse_line(text, r'hl\.env\(\s*["\']HYPRCURSOR_THEME["\']\s*,\s*["\']([^"\']*)')
+    size = parse_line(text, r'hl\.env\(\s*["\']HYPRCURSOR_SIZE["\']\s*,\s*["\']([^"\']*)')
+    return (theme or None), (size or None)
+
+
+def cmd_status() -> int:
+    env = hypr_env_keys()
+    gtk3 = read(GTK_INIS[0])
+    gtk4 = read(GTK_INIS[1])
+    xres = read(XRESOURCES)
+    xs = read(XSETTINGSD)
+    defaults = [parse_line(read(p), r"^Inherits\s*=\s*(.*)$") for p in DEFAULT_THEMES]
+
+    rows = [
+        ("hypr env  HYPRCURSOR_THEME", parse_line(read(env["HYPRCURSOR_THEME"]),
+                                                  r'hl\.env\(\s*["\']HYPRCURSOR_THEME["\']\s*,\s*["\']([^"\']*)')),
+        ("hypr env  XCURSOR_THEME", parse_line(read(env["XCURSOR_THEME"]),
+                                               r'hl\.env\(\s*["\']XCURSOR_THEME["\']\s*,\s*["\']([^"\']*)')),
+        ("gtk-3.0   cursor-theme-name", parse_line(gtk3, r"^gtk-cursor-theme-name\s*=\s*(.*)$")),
+        ("gtk-3.0   cursor-theme-size", parse_line(gtk3, r"^gtk-cursor-theme-size\s*=\s*(.*)$")),
+        ("gtk-4.0   cursor-theme-name", parse_line(gtk4, r"^gtk-cursor-theme-name\s*=\s*(.*)$")),
+        ("gtk-4.0   cursor-theme-size", parse_line(gtk4, r"^gtk-cursor-theme-size\s*=\s*(.*)$")),
+        ("xsettingsd CursorThemeName", parse_line(xs, r'^Gtk/CursorThemeName\s+"?([^"\n]*)"?')),
+        ("xsettingsd CursorThemeSize", parse_line(xs, r"^Gtk/CursorThemeSize\s+(\S+)")),
+        (".Xresources Xcursor.theme", parse_line(xres, r"^Xcursor\.theme\s*:\s*(.*)$")),
+        (".Xresources Xcursor.size", parse_line(xres, r"^Xcursor\.size\s*:\s*(.*)$")),
+        ("icons/default Inherits", defaults[0]),
+        ("share/icons/default Inherits", defaults[1]),
+    ]
+    print("来源                                 值")
+    print("-" * 62)
+    themes, sizes = set(), set()
+    for label, value in rows:
+        print(f"{label:<36} {value or '-'}")
+        if "size" in label.lower() or "Size" in label:
+            sizes.add(value)
+        else:
+            themes.add(value)
+    if gtk := shutil_which("gsettings"):
+        code, out = sh(["gsettings", "get", "org.gnome.desktop.interface", "cursor-theme"], merge=False)
+        if code == 0:
+            print(f"{'gsettings cursor-theme':<36} {out}")
+            themes.add(out.strip().strip("'"))
+    if os.environ.get("DISPLAY"):
+        code, out = sh(["xrdb", "-query"])
+        if code == 0:
+            print(f"{'X server Xcursor.theme':<36} {parse_line(out, r'^Xcursor\.theme:\s*(.*)$')}")
+            print(f"{'X server Xcursor.size':<36} {parse_line(out, r'^Xcursor\.size:\s*(.*)$')}")
+    live_theme, live_size = current_values()
+    if len([t for t in themes if t and t != "-"]) > 1:
+        print("\n! 主题在各来源之间不一致，跑一次 `cursor-set theme <名称>` 可以对齐")
+    if len([s for s in sizes if s and s != "-"]) > 1:
+        print("! 尺寸在各来源之间不一致，跑一次 `cursor-set size <数字>` 可以对齐")
+    return 0
+
+
+def cmd_list(show_all: bool) -> int:
+    cur_theme, cur_size = current_values()
+    themes = available_themes()
+    print(f"当前: {cur_theme} / {cur_size}px" if cur_theme else "当前: 未设置")
+    print()
+    for name, path in sorted(themes.items()):
+        sizes = native_sizes(path)
+        hypr = "hyprcursor" if (path / "hyprcursors").is_dir() else "xcursor only"
+        mark = "*" if name == cur_theme else " "
+        where = path.relative_to(HOME) if str(path).startswith(str(HOME)) else path
+        if not show_all and name.startswith("default") and name != cur_theme:
+            continue
+        size_txt = ",".join(str(s) for s in sizes) if sizes else "?"
+        print(f" {mark} {name:<34} {size_txt:<22} {hypr:<13} {where}")
+    print("\n带 * 的是当前使用中的主题")
+    return 0
+
+
+def cmd_set(theme: str | None, size: int | None, args) -> int:
+    if not theme and not size:
+        print("没有要改的内容", file=sys.stderr)
+        return 2
+
+    if theme:
+        path = theme_path(theme)
+        if path is None:
+            print(f"找不到光标主题 {theme!r}。已安装的：", file=sys.stderr)
+            for name in sorted(available_themes()):
+                print(f"  {name}", file=sys.stderr)
+            if not args.force:
+                print("（确认名称无误可加 --force 强制写入）", file=sys.stderr)
+                return 1
+        else:
+            sizes = native_sizes(path)
+            if size and sizes and size not in sizes:
+                print(f"提示: {theme} 没有 {size}px 原生档（它有 {sizes}），"
+                      f"合成器会缩放，边缘会略软。")
+
+    prefix = "[dry-run] " if args.dry_run else ""
+    print(f"{prefix}写入所有光标主题来源：theme={theme or '保持'} size={size or '保持'}")
+    changes = []
+    changes += set_hypr_env(theme, size, args.dry_run)
+    changes += set_gtk_ini(theme, size, args.dry_run)
+    changes += set_xsettingsd(theme, size, args.dry_run)
+    changes += set_xresources(theme, size, args.dry_run)
+    changes += set_default_themes(theme, size, args.dry_run)
+    for line in changes:
+        print(line)
+    if not changes:
+        print("  （所有来源已经是这个值，无需修改）")
+
+    if not args.dry_run:
+        print("\n实时生效：")
+        for line in apply_live(theme, size):
+            print(line)
+
+    print("\n还需要手动做一次（这些进程在启动时就固定了光标）：")
+    print("  · GTK/Electron 程序（QQ、微信…）：退出重开")
+    print("  · 纯 X11 程序：注销重登；或先关掉所有 X 程序再 `pkill Xwayland`")
+    if theme:
+        print(f"\n注意: 主题改动写在 {hypr_env_keys()['HYPRCURSOR_THEME'].relative_to(HOME)}，"
+              f"记得用 jj 提交（`jj status`）。")
+    if args.restart_xwayland:
+        return restart_xwayland(args.yes)
+    return 0
+
+
+def restart_xwayland(assume_yes: bool) -> int:
+    if not assume_yes:
+        print("\n重启 Xwayland 会关掉所有正在运行的 X11 程序（含未保存内容）。继续？[y/N] ",
+              end="", flush=True)
+        if sys.stdin.readline().strip().lower() not in ("y", "yes"):
+            print("已取消")
+            return 0
+    code, out = sh(["pgrep", "-x", "Xwayland"])
+    if code != 0:
+        print("Xwayland 当前没有运行（下次启动 X 程序时会自动拉起）")
+        return 0
+    pids = out.split()
+    code, msg = sh(["kill"] + pids)
+    print(f"已结束 Xwayland ({' '.join(pids)}): {'ok' if code == 0 else msg}")
+    print("下次启动任意 X 程序时会带着新的环境变量重新拉起")
+    return 0
+
+
+# --------------------------------------------------------------------- main --
+
+def main(argv: list[str]) -> int:
+    if argv and re.fullmatch(r"\d+", argv[0]):
+        argv = ["size", *argv]
+    elif argv and not argv[0].startswith("-") and argv[0] not in {"size", "theme", "status",
+                                                                  "list", "apply", "help"}:
+        argv = ["theme", *argv]
+
+    p = argparse.ArgumentParser(prog="cursor-set", description=__doc__,
+                                formatter_class=argparse.RawDescriptionHelpFormatter)
+    p.add_argument("--dry-run", action="store_true", help="只显示会改什么，不落盘")
+    p.add_argument("--force", action="store_true", help="主题不存在时也照样写入")
+    p.add_argument("--yes", action="store_true", help="跳过 --restart-xwayland 的确认")
+    p.add_argument("--restart-xwayland", action="store_true",
+                   help="改完后顺手重启 Xwayland（会关掉所有 X 程序）")
+    sub = p.add_subparsers(dest="cmd")
+
+    ps = sub.add_parser("size", help="只改尺寸")
+    ps.add_argument("size", type=int)
+    pt = sub.add_parser("theme", help="只改主题（可同时给 --size）")
+    pt.add_argument("theme")
+    pt.add_argument("--size", type=int)
+    sub.add_parser("status", help="列出各来源的当前值")
+    pl = sub.add_parser("list", help="列出已安装的光标主题和它们支持的尺寸")
+    pl.add_argument("--all", action="store_true", help="包含 default 之类的条目")
+    pa = sub.add_parser("apply", help="把当前记录的值重新写一遍并实时生效")
+    pa.add_argument("--size", type=int)
+
+    args = p.parse_args(argv)
+
+    if args.cmd == "status":
+        return cmd_status()
+    if args.cmd == "list":
+        return cmd_list(args.all)
+    if args.cmd == "size":
+        return cmd_set(None, args.size, args)
+    if args.cmd == "theme":
+        return cmd_set(args.theme, args.size, args)
+    if args.cmd == "apply":
+        theme, size = current_values()
+        return cmd_set(theme, args.size or (int(size) if size and size.isdigit() else None), args)
+    p.print_help()
+    return 0
+
+
+if __name__ == "__main__":
+    try:
+        sys.exit(main(sys.argv[1:]))
+    except KeyboardInterrupt:
+        sys.exit(130)
