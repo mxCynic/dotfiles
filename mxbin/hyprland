@@ -11,18 +11,37 @@
 # 都会被画到那块屏上——登录后那段约 2 秒的"纯 TTY"画面就是这么来的。SDDM 用
 # [Wayland] SessionLogFile 把会话输出写进日志文件，这里做同样的事，并顺带清
 # 掉 VT 上残留的文字（对应 SDDM 的 "clear VT"）。
+#
+# 注意别把版本查询也重定向走：start-hyprland 启动前会执行 `Hyprland
+# --version-json`（同样走 PATH 命中本垫片）并解析它的 stdout，那条路径必须原样
+# 透传，否则它拿不到 JSON，会在 VT 上刷三条
+# "failed to obtain hyprland version string (bad json)"。
 
 set -u
+
+hyprland=/usr/bin/Hyprland
+
+for arg in "$@"; do
+  case "$arg" in
+    -v | --version | --version-json)
+      exec "$hyprland" "$@"
+      ;;
+  esac
+done
 
 log_dir="${XDG_DATA_HOME:-${HOME:-/home/mx}/.local/share}/hyprland"
 log_file="${log_dir}/session.log"
 
 # 清掉活动 VT 上残留的控制台文字。
+# greetd 的会话在合成器接管 seat 之前没有 /dev/ttyN 的写权限，失败是正常的；
+# 整条语句的 stderr 要一起丢掉——重定向本身失败时 bash 会自己往 stderr 打印
+# "Permission denied"，而那是会话的 stderr，也就是 VT。
 vt_dev="/dev/$(cat /sys/class/tty/tty0/active 2>/dev/null || echo tty1)"
-printf '\033[2J\033[H' >"$vt_dev" 2>/dev/null || true
+{ printf '\033[2J\033[H' >"$vt_dev"; } 2>/dev/null || true
 
-if mkdir -p "$log_dir" 2>/dev/null && : >"$log_file" 2>/dev/null; then
-  exec /usr/bin/Hyprland "$@" >>"$log_file" 2>&1
+if mkdir -p "$log_dir" 2>/dev/null && { : >"$log_file"; } 2>/dev/null; then
+  # 同上：重定向本身失败（磁盘满、目录只读）时也别让 bash 把报错画到 VT 上。
+  { exec "$hyprland" "$@" >>"$log_file" 2>&1; } 2>/dev/null || true
 fi
 
-exec /usr/bin/Hyprland "$@" >/dev/null 2>&1
+exec "$hyprland" "$@" >/dev/null 2>&1
