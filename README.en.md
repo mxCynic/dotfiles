@@ -128,6 +128,7 @@ Highlights; the full inventory lives in `mxbin/`:
   dictionary (see below)
 - `screenShot.sh`, `flameshot-gui`, `flameshot-full`, `clipimg`, `clipboard.sh` —
   screenshot and clipboard helpers
+- `pdf2png` — renders every PDF page to PNG (300 DPI, next to the source file)
 - `chwp`, `noctalia-wallpaper-sync` — wallpaper tooling
 - `hyprsunsetctl`, `log-health` — Hyprland session helpers and diagnostics
 - `caps_use_for_shurufa.sh` — Caps Lock remapping for input methods

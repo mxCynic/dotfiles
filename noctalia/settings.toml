@@ -134,9 +134,6 @@ enabled = true
 [location]
 auto_locate = true
 
-[lockscreen]
-blurred_desktop = true
-
 [lockscreen_widgets]
 enabled = true
 schema_version = 2
@@ -340,13 +337,16 @@ settings_window_translucent = true
     [shell.screen_corners]
     size = 28
 
+    [shell.screenshot]
+    annotate = true
+
     [shell.shadow]
     direction = "center"
 
 [theme]
 builtin = "Tokyo-Night"
 community_palette = "Oxocarbon"
-mode = "dark"
+mode = "auto"
 shell_mode = "dark"
 source = "builtin"
 wallpaper_scheme = "soft"
@@ -356,7 +356,7 @@ wallpaper_scheme = "soft"
 
 [wallpaper]
 directory = "/home/mx/Pictures/wallpapers"
-enabled = true
+enabled = false
 transition_duration = 7200
 transition_on_startup = true
 
@@ -364,16 +364,16 @@ transition_on_startup = true
     enabled = true
 
     [wallpaper.default]
-    path = "/home/mx/Pictures/wallpapers/00096.jpg"
+    path = "/home/mx/Pictures/wallpapers/00058.jpg"
 
     [wallpaper.last]
-    path = "/home/mx/Pictures/wallpapers/00096.jpg"
+    path = "/home/mx/Pictures/wallpapers/00058.jpg"
 
     [wallpaper.monitors.HDMI-A-1]
-    path = "/home/mx/Pictures/wallpapers/00096.jpg"
+    path = "/home/mx/Pictures/wallpapers/00099.jpg"
 
     [wallpaper.monitors.eDP-1]
-    path = "/home/mx/Pictures/wallpapers/00035.png"
+    path = "/home/mx/Pictures/wallpapers/00058.jpg"
 
 [widget.clock]
 capsule = true

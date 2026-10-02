@@ -115,6 +115,7 @@ uv run mxbin/deploy.py
 - `rime-clipboard-learn.py` —— 把高频复制词提升到 Rime 用户词典（见下文）
 - `screenShot.sh`、`flameshot-gui`、`flameshot-full`、`clipimg`、`clipboard.sh` ——
   截图与剪贴板辅助
+- `pdf2png` —— 把 PDF 每页渲染成 PNG（默认 300 DPI，输出到原目录）
 - `chwp`、`noctalia-wallpaper-sync` —— 壁纸工具
 - `hyprsunsetctl`、`log-health` —— Hyprland 会话辅助与诊断
 - `caps_use_for_shurufa.sh` —— 输入法用的 Caps Lock 改键

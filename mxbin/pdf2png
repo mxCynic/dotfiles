@@ -1,0 +1,147 @@
+#!/usr/bin/env bash
+# 把 PDF 的每一页渲染成 PNG 图片（底层调用 pdftoppm / poppler）。
+#
+#   pdf2png [-r DPI] [-o OUTDIR] [-p PAGES] [-n] file.pdf [file2.pdf ...]
+#
+# 默认 300 DPI，输出到 PDF 所在目录，文件名为 <pdf 名>-<页码>.png。
+
+set -euo pipefail
+
+prog=${0##*/}
+dpi=300
+outdir=""
+pages=""
+skip_existing=0
+rc=0
+
+usage() {
+	cat <<EOF
+用法: $prog [选项] 文件.pdf [更多.pdf ...]
+
+把 PDF 的每一页渲染成 PNG 图片（底层调用 pdftoppm）。
+
+选项:
+  -r, --dpi N          渲染分辨率，默认 300
+  -o, --outdir DIR     输出目录，默认与 PDF 同目录
+  -p, --pages RANGE    页码范围，如 3 或 2-5，默认全部
+  -n, --skip-existing  已存在的同名图片跳过不覆盖
+  -h, --help           显示本帮助
+
+输出文件名为 <pdf 名>-<页码>.png，页码与 PDF 内的实际页码一致。
+多个 PDF 共用 -o 时，同名文件会互相覆盖。
+EOF
+}
+
+die() {
+	printf '%s: %s\n' "$prog" "$*" >&2
+	exit 1
+}
+
+files=()
+while (($#)); do
+	case $1 in
+	-r | --dpi)
+		dpi=${2:-}
+		if [[ ! $dpi =~ ^[0-9]+$ ]] || ((dpi == 0)); then
+			die "--dpi 需要一个正整数"
+		fi
+		shift 2
+		;;
+	-o | --outdir)
+		[[ -n ${2:-} ]] || die "--outdir 需要一个目录"
+		outdir=$2
+		shift 2
+		;;
+	-p | --pages)
+		pages=${2:-}
+		[[ $pages =~ ^[0-9]+(-[0-9]+)?$ ]] ||
+			die "--pages 应为单页或范围，如 3 或 2-5"
+		shift 2
+		;;
+	-n | --skip-existing)
+		skip_existing=1
+		shift
+		;;
+	-h | --help)
+		usage
+		exit 0
+		;;
+	--)
+		shift
+		files+=("$@")
+		break
+		;;
+	-?*)
+		die "未知选项: $1（用 --help 查看用法）"
+		;;
+	*)
+		files+=("$1")
+		shift
+		;;
+	esac
+done
+
+if ((${#files[@]} == 0)); then
+	usage >&2
+	exit 2
+fi
+
+command -v pdftoppm >/dev/null 2>&1 ||
+	die "找不到 pdftoppm，请先安装 poppler（Arch: sudo pacman -S poppler）"
+
+if [[ -n $pages ]]; then
+	first=${pages%%-*}
+	last=${pages##*-}
+	((last >= first)) || die "--pages 范围起点大于终点: $pages"
+fi
+
+for pdf in "${files[@]}"; do
+	if [[ ! -f $pdf ]]; then
+		printf '%s: 跳过不存在的文件: %s\n' "$prog" "$pdf" >&2
+		rc=1
+		continue
+	fi
+
+	name=${pdf##*/}
+	name=${name%.[Pp][Dd][Ff]}
+	dir=${outdir:-$(dirname "$pdf")}
+	mkdir -p "$dir"
+	prefix=$dir/$name
+
+	poppler_args=(-png -r "$dpi")
+	if [[ -n $pages ]]; then
+		poppler_args+=(-f "$first" -l "$last")
+	fi
+
+	total=""
+	if command -v pdfinfo >/dev/null 2>&1; then
+		total=$(pdfinfo "$pdf" 2>/dev/null | awk '/^Pages:/ {print $2}') || total=""
+	fi
+	if [[ $total =~ ^[0-9]+$ ]] && [[ -n $pages ]] && ((first > total)); then
+		printf '%s: 页码范围 %s 超出文档总页数 %s: %s\n' \
+			"$prog" "$pages" "$total" "$pdf" >&2
+		rc=1
+		continue
+	fi
+
+	if ((skip_existing)); then
+		if [[ $total =~ ^[0-9]+$ ]]; then
+			begin=${first:-1}
+			end=${last:-$total}
+			((end > total)) && end=$total
+			pending=0
+			for ((p = begin; p <= end; p++)); do
+				[[ -f "$prefix-$p.png" ]] || pending=1
+			done
+			if ((pending == 0)); then
+				printf '%s: 图片已存在，跳过 %s\n' "$prog" "$pdf"
+				continue
+			fi
+		fi
+	fi
+
+	printf '%s -> %s-<页码>.png\n' "$pdf" "$prefix"
+	pdftoppm "${poppler_args[@]}" -- "$pdf" "$prefix" || rc=1
+done
+
+exit "$rc"

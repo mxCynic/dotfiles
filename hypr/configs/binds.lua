@@ -1,5 +1,5 @@
 local terminal = "kitty"
-local fileManager = "pkill dolphin || dolphin"
+local fileManager = "pkill strata || strata"
 local functions = require("configs.function")
 -- local menu = "hyprlauncher"
 local menu = "pkill rofi || rofi -show drun"
@@ -95,13 +95,9 @@ hl.bind(mainMod .. "C", hl.dsp.window.center())
 hl.bind(mainMod .. "B", hl.dsp.exec_cmd("noctalia msg bar-toggle"))
 hl.bind(mainMod .. "T", hl.dsp.exec_cmd("pkill pavucontrol || pavucontrol"))
 hl.bind(mainMod .. "X", functions.touchpad.toggle) -- toggle 内置触摸板开关
-hl.bind(
-  mainMod .. "TAB",
-  functions.focus.toggle_floating_tiled,
-  { description = "Switch focus between tiled and floating windows" }
-)
+hl.bind(mainMod .. "TAB", functions.focus.toggle_floating_tiled)
 hl.bind("CTRL + code:47", hl.dsp.exec_cmd(cliphist_rofi))
-hl.bind("CTRL + ALT + A", hl.dsp.exec_cmd("omasnap" .. " --capture-window"))
+hl.bind("CTRL + ALT + A", hl.dsp.exec_cmd("omasnap" .. " --editor overlay"))
 hl.bind("PRINT", hl.dsp.exec_cmd("omasnap"))
 hl.bind("SHIFT + PRINT", hl.dsp.exec_cmd("omasnap" .. " --capture-fullscreen"))
 hl.bind("ALT + PRINT", hl.dsp.exec_cmd("omasnap" .. " --capture-window"))
@@ -109,3 +105,4 @@ hl.bind("CTRL + ALT + R", hl.dsp.exec_cmd(mxbin .. "obs-toggle"))
 hl.bind(mainMod .. "F1", hl.dsp.exec_cmd(mxbin .. "gamemode.sh"))
 hl.bind(mainMod .. "U", hl.dsp.exec_cmd("noctalia msg wallpaper-random"))
 hl.bind(mainMod .. "I", hl.dsp.exec_cmd(mxbin .. "clipimg"))
+hl.bind("SUPER + P", hl.dsp.exec_cmd("skwd-wall-v2"))
