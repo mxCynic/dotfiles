@@ -1,0 +1,286 @@
+#!/usr/bin/env lua
+-- 检查 Hyprland Lua 配置里是否存在重复的键映射。
+--
+--   check-hypr-binds [binds.lua]
+--
+-- 脚本会在受限的 Lua 环境中执行配置，只拦截 hl.bind()，因此能检查
+-- for 循环和字符串拼接生成的键位，不需要启动 Hyprland。
+--
+-- 退出码: 0 无重复, 1 有重复, 2 参数/读取/执行错误。
+
+local function usage(stream)
+  stream:write([[
+用法: check-hypr-binds [选项] [binds.lua]
+
+检查 Hyprland Lua 配置中的重复键映射。不指定文件时，依次查找:
+  ~/.config/hypr/configs/binds.lua
+  ./hypr/configs/binds.lua
+
+比较键位时会忽略大小写、空格和修饰键顺序，例如
+  SUPER + SHIFT + Q
+  shift + super + q
+会被视为同一个键映射。
+
+选项:
+  -h, --help    显示此帮助
+
+退出码:
+  0  未发现重复键映射
+  1  发现重复键映射
+  2  参数、读取或执行配置时出错
+]])
+end
+
+local function fail(message)
+  io.stderr:write("check-hypr-binds: ", message, "\n")
+  os.exit(2)
+end
+
+local function file_exists(path)
+  local file = io.open(path, "r")
+  if not file then
+    return false
+  end
+  file:close()
+  return true
+end
+
+local args = { ... }
+if args[1] == "-h" or args[1] == "--help" then
+  usage(io.stdout)
+  os.exit(0)
+end
+if #args > 1 then
+  usage(io.stderr)
+  fail("只能指定一个 binds.lua 文件")
+end
+
+local path = args[1]
+if not path then
+  local candidates = {}
+  local home = os.getenv("HOME")
+  if home and home ~= "" then
+    candidates[#candidates + 1] = home .. "/.config/hypr/configs/binds.lua"
+  end
+  candidates[#candidates + 1] = "hypr/configs/binds.lua"
+
+  for _, candidate in ipairs(candidates) do
+    if file_exists(candidate) then
+      path = candidate
+      break
+    end
+  end
+
+  if not path then
+    fail("找不到 binds.lua；请传入文件路径")
+  end
+end
+
+local function inert_value()
+  local value = {}
+  setmetatable(value, {
+    __index = function()
+      return inert_value()
+    end,
+    __call = function()
+      return inert_value()
+    end,
+  })
+  return value
+end
+
+local bindings = {}
+
+local function binding_handle(record)
+  local handle = {}
+
+  function handle:set_enabled(enabled)
+    record.enabled = enabled ~= false
+    return self
+  end
+
+  function handle:set_description()
+    return self
+  end
+
+  return setmetatable(handle, {
+    __index = function()
+      return function()
+        return handle
+      end
+    end,
+  })
+end
+
+local hl = {
+  bind = function(key)
+    if type(key) ~= "string" then
+      error("hl.bind() 的键位参数不是字符串", 2)
+    end
+
+    local info = debug.getinfo(2, "Sl") or {}
+    local record = {
+      key = key,
+      line = info.currentline or 0,
+      source = info.source or ("@" .. path),
+      enabled = true,
+    }
+    bindings[#bindings + 1] = record
+    return binding_handle(record)
+  end,
+}
+setmetatable(hl, {
+  __index = function()
+    return inert_value()
+  end,
+})
+
+local environment = setmetatable({
+  hl = hl,
+  require = function()
+    return inert_value()
+  end,
+}, {
+  __index = _G,
+})
+
+local function load_binds()
+  local chunk, load_error
+  if _VERSION == "Lua 5.1" then
+    chunk, load_error = loadfile(path)
+    if chunk and setfenv then
+      setfenv(chunk, environment)
+    end
+  else
+    chunk, load_error = loadfile(path, "t", environment)
+  end
+
+  if not chunk then
+    fail("无法加载 " .. path .. ": " .. tostring(load_error))
+  end
+
+  local ok, run_error = pcall(chunk)
+  if not ok then
+    fail("执行 " .. path .. " 时出错: " .. tostring(run_error))
+  end
+end
+
+local trim = function(value)
+  return (value:gsub("^%s+", ""):gsub("%s+$", ""))
+end
+
+local modifier_alias = {
+  CONTROL = "CTRL",
+  WIN = "SUPER",
+  LOGO = "SUPER",
+  META = "SUPER",
+  MOD1 = "ALT",
+  MOD4 = "SUPER",
+}
+
+local modifier_order = {
+  SUPER = 10,
+  CTRL = 20,
+  ALT = 30,
+  SHIFT = 40,
+  CAPS = 50,
+  MOD2 = 60,
+  MOD3 = 70,
+  MOD5 = 80,
+}
+
+local function normalize(key)
+  local parts = {}
+  for raw_part in key:gmatch("[^+]+") do
+    local part = trim(raw_part):upper():gsub("%s+", " ")
+    if part ~= "" then
+      parts[#parts + 1] = modifier_alias[part] or part
+    end
+  end
+
+  if #parts == 0 then
+    error("键位不能为空")
+  end
+
+  local main_key = table.remove(parts)
+  local unique_modifiers = {}
+  for _, modifier in ipairs(parts) do
+    unique_modifiers[modifier] = true
+  end
+
+  local modifiers = {}
+  for modifier in pairs(unique_modifiers) do
+    modifiers[#modifiers + 1] = modifier
+  end
+  table.sort(modifiers, function(left, right)
+    local left_order = modifier_order[left] or 1000
+    local right_order = modifier_order[right] or 1000
+    if left_order ~= right_order then
+      return left_order < right_order
+    end
+    return left < right
+  end)
+
+  local signature = table.concat(modifiers, "\31") .. "\30" .. main_key
+  local display = #modifiers > 0
+    and (table.concat(modifiers, " + ") .. " + " .. main_key)
+    or main_key
+  return signature, display
+end
+
+load_binds()
+
+if #bindings == 0 then
+  fail("没有在 " .. path .. " 中找到 hl.bind() 调用")
+end
+
+local groups = {}
+local group_order = {}
+local active_count = 0
+
+for _, record in ipairs(bindings) do
+  if record.enabled then
+    active_count = active_count + 1
+    local ok, signature, display = pcall(normalize, record.key)
+    if not ok then
+      fail(("%s:%d: 无法解析键位 %q: %s")
+        :format(record.source:gsub("^@", ""), record.line, record.key, signature))
+    end
+
+    record.display = display
+    if not groups[signature] then
+      groups[signature] = {}
+      group_order[#group_order + 1] = signature
+    end
+    table.insert(groups[signature], record)
+  end
+end
+
+local duplicate_groups = 0
+for _, signature in ipairs(group_order) do
+  if #groups[signature] > 1 then
+    duplicate_groups = duplicate_groups + 1
+  end
+end
+
+if duplicate_groups == 0 then
+  print(("OK: %d 个键映射，未发现重复键位（%s）"):format(active_count, path))
+  os.exit(0)
+end
+
+print(("发现 %d 组重复键映射（共 %d 个键映射，%s）:")
+  :format(duplicate_groups, active_count, path))
+
+for _, signature in ipairs(group_order) do
+  local group = groups[signature]
+  if #group > 1 then
+    print("")
+    print(group[1].display)
+    for _, record in ipairs(group) do
+      local source = record.source:gsub("^@", "")
+      print(("  %s:%d  %s"):format(source, record.line, record.key))
+    end
+  end
+end
+
+os.exit(1)

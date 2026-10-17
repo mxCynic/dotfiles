@@ -355,7 +355,7 @@ wallpaper_scheme = "soft"
     builtin_ids = [ "cava" ]
 
 [wallpaper]
-directory = "/home/mx/Pictures/wallpapers"
+directory = "/home/mx/Pictures/Wallpapers"
 enabled = false
 transition_duration = 7200
 transition_on_startup = true
