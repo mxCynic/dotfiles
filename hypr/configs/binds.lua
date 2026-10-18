@@ -103,10 +103,20 @@ hl.bind(mainMod .. "T", hl.dsp.exec_cmd("pkill pavucontrol || pavucontrol"), { d
 hl.bind(mainMod .. "X", functions.touchpad.toggle, { description = "切换内置触摸板" })
 hl.bind(mainMod .. "TAB", functions.focus.toggle_floating_tiled, { description = "在浮动与平铺窗口间切换焦点" })
 hl.bind(mainMod .. "F1", hl.dsp.exec_cmd(mxbin .. "gamemode.sh"), { description = "切换游戏模式" })
-hl.bind(mainMod .. "U", hl.dsp.exec_cmd("skwd-helm random"), { description = "随机更换头盔" })
+hl.bind(mainMod .. "U", hl.dsp.exec_cmd("noctalia msg wallpaper-random"), { description = "随机更换壁纸" })
 hl.bind(mainMod .. "I", hl.dsp.exec_cmd(mxbin .. "clipimg"), { description = "剪贴板图片贴图" })
 hl.bind(mainMod .. "P", hl.dsp.exec_cmd("skwd-wall-v2"), { description = "打开壁纸选择器" })
 hl.bind("CTRL + code:47", hl.dsp.exec_cmd(cliphist_rofi), { description = "打开剪贴板历史" })
 hl.bind("CTRL + ALT + R", hl.dsp.exec_cmd(mxbin .. "obs-toggle"), { description = "切换 OBS 录制" })
+
+-- Resize mode: SUPER+R toggles the submap; HJKL adjusts the active window.
+hl.bind(mainMod .. "R", hl.dsp.submap("resize"), { description = "进入窗口调整模式" })
+hl.define_submap("resize", function()
+  hl.bind("H", hl.dsp.window.resize({ x = -20, y = 0, relative = true }), { repeating = true, description = "向左调整窗口宽度" })
+  hl.bind("L", hl.dsp.window.resize({ x = 20, y = 0, relative = true }), { repeating = true, description = "向右调整窗口宽度" })
+  hl.bind("K", hl.dsp.window.resize({ x = 0, y = 20, relative = true }), { repeating = true, description = "向上调整窗口高度" })
+  hl.bind("J", hl.dsp.window.resize({ x = 0, y = -20, relative = true }), { repeating = true, description = "向下调整窗口高度" })
+  hl.bind(mainMod .. "R", hl.dsp.submap("reset"), { description = "退出窗口调整模式" })
+end)
 
 -- stylua: ignore end
