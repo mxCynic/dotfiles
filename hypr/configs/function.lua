@@ -73,7 +73,8 @@ functions.pin_nofocus.toggle = (function()
       -- Restore all windows that were marked this way
       for _, marked_window in ipairs(hl.get_windows({ tag = tag })) do
         hl.dispatch(hl.dsp.window.set_prop({ prop = "no_focus", value = "unset", window = marked_window }))
-        if window.pinned then
+        -- no_focus can move focus away, so the marked window may not be active.
+        if marked_window.pinned then
           hl.dispatch(hl.dsp.window.pin({ window = marked_window }))
         end
         hl.dispatch(hl.dsp.window.tag({ tag = "-" .. tag, window = marked_window }))
