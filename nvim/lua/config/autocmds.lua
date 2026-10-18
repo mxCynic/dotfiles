@@ -25,6 +25,15 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
+-- binds.lua is intentionally hand-aligned for readable one-line keymaps.
+vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
+  group = augroup("hypr_binds_no_autoformat"),
+  pattern = "*/hypr/configs/binds.lua",
+  callback = function(event)
+    vim.b[event.buf].autoformat = false
+  end,
+})
+
 -- Fix TypeScript/TSX filetype detection
 vim.api.nvim_create_autocmd({ "BufNewFile", "BufRead" }, {
   group = augroup("typescript_filetype"),

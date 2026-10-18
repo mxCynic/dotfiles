@@ -255,6 +255,14 @@ local function find_formatting_client(bufnr, excluded_client_id)
   end
 end
 
+local function autoformat_enabled(bufnr)
+  local buffer_value = vim.b[bufnr].autoformat
+  if buffer_value ~= nil then
+    return buffer_value
+  end
+  return vim.g.autoformat ~= false
+end
+
 local function setup_format_on_save(bufnr, excluded_client_id)
   local group_name = "lsp_format_" .. bufnr
   local client = find_formatting_client(bufnr, excluded_client_id)
@@ -267,7 +275,7 @@ local function setup_format_on_save(bufnr, excluded_client_id)
     group = vim.api.nvim_create_augroup(group_name, { clear = true }),
     buffer = bufnr,
     callback = function()
-      if vim.bo[bufnr].filetype == "toml" then
+      if vim.bo[bufnr].filetype == "toml" or not autoformat_enabled(bufnr) then
         return
       end
 
