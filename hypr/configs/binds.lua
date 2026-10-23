@@ -3,7 +3,8 @@ local terminal = "kitty"
 local fileManager = "pkill strata || strata"
 local functions = require("configs.function")
 -- local menu = "hyprlauncher"
-local menu = "pkill rofi || rofi -show drun"
+local rofiMenu = "pkill rofi || rofi -show drun"
+local fuzzelMenu = "pkill fuzzel || fuzzel"
 local mainMod = "SUPER + " -- Sets "Windows" key as main modifier
 local mxbin = "/home/mx/.mxbin/"
 
@@ -21,7 +22,7 @@ local hypr_shutdown = "command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown |
 hl.bind(mainMod .. "Q", hl.dsp.exec_cmd(terminal), { description = "打开终端" })
 hl.bind(mainMod .. "D", hl.dsp.window.close(), { description = "关闭当前窗口" })
 hl.bind(mainMod .. "SHIFT + M", hl.dsp.exec_cmd(hypr_shutdown), { description = "退出 Hyprland" })
-hl.bind("ALT + SPACE", hl.dsp.exec_cmd(menu), { description = "打开应用菜单" })
+hl.bind("ALT + SPACE", hl.dsp.exec_cmd(fuzzelMenu), { description = "打开应用菜单" })
 hl.bind(mainMod .. "E", hl.dsp.exec_cmd(fileManager), { description = "打开文件管理器" })
 hl.bind(mainMod .. "F", hl.dsp.window.float({ action = "toggle" }), { description = "切换浮动窗口" })
 -- hl.bind(mainMod .. "P", hl.dsp.window.pseudo())
