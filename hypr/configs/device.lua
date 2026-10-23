@@ -28,6 +28,8 @@ hl.config({
 
   cursor = {
     no_warps = false,
+    inactive_timeout = 2,
+    hide_on_key_press = true,
   },
 })
 

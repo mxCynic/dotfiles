@@ -30,6 +30,9 @@ sidebar = "full"
     [control_center.calendar]
     show_events_card = false
 
+    [control_center.media]
+    show_visualizer = false
+
     [[control_center.shortcuts]]
     type = "bluetooth"
 
@@ -364,16 +367,16 @@ transition_on_startup = true
     enabled = true
 
     [wallpaper.default]
-    path = "/home/mx/Pictures/Wallpapers/00095.jpg"
+    path = "/home/mx/Pictures/Wallpapers/00067.png"
 
     [wallpaper.last]
-    path = "/home/mx/Pictures/Wallpapers/00095.jpg"
+    path = "/home/mx/Pictures/Wallpapers/00067.png"
 
     [wallpaper.monitors.HDMI-A-1]
     path = "/home/mx/Pictures/wallpapers/00099.jpg"
 
     [wallpaper.monitors.eDP-1]
-    path = "/home/mx/Pictures/Wallpapers/00095.jpg"
+    path = "/home/mx/Pictures/Wallpapers/00067.png"
 
 [widget.clock]
 capsule = true
