@@ -11,6 +11,7 @@ local mxbin = "/home/mx/.mxbin/"
 
 -- 一些太长的命令放在这里,尽量让hl.bind不会过长,能在一行写完,(在启动格式化的情况下,太长会分成多行)
 local cliphist_rofi = "pkill rofi || cliphist list | rofi -dmenu -display-columns 2 | cliphist decode | wl-copy"
+local cliphist_fuzzel = "pkill fuzzel || cliphist list | fuzzel --dmenu --with-nth=2 --prompt='剪贴板 > ' | cliphist decode | wl-copy"
 local hypr_shutdown = "command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"
 
 -- Example binds, see https://wiki.hypr.land/Configuring/Basics/Binds/ for more
@@ -106,7 +107,7 @@ hl.bind(mainMod .. "F1", hl.dsp.exec_cmd(mxbin .. "gamemode.sh"), { description 
 hl.bind(mainMod .. "U", hl.dsp.exec_cmd("noctalia msg wallpaper-random"), { description = "随机更换壁纸" })
 hl.bind(mainMod .. "I", hl.dsp.exec_cmd(mxbin .. "clipimg"), { description = "剪贴板图片贴图" })
 hl.bind(mainMod .. "P", hl.dsp.exec_cmd("skwd-wall-v2"), { description = "打开壁纸选择器" })
-hl.bind("CTRL + code:47", hl.dsp.exec_cmd(cliphist_rofi), { description = "打开剪贴板历史" })
+hl.bind("CTRL + code:47", hl.dsp.exec_cmd(cliphist_fuzzel), { description = "打开剪贴板历史" })
 hl.bind("CTRL + ALT + R", hl.dsp.exec_cmd(mxbin .. "obs-toggle"), { description = "切换 OBS 录制" })
 
 -- Resize mode: SUPER+R toggles the submap; HJKL adjusts the active window.
