@@ -1,4 +1,4 @@
-config_version = 15
+config_version = 16
 
 [audio]
 enable_overdrive = true
@@ -169,7 +169,7 @@ widget_order = [
     type = "login_box"
 
         [lockscreen_widgets.widget."lockscreen-login-box@FALLBACK".settings]
-        background_color = "surface_variant"
+        background_color = "surface_container"
         background_opacity = 0.88
         background_radius = 12.0
         center_password_text = false
@@ -196,7 +196,7 @@ widget_order = [
     type = "login_box"
 
         [lockscreen_widgets.widget."lockscreen-login-box@HDMI-A-1".settings]
-        background_color = "surface_variant"
+        background_color = "surface_container"
         background_opacity = 0.88
         background_radius = 12.0
         center_password_text = false
@@ -223,7 +223,7 @@ widget_order = [
     type = "login_box"
 
         [lockscreen_widgets.widget."lockscreen-login-box@eDP-1".settings]
-        background_color = "surface_variant"
+        background_color = "surface_container"
         background_opacity = 0.88
         background_radius = 12.0
         center_password_text = false
@@ -360,23 +360,23 @@ wallpaper_scheme = "soft"
 
 [wallpaper]
 directory = "/home/mx/Pictures/Wallpapers"
-transition_duration = 7200
+transition_duration = 2800
 transition_on_startup = true
 
     [wallpaper.automation]
     enabled = true
 
     [wallpaper.default]
-    path = "/home/mx/Pictures/Wallpapers/00067.png"
+    path = "/home/mx/Pictures/Wallpapers/00029.jpg"
 
     [wallpaper.last]
-    path = "/home/mx/Pictures/Wallpapers/00067.png"
+    path = "/home/mx/Pictures/Wallpapers/00029.jpg"
 
     [wallpaper.monitors.HDMI-A-1]
     path = "/home/mx/Pictures/wallpapers/00099.jpg"
 
     [wallpaper.monitors.eDP-1]
-    path = "/home/mx/Pictures/Wallpapers/00067.png"
+    path = "/home/mx/Pictures/Wallpapers/00029.jpg"
 
 [widget.clock]
 capsule = true
@@ -386,6 +386,7 @@ album_art_only = true
 anchor = true
 art_size = 20
 hide_when_no_media = true
+rotate_album_art = true
 show_progress = true
 
 [widget.ram_used]
