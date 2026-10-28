@@ -372,16 +372,16 @@ transition_on_startup = true
     enabled = true
 
     [wallpaper.default]
-    path = "/home/mx/Pictures/Wallpapers/00039.png"
+    path = "/home/mx/Pictures/Wallpapers/00061.jpg"
 
     [wallpaper.last]
-    path = "/home/mx/Pictures/Wallpapers/00039.png"
+    path = "/home/mx/Pictures/Wallpapers/00061.jpg"
 
     [wallpaper.monitors.HDMI-A-1]
     path = "/home/mx/Pictures/wallpapers/00099.jpg"
 
     [wallpaper.monitors.eDP-1]
-    path = "/home/mx/Pictures/Wallpapers/00039.png"
+    path = "/home/mx/Pictures/Wallpapers/00061.jpg"
 
 [widget.clock]
 capsule = true
