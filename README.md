@@ -40,7 +40,8 @@ uv run mxbin/deploy.py
 |---|---|---|
 | `hypr/` | `~/.config/hypr` | Hyprland 配置：`hyprland.lua` 主配置、`configs/` 下的 Lua 模块与 `plugins/` 插件配置 |
 | `rofi/` | `~/.config/rofi` | Rofi 启动器主题与配置 |
-| `noctalia/` | `~/.config/noctalia/config.toml` | Noctalia 壁纸/顶栏辅助配置 |
+| `fuzzel/` | `~/.config/fuzzel` | Fuzzel 启动器配置与主题 |
+| `noctalia/` | `~/.config/noctalia/{config.toml,templates/}` + `~/.local/state/noctalia/settings.toml` | Noctalia 壁纸、顶栏与主题模板配置 |
 
 ### 文本编辑
 

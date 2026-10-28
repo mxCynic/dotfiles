@@ -350,13 +350,18 @@ settings_window_translucent = true
 [theme]
 builtin = "Tokyo-Night"
 community_palette = "Oxocarbon"
-mode = "auto"
+mode = "dark"
 shell_mode = "dark"
-source = "builtin"
+source = "wallpaper"
 wallpaper_scheme = "soft"
 
     [theme.templates]
-    builtin_ids = [ "cava" ]
+    builtin_ids = [ "cava", "hyprland", "kitty" ]
+    enable_builtin_templates = true
+
+        [theme.templates.user.fuzzel]
+        input_path = "$XDG_CONFIG_HOME/noctalia/templates/fuzzel.ini"
+        output_path = "$XDG_CONFIG_HOME/fuzzel/themes/noctalia"
 
 [wallpaper]
 directory = "/home/mx/Pictures/Wallpapers"
@@ -367,16 +372,16 @@ transition_on_startup = true
     enabled = true
 
     [wallpaper.default]
-    path = "/home/mx/Pictures/Wallpapers/00029.jpg"
+    path = "/home/mx/Pictures/Wallpapers/wallhaven-pomg5p.jpg"
 
     [wallpaper.last]
-    path = "/home/mx/Pictures/Wallpapers/00029.jpg"
+    path = "/home/mx/Pictures/Wallpapers/wallhaven-pomg5p.jpg"
 
     [wallpaper.monitors.HDMI-A-1]
     path = "/home/mx/Pictures/wallpapers/00099.jpg"
 
     [wallpaper.monitors.eDP-1]
-    path = "/home/mx/Pictures/Wallpapers/00029.jpg"
+    path = "/home/mx/Pictures/Wallpapers/wallhaven-pomg5p.jpg"
 
 [widget.clock]
 capsule = true

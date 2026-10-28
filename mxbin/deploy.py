@@ -9,6 +9,7 @@ def deploy_dotfiles():
     MAPPING = {
         "hypr": op.expanduser("~/.config/hypr"),
         "flameshot": op.expanduser("~/.config/flameshot"),
+        "fuzzel": op.expanduser("~/.config/fuzzel"),
         "nvim": op.expanduser("~/.config/nvim"),
         "rofi": op.expanduser("~/.config/rofi"),
         # "waybar": op.expanduser("~/.config/waybar"),
@@ -27,6 +28,7 @@ def deploy_dotfiles():
         "cava": op.expanduser("~/.config/cava"),
         "noctalia/config.toml": op.expanduser("~/.config/noctalia/config.toml"),
         "noctalia/settings.toml": op.expanduser("~/.local/state/noctalia/settings.toml"),
+        "noctalia/templates": op.expanduser("~/.config/noctalia/templates"),
         "patch/qq-flags.conf": op.expanduser("~/.config/qq-flags.conf"),
         "systemd/user": op.expanduser("~/.config/systemd/user"),
         "patch/applications": op.expanduser("~/.local/share/applications"),

@@ -47,7 +47,8 @@ Config directories, grouped by what they configure. “Deployed to” is where
 |---|---|---|
 | `hypr/` | `~/.config/hypr` | Hyprland config: `hyprland.lua`, Lua modules in `configs/`, and plugin configs in `plugins/` |
 | `rofi/` | `~/.config/rofi` | Rofi launcher themes and config |
-| `noctalia/` | `~/.config/noctalia/config.toml` | Noctalia wallpaper/bar helper config |
+| `fuzzel/` | `~/.config/fuzzel` | Fuzzel launcher config and theme |
+| `noctalia/` | `~/.config/noctalia/{config.toml,templates/}` + `~/.local/state/noctalia/settings.toml` | Noctalia wallpaper, bar, and theme-template config |
 
 ### Text editing
 
