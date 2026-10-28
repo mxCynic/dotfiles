@@ -44,7 +44,7 @@ play = [
 ]
 image = [
   { run = '''
-wallpaper_dir="$HOME/Pictures/wallpapers"
+wallpaper_dir="$HOME/Pictures/Wallpapers"
 wallpaper_dir="$(cd -- "$wallpaper_dir" && pwd -P)"
 file="%s1"
 file_dir="$(cd -- "$(dirname -- "$file")" && pwd -P)"

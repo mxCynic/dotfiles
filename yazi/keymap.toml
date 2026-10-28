@@ -379,7 +379,7 @@ keymap = [
   { on = [
     "g",
     "w",
-  ], run = "cd ~/Pictures/wallpapers/", desc = "Go to a wallpapers directory" },
+  ], run = "cd ~/Pictures/Wallpapers/", desc = "Go to a wallpapers directory" },
   { on = [
     "g",
     "b",
