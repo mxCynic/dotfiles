@@ -20,6 +20,7 @@ hl.config({
   },
 })
 
+-- Noctalia generates ~/.config/hypr/noctalia.lua from the wallpaper palette.
 local noctalia_ok, noctalia = pcall(require, "noctalia")
 if noctalia_ok and type(noctalia) == "table" and type(noctalia.apply_theme) == "function" then
   local apply_ok, apply_err = pcall(noctalia.apply_theme)

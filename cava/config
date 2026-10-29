@@ -20,6 +20,7 @@ method = ncurses
 style = stereo
 
 [color]
+# Noctalia generates this theme from the wallpaper palette.
 theme = "noctalia"
 # Color gradient: 底部冷色 -> 顶部暖色（短柱不红）
 gradient = 1
