@@ -5,11 +5,6 @@ hl.config({
 
     border_size = 2,
 
-    col = {
-      active_border = { colors = { "rgba(39c5bbee)", "rgba(39c5bbee)" }, angle = 45 },
-      inactive_border = "rgba(595959aa)",
-    },
-
     -- Set to true to enable resizing windows by clicking and dragging on borders and gaps
     resize_on_border = false,
 
@@ -40,8 +35,6 @@ hl.config({
       range = 4,
       render_power = 3,
       sharp = true,
-      color = "rgba(39c5bbee)",
-      color_inactive = "rgba(39c5bbee)",
       offset = { 0, 0 },
       scale = 1,
 
@@ -60,9 +53,6 @@ hl.config({
       enabled = false,
       range = 10,
       render_power = 1,
-      color = "rgba(39c5bbee)",
-      --color_inactive = 1,
-
     },
     wobble = {
       enabled = false,
