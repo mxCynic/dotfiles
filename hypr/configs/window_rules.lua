@@ -52,7 +52,9 @@ local float_windows_by_title = {
   "视频播放器",
   "^.*的聊天记录$",
   "SPlayer - 桌面歌词",
-  "Strata"
+  "Strata",
+  "媒体查看器",
+  "设置"
 }
 for _, name in ipairs(float_windows_by_title) do
   hl.window_rule({ match = { title = name }, float = true, persistent_size = true })
