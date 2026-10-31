@@ -1,0 +1,307 @@
+#!/usr/bin/env python3
+
+import argparse
+import html
+import json
+import os
+import socket
+import time
+from collections import Counter, defaultdict
+from pathlib import Path
+from unicodedata import combining, east_asian_width
+
+
+def default_log_path() -> Path:
+    state_home = os.environ.get("XDG_STATE_HOME")
+    if state_home:
+        return Path(state_home) / "hypr-keybind-attempts.tsv"
+    return Path.home() / ".local/state/hypr-keybind-attempts.tsv"
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Show Hyprland shortcut attempt frequency as a table and optional SVG chart."
+    )
+    parser.add_argument(
+        "--log",
+        type=Path,
+        default=default_log_path(),
+        help="event log written by hypr-keybind-collector",
+    )
+    parser.add_argument(
+        "--days",
+        type=float,
+        default=30,
+        help="Only include events from the last N days; 0 means all (default: 30)",
+    )
+    parser.add_argument(
+        "--top",
+        type=int,
+        default=25,
+        help="Maximum rows to display; 0 means all (default: 25)",
+    )
+    parser.add_argument("--svg", type=Path, help="Write a horizontal bar chart as SVG")
+    parser.add_argument("--json", action="store_true", help="Print JSON instead of a table")
+    return parser.parse_args()
+
+
+def normalize_key(value: str) -> tuple[str, str]:
+    aliases = {
+        "CONTROL": "CTRL",
+        "WIN": "SUPER",
+        "LOGO": "SUPER",
+        "META": "SUPER",
+        "MOD1": "ALT",
+        "MOD4": "SUPER",
+    }
+    order = {"SUPER": 10, "CTRL": 20, "ALT": 30, "SHIFT": 40}
+    parts = []
+    for raw in value.split("+"):
+        part = " ".join(raw.strip().upper().split())
+        if part:
+            parts.append(aliases.get(part, part))
+    if not parts:
+        return "", ""
+    main = parts.pop()
+    modifiers = sorted(set(parts), key=lambda item: (order.get(item, 1000), item))
+    display = " + ".join([*modifiers, main])
+    return display, "\x1f".join([*modifiers, main])
+
+
+def current_bindings() -> dict[tuple[str, str], str]:
+    try:
+        instance = find_instance()
+        output = ipc_request(instance, "j/binds")
+        entries = json.loads(output)
+    except (OSError, RuntimeError, json.JSONDecodeError):
+        return {}
+
+    bindings = {}
+    modifier_bits = (
+        (1, "SHIFT"),
+        (4, "CTRL"),
+        (8, "ALT"),
+        (64, "SUPER"),
+    )
+    for entry in entries:
+        modifiers = [name for bit, name in modifier_bits if entry.get("modmask", 0) & bit]
+        key = entry.get("key", "")
+        display, signature = normalize_key(" + ".join([*modifiers, key]))
+        if signature:
+            context = entry.get("submap", "")
+            bindings[(context, signature)] = entry.get("description", "") or display
+    return bindings
+
+
+def find_instance() -> str:
+    signature = os.environ.get("HYPRLAND_INSTANCE_SIGNATURE")
+    if signature:
+        return signature
+
+    runtime_dir = Path(os.environ.get("XDG_RUNTIME_DIR", f"/run/user/{os.getuid()}"))
+    sockets = list((runtime_dir / "hypr").glob("*/.socket2.sock"))
+    if not sockets:
+        raise RuntimeError("Hyprland instance not found")
+    return max(sockets, key=lambda path: path.stat().st_mtime).parent.name
+
+
+def ipc_request(instance: str, command: str) -> str:
+    runtime_dir = Path(os.environ.get("XDG_RUNTIME_DIR", f"/run/user/{os.getuid()}"))
+    request_socket = runtime_dir / "hypr" / instance / ".socket.sock"
+    with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as client:
+        client.connect(str(request_socket))
+        client.sendall(command.encode())
+        client.shutdown(socket.SHUT_WR)
+        chunks = []
+        while chunk := client.recv(65536):
+            chunks.append(chunk)
+    return b"".join(chunks).decode(errors="replace")
+
+
+def read_events(path: Path, days: float) -> list[tuple[int, str, str]]:
+    cutoff = time.time() - days * 86400 if days > 0 else None
+    events = []
+    try:
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except FileNotFoundError:
+        return events
+
+    for line in lines:
+        fields = line.split("\t")
+        if len(fields) < 3:
+            continue
+        try:
+            timestamp = int(fields[0])
+        except ValueError:
+            continue
+        if cutoff is not None and timestamp < cutoff:
+            continue
+        context, keys = fields[1], fields[2]
+        events.append((timestamp, context, keys))
+    return events
+
+
+def build_rows(events, bindings, limit: int):
+    counts = Counter()
+    last_used = {}
+    actions = {}
+    for timestamp, context, keys in events:
+        display, signature = normalize_key(keys)
+        identity = (context, display)
+        counts[identity] += 1
+        last_used[identity] = max(timestamp, last_used.get(identity, 0))
+        actions[identity] = bindings.get((context, signature), "未匹配当前绑定")
+
+    total = sum(counts.values())
+    rows = []
+    for identity, count in counts.most_common(limit or None):
+        context, keys = identity
+        rows.append(
+            {
+                "count": count,
+                "share": count / total * 100 if total else 0,
+                "keys": keys,
+                "context": context or "normal",
+                "description": actions[identity],
+                "last_used": time.strftime(
+                    "%Y-%m-%d %H:%M:%S", time.localtime(last_used[identity])
+                ),
+            }
+        )
+    return rows, total
+
+
+def text_width(value: str) -> int:
+    width = 0
+    for char in value:
+        if combining(char):
+            continue
+        width += 2 if east_asian_width(char) in {"W", "F"} else 1
+    return width
+
+
+def pad(value: str, width: int, right: bool = False) -> str:
+    spaces = " " * max(0, width - text_width(value))
+    return spaces + value if right else value + spaces
+
+
+def print_table(rows, total: int, days: float) -> None:
+    if not rows:
+        print("暂无快捷键记录。确认 hypr-keybind-collector 服务已启动后再使用快捷键。")
+        return
+
+    headers = ("排名", "快捷键", "上下文", "动作", "次数", "占比", "最近使用")
+    body = []
+    for index, row in enumerate(rows, 1):
+        body.append(
+            (
+                str(index),
+                row["keys"],
+                row["context"],
+                row["description"],
+                str(row["count"]),
+                f"{row['share']:.1f}%",
+                row["last_used"],
+            )
+        )
+
+    widths = [
+        max(text_width(headers[i]), *(text_width(row[i]) for row in body))
+        for i in range(len(headers))
+    ]
+
+    def print_row(row, right_columns=()):
+        print(
+            "  ".join(
+                pad(value, widths[i], right=i in right_columns)
+                for i, value in enumerate(row)
+            )
+        )
+
+    period = f"最近 {days:g} 天" if days > 0 else "全部时间"
+    print(f"Hyprland 快捷键尝试统计（{period}，共 {total} 次）")
+    print_row(headers)
+    print("  ".join("─" * width for width in widths))
+    for row in body:
+        print_row(row, right_columns=(0, 4, 5))
+
+
+def svg_label(row) -> str:
+    label = f"{row['keys']} · {row['description']}"
+    if text_width(label) > 48:
+        result = ""
+        for char in label:
+            if text_width(result + char) > 45:
+                return result + "…"
+            result += char
+    return label
+
+
+def write_svg(path: Path, rows, total: int, days: float) -> None:
+    width = 1100
+    label_width = 390
+    bar_width = 560
+    row_height = 42
+    top = 82
+    height = max(150, top + len(rows) * row_height + 24)
+    max_count = max((row["count"] for row in rows), default=1)
+    period = f"last {days:g} days" if days > 0 else "all time"
+
+    lines = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">',
+        '<rect width="100%" height="100%" fill="#171820"/>',
+        '<style>text{font-family:"Noto Sans CJK SC","Source Han Sans SC",sans-serif;fill:#e6e6e6}.muted{fill:#9ca3af}.title{font-size:24px;font-weight:700}.label{font-size:14px}.bar{fill:#82aaff}.count{font-size:13px}</style>',
+        '<text x="24" y="38" class="title">Hyprland shortcut attempts</text>',
+        f'<text x="24" y="62" class="muted">{html.escape(period)}, {total} attempts</text>',
+    ]
+
+    if not rows:
+        lines.append('<text x="24" y="112" class="label">No shortcut attempts recorded yet.</text>')
+    else:
+        for index, row in enumerate(rows):
+            y = top + index * row_height
+            bar = max(3, round(bar_width * row["count"] / max_count))
+            label = html.escape(svg_label(row))
+            tooltip = html.escape(
+                f"{row['keys']} / {row['context']} / {row['description']}: {row['count']}"
+            )
+            lines.extend(
+                [
+                    f'<g><title>{tooltip}</title>',
+                    f'<text x="24" y="{y + 18}" class="label">{label}</text>',
+                    f'<rect class="bar" x="{label_width}" y="{y}" width="{bar}" height="24" rx="5"/>',
+                    f'<text x="{label_width + bar + 10}" y="{y + 18}" class="count">{row["count"]} ({row["share"]:.1f}%)</text>',
+                    "</g>",
+                ]
+            )
+
+    lines.append("</svg>")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def main() -> None:
+    args = parse_args()
+    events = read_events(args.log.expanduser(), args.days)
+    rows, total = build_rows(events, current_bindings(), args.top)
+
+    if args.json:
+        print(
+            json.dumps(
+                {"total": total, "days": args.days, "rows": rows},
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
+    else:
+        print_table(rows, total, args.days)
+
+    if args.svg:
+        output = args.svg.expanduser()
+        write_svg(output, rows, total, args.days)
+        print(f"\nSVG 图表已写入: {output}")
+
+
+if __name__ == "__main__":
+    main()

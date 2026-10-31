@@ -1,0 +1,13 @@
+[Unit]
+Description=Collect Hyprland keyboard shortcut attempts
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.mxbin/hypr-keybind-collector
+Restart=always
+RestartSec=2
+NoNewPrivileges=true
+
+[Install]
+WantedBy=default.target

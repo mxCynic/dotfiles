@@ -1,0 +1,236 @@
+#!/usr/bin/env python3
+
+import argparse
+import json
+import os
+import socket
+import sys
+import threading
+import time
+from pathlib import Path
+
+
+DEFAULT_LOG = Path.home() / ".local/state/hypr-keybind-attempts.tsv"
+
+
+LUA_HOOK = r'''
+if _G.__hypr_keybind_usage_hook then
+  pcall(function() _G.__hypr_keybind_usage_hook:remove() end)
+end
+
+local LOG_PATH = __LOG_PATH__
+local KEY_NAMES = {
+  [9] = "ESC", [10] = "1", [11] = "2", [12] = "3", [13] = "4",
+  [14] = "5", [15] = "6", [16] = "7", [17] = "8", [18] = "9",
+  [19] = "0", [20] = "minus", [21] = "equal", [22] = "BACKSPACE",
+  [23] = "TAB", [24] = "Q", [25] = "W", [26] = "E", [27] = "R",
+  [28] = "T", [29] = "Y", [30] = "U", [31] = "I", [32] = "O",
+  [33] = "P", [34] = "bracketleft", [35] = "bracketright",
+  [36] = "ENTER", [38] = "A", [39] = "S", [40] = "D", [41] = "F",
+  [42] = "G", [43] = "H", [44] = "J", [45] = "K", [46] = "L",
+  [47] = "code:47", [48] = "apostrophe", [49] = "grave", [51] = "backslash",
+  [52] = "Z", [53] = "X", [54] = "C", [55] = "V", [56] = "B",
+  [57] = "N", [58] = "M", [59] = "comma", [60] = "period", [61] = "slash",
+  [65] = "SPACE", [67] = "F1", [68] = "F2", [69] = "F3", [70] = "F4",
+  [71] = "F5", [72] = "F6", [73] = "F7", [74] = "F8", [75] = "F9",
+  [76] = "F10", [95] = "F11", [96] = "F12", [107] = "PRINT",
+  [110] = "HOME", [111] = "UP", [112] = "PAGE_UP", [113] = "LEFT",
+  [114] = "RIGHT", [115] = "END", [116] = "DOWN", [117] = "PAGE_DOWN",
+  [118] = "INSERT", [119] = "DELETE",
+  [121] = "XF86AudioMute", [122] = "XF86AudioLowerVolume",
+  [123] = "XF86AudioRaiseVolume", [171] = "XF86AudioNext",
+  [172] = "XF86AudioPlay", [173] = "XF86AudioPrev",
+  [198] = "XF86AudioMicMute", [232] = "XF86MonBrightnessDown",
+  [233] = "XF86MonBrightnessUp",
+}
+
+local MODIFIER_CODES = {
+  [37] = "CTRL", [105] = "CTRL",
+  [50] = "SHIFT", [62] = "SHIFT",
+  [64] = "ALT", [108] = "ALT",
+  [133] = "SUPER", [134] = "SUPER",
+}
+local MODIFIER_ORDER = { "SUPER", "CTRL", "ALT", "SHIFT" }
+local STANDALONE_KEYS = {
+  [67] = true, [68] = true, [69] = true, [70] = true, [71] = true,
+  [72] = true, [73] = true, [74] = true, [75] = true, [76] = true,
+  [95] = true, [96] = true, [107] = true,
+  [121] = true, [122] = true, [123] = true, [171] = true,
+  [172] = true, [173] = true, [198] = true, [232] = true, [233] = true,
+}
+local last_press = {}
+local held_modifiers = {}
+
+local function sanitize(value)
+  return tostring(value or ""):gsub("[\t\r\n]+", " ")
+end
+
+local function active_modifiers()
+  local active = {}
+  for code, name in pairs(MODIFIER_CODES) do
+    if hl.is_key_down(code) == true then
+      active[name] = true
+    end
+  end
+  return active
+end
+
+local function append(keys, context)
+  local file = io.open(LOG_PATH, "a")
+  if not file then return end
+  file:write(string.format(
+    "%d\t%s\t%s\n",
+    os.time(),
+    sanitize(context),
+    sanitize(keys)
+  ))
+  file:close()
+end
+
+_G.__hypr_keybind_usage_hook = hl.on("input.keyboard.key", function(raw_keycode, raw_time, raw_state)
+  local keycode = tonumber(raw_keycode)
+  local state = tonumber(raw_state) or (raw_state and 1 or 0)
+  if not keycode or keycode == 0 then return end
+
+  local modifier = MODIFIER_CODES[keycode]
+  if modifier then
+    held_modifiers[modifier] = state == 1
+    return
+  end
+  if state ~= 1 then return end
+
+  local context = sanitize(hl.get_current_submap())
+  local modifiers = active_modifiers()
+  for name, pressed in pairs(held_modifiers) do
+    modifiers[name] = modifiers[name] or pressed
+  end
+  local parts = {}
+  for _, modifier in ipairs(MODIFIER_ORDER) do
+    if modifiers[modifier] then parts[#parts + 1] = modifier end
+  end
+
+  local main = KEY_NAMES[keycode] or ("code:" .. keycode)
+  if #parts == 0 and context == "" and not STANDALONE_KEYS[keycode] then return end
+  parts[#parts + 1] = main
+
+  local keys = table.concat(parts, " + ")
+  local identity = context .. "\t" .. keys
+  local now = tonumber(raw_time) or os.clock() * 1000
+  if last_press[identity] and now - last_press[identity] < 120 then return end
+  last_press[identity] = now
+  append(keys, context)
+end)
+'''
+
+
+def install_hook(instance: str, log_path: Path) -> None:
+    hook = LUA_HOOK.replace("__LOG_PATH__", json.dumps(str(log_path)))
+    response = ipc_request(instance, f"eval {hook}")
+    if response.strip() != "ok":
+        raise RuntimeError(f"failed to install Hyprland hook: {response.strip()}")
+
+
+def ensure_hook(instance: str, log_path: Path) -> None:
+    response = ipc_request(instance, "eval return type(_G.__hypr_keybind_usage_hook)")
+    if response.strip() != "userdata":
+        install_hook(instance, log_path)
+
+
+def maintain_hook(instance: str, log_path: Path, stop: threading.Event, verbose: bool) -> None:
+    while not stop.wait(2):
+        try:
+            ensure_hook(instance, log_path)
+        except (OSError, RuntimeError) as error:
+            if verbose:
+                print(f"collector reinstall waiting: {error}", file=sys.stderr)
+
+
+def event_socket(instance: str) -> Path:
+    runtime_dir = os.environ.get("XDG_RUNTIME_DIR")
+    if not runtime_dir:
+        runtime_dir = f"/run/user/{os.getuid()}"
+    return Path(runtime_dir) / "hypr" / instance / ".socket2.sock"
+
+
+def ipc_request(instance: str, command: str) -> str:
+    request_socket = event_socket(instance).with_name(".socket.sock")
+    with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as client:
+        client.connect(str(request_socket))
+        client.sendall(command.encode())
+        client.shutdown(socket.SHUT_WR)
+        chunks = []
+        while chunk := client.recv(65536):
+            chunks.append(chunk)
+    return b"".join(chunks).decode(errors="replace")
+
+
+def find_instance() -> str:
+    signature = os.environ.get("HYPRLAND_INSTANCE_SIGNATURE")
+    if signature:
+        return signature
+
+    runtime_dir = Path(os.environ.get("XDG_RUNTIME_DIR", f"/run/user/{os.getuid()}"))
+    sockets = list((runtime_dir / "hypr").glob("*/.socket2.sock"))
+    if not sockets:
+        raise RuntimeError("Hyprland instance not found")
+    return max(sockets, key=lambda path: path.stat().st_mtime).parent.name
+
+
+def run(log_path: Path, verbose: bool) -> None:
+    while True:
+        try:
+            instance = find_instance()
+            install_hook(instance, log_path)
+            if verbose:
+                print(f"installed Hyprland key event hook: {instance}", file=sys.stderr)
+
+            with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as client:
+                client.connect(str(event_socket(instance)))
+                stop = threading.Event()
+                watchdog = threading.Thread(
+                    target=maintain_hook,
+                    args=(instance, log_path, stop, verbose),
+                    daemon=True,
+                )
+                watchdog.start()
+                try:
+                    with client.makefile("r", encoding="utf-8", errors="replace") as events:
+                        for line in events:
+                            if line.startswith("config.reloaded>>"):
+                                install_hook(instance, log_path)
+                            elif line.startswith("hyprland.shutdown>>"):
+                                return
+                finally:
+                    stop.set()
+        except (OSError, RuntimeError) as error:
+            if verbose:
+                print(f"collector waiting: {error}", file=sys.stderr)
+            time.sleep(2)
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="Collect Hyprland keyboard shortcut attempts without changing bind configuration."
+    )
+    parser.add_argument(
+        "--log",
+        type=Path,
+        default=DEFAULT_LOG,
+        help=f"event log path (default: {DEFAULT_LOG})",
+    )
+    parser.add_argument("--verbose", action="store_true", help="log install and reconnect messages")
+    parser.add_argument("--once", action="store_true", help="install the hook and exit")
+    args = parser.parse_args()
+
+    log_path = args.log.expanduser()
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    if args.once:
+        install_hook(find_instance(), log_path)
+        print("Hyprland key event hook installed")
+        return
+
+    run(log_path, args.verbose)
+
+
+if __name__ == "__main__":
+    main()
