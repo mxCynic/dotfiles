@@ -106,6 +106,11 @@ end)()
 functions.workspace.toggle_empty = (function()
   local PREVIOUS = "previous"
   local EMPTY = "empty"
+  local previous_by_monitor = {}
+
+  local function monitor_key(workspace)
+    return workspace.monitor and workspace.monitor.name or ""
+  end
 
   return function()
     local ws = hl.get_active_workspace()
@@ -113,9 +118,15 @@ functions.workspace.toggle_empty = (function()
       return
     end
 
-    if ws.windows == 0 then
-      hl.dispatch(hl.dsp.focus({ workspace = PREVIOUS }))
+    local key = monitor_key(ws)
+    if ws.is_empty then
+      -- Remember the workspace explicitly instead of relying on Hyprland's
+      -- cross-monitor "previous" target after switching to an empty workspace.
+      local previous = previous_by_monitor[key]
+      previous_by_monitor[key] = nil
+      hl.dispatch(hl.dsp.focus({ workspace = previous or PREVIOUS }))
     else
+      previous_by_monitor[key] = ws.name
       hl.dispatch(hl.dsp.focus({ workspace = EMPTY }))
     end
   end
