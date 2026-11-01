@@ -17,7 +17,6 @@ diff-editor = ":builtin"
 
 
 [remotes.origin]
-auto-track-bookmarks = "wxq*"
 
 [fsmonitor]
 backend = "watchman"
