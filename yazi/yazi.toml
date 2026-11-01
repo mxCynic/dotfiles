@@ -59,32 +59,32 @@ fi
 ]
 read = [{ run = 'sioyek %s', orphan = true }]
 
-wps-word = [{ run = 'wps %s1', orphan = true }]
-wps-ppt = [{ run = 'wpp %s1', orphan = true }]
-wps-excel = [{ run = 'et %s1', orphan = true }]
+ely-doc = [{ run = 'ely-doc %s1', orphan = true }]
+ely-ppt = [{ run = 'ely-show %s1', orphan = true }]
+ely-excel = [{ run = 'ely-table %s1', orphan = true }]
 
 [open]
 rules = [
   { url = "*.doc", use = [
-    "wps-word",
+    "ely-doc",
   ] },
   { url = "*.docx", use = [
-    "wps-word",
+    "ely-doc",
   ] },
   { url = "*.xls", use = [
-    "wps-excel",
+    "ely-excel",
   ] },
   { url = "*.xlsx", use = [
-    "wps-excel",
+    "ely-excel",
   ] },
   { url = "*.xlsm", use = [
-    "wps-excel",
+    "ely-excel",
   ] },
   { url = "*.ppt", use = [
-    "wps-ppt",
+    "ely-ppt",
   ] },
   { url = "*.pptx", use = [
-    "wps-ppt",
+    "ely-ppt",
   ] },
 
   { url = "*/", use = [
