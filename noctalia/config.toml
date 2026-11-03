@@ -1,6 +1,7 @@
 # 手写层（会被 GUI 写入的 ~/.local/state/noctalia/settings.toml 覆盖）。
 # 这里只放 GUI 管不到、或者你不希望 GUI 接管的设置；
-# 其余设置请在设置界面里改，或直接改 noctalia/settings.toml。
+# 其余设置请在设置界面里改；运行时状态不纳入版本控制。
+# 首次部署使用 noctalia/settings.example.toml 初始化状态。
 
 [bar]
 order = [ "main" ]

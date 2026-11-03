@@ -1,3 +1,5 @@
+# Noctalia 运行时状态初始化模板。
+# deploy.py 只在状态文件不存在时复制它；之后由 Noctalia 在本机维护。
 config_version = 16
 
 [audio]
@@ -376,16 +378,16 @@ transition_on_startup = true
     enabled = true
 
     [wallpaper.default]
-    path = "/home/mx/Pictures/Wallpapers/00058.jpg"
+    path = ""
 
     [wallpaper.last]
-    path = "/home/mx/Pictures/Wallpapers/00058.jpg"
+    path = ""
 
     [wallpaper.monitors.HDMI-A-1]
-    path = "/home/mx/Pictures/Wallpapers/00058.jpg"
+    path = ""
 
     [wallpaper.monitors.eDP-1]
-    path = "/home/mx/Pictures/Wallpapers/00058.jpg"
+    path = ""
 
 [widget.clock]
 capsule = true

@@ -2,6 +2,30 @@
 
 import os
 import os.path as op
+import shutil
+
+
+def deploy_seed_files(dotfile_dir):
+    seed_mapping = {
+        "noctalia/settings.example.toml": op.expanduser(
+            "~/.local/state/noctalia/settings.toml"
+        ),
+    }
+
+    for src_name, tgt_path in seed_mapping.items():
+        src_path = op.join(dotfile_dir, src_name)
+        if not op.isfile(src_path):
+            print(f"⚠️  种子文件不存在: {src_path}")
+            continue
+
+        if op.lexists(tgt_path):
+            if not op.islink(tgt_path) or op.exists(tgt_path):
+                continue
+            os.unlink(tgt_path)
+
+        os.makedirs(op.dirname(tgt_path), exist_ok=True)
+        shutil.copy2(src_path, tgt_path)
+        print(f"📄 状态初始化: {tgt_path} ← {src_path}")
 
 
 def deploy_dotfiles():
@@ -27,7 +51,6 @@ def deploy_dotfiles():
         "zed": op.expanduser("~/.config/zed"),
         "cava": op.expanduser("~/.config/cava"),
         "noctalia/config.toml": op.expanduser("~/.config/noctalia/config.toml"),
-        "noctalia/settings.toml": op.expanduser("~/.local/state/noctalia/settings.toml"),
         "noctalia/templates": op.expanduser("~/.config/noctalia/templates"),
         "patch/qq-flags.conf": op.expanduser("~/.config/qq-flags.conf"),
         "systemd/user": op.expanduser("~/.config/systemd/user"),
@@ -82,6 +105,8 @@ def deploy_dotfiles():
                     else:
                         os.symlink(src_file, tgt_file)
                         print(f"🔗 链接创建: {tgt_file} → {src_file}")
+
+    deploy_seed_files(DOTFILE_DIR)
 
 
 if __name__ == "__main__":

@@ -5,7 +5,8 @@
 
 Personal dotfiles for a Hyprland-based Wayland environment on Arch Linux.
 Configuration is managed in this repository (with [Jujutsu](https://github.com/martinvonz/jj))
-and symlinked into place by `mxbin/deploy.py`.
+and symlinked into place by `mxbin/deploy.py`. A small amount of per-machine
+runtime state is copied from an example only on first deployment.
 
 ## Overview
 
@@ -34,12 +35,14 @@ uv run mxbin/deploy.py
 ```
 
 `deploy.py` never overwrites an existing non-symlink file; it prints a warning
-and skips those entries instead.
+and skips those entries instead. The Noctalia state file is likewise initialized
+only when absent and is never overwritten.
 
 ## Directory guide
 
 Config directories, grouped by what they configure. “Deployed to” is where
-`deploy.py` symlinks them into your home directory.
+`deploy.py` places them in your home directory. Static configuration is
+symlinked, while runtime state is copied only once.
 
 ### Desktop environment
 
@@ -48,7 +51,7 @@ Config directories, grouped by what they configure. “Deployed to” is where
 | `hypr/` | `~/.config/hypr` | Hyprland config: `hyprland.lua`, Lua modules in `configs/`, and plugin configs in `plugins/` |
 | `rofi/` | `~/.config/rofi` | Rofi launcher themes and config |
 | `fuzzel/` | `~/.config/fuzzel` | Fuzzel launcher config and theme |
-| `noctalia/` | `~/.config/noctalia/{config.toml,templates/}` + `~/.local/state/noctalia/settings.toml` | Noctalia wallpaper, bar, and theme-template config |
+| `noctalia/` | `~/.config/noctalia/{config.toml,templates/}`; `settings.example.toml` is copied to `~/.local/state/noctalia/settings.toml` on first deployment | Noctalia static config, theme templates, and local-state initialization |
 
 ### Text editing
 

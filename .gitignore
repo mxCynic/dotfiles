@@ -4,5 +4,7 @@
 nvim/lazy-lock.json
 nvim/lazyvim.json
 
+# Noctalia 的壁纸和 GUI 设置属于本机运行时状态。
+noctalia/settings.toml
 
 

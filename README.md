@@ -2,7 +2,8 @@
 
 基于 Hyprland 的 Wayland 桌面环境（Arch Linux）的个人配置文件仓库。
 配置由本仓库统一管理（版本控制使用 [Jujutsu](https://github.com/martinvonz/jj)），
-并通过 `mxbin/deploy.py` 以符号链接的方式部署到主目录对应位置。
+并通过 `mxbin/deploy.py` 以符号链接的方式部署到主目录对应位置。少量本机运行时状态
+仅在首次部署时从示例文件复制，之后不再由仓库接管。
 
 > 本文件（README.md）为中文标准版；英文翻译见 [README.en.md](./README.en.md)。
 
@@ -28,11 +29,12 @@ uv run mxbin/deploy.py
 ```
 
 `deploy.py` 不会覆盖已存在的非符号链接文件；遇到这种情况会打印警告并跳过。
+Noctalia 状态文件同样只会在不存在时初始化，不会覆盖已有状态。
 
 ## 目录指南
 
-配置目录按用途分类。“部署到”一列说明 `deploy.py` 会把仓库内容以符号链接
-放到主目录的哪个位置。
+配置目录按用途分类。“部署到”一列说明 `deploy.py` 会把仓库内容放到主目录的
+哪个位置。静态配置使用符号链接，运行时状态使用首次复制。
 
 ### 桌面环境
 
@@ -41,7 +43,7 @@ uv run mxbin/deploy.py
 | `hypr/` | `~/.config/hypr` | Hyprland 配置：`hyprland.lua` 主配置、`configs/` 下的 Lua 模块与 `plugins/` 插件配置 |
 | `rofi/` | `~/.config/rofi` | Rofi 启动器主题与配置 |
 | `fuzzel/` | `~/.config/fuzzel` | Fuzzel 启动器配置与主题 |
-| `noctalia/` | `~/.config/noctalia/{config.toml,templates/}` + `~/.local/state/noctalia/settings.toml` | Noctalia 壁纸、顶栏与主题模板配置 |
+| `noctalia/` | `~/.config/noctalia/{config.toml,templates/}`；`settings.example.toml` 首次复制到 `~/.local/state/noctalia/settings.toml` | Noctalia 静态配置、主题模板与本机状态初始化 |
 
 ### 文本编辑
 
