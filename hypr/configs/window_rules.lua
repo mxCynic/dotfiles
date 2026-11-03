@@ -54,7 +54,8 @@ local float_windows_by_title = {
   "SPlayer - 桌面歌词",
   "Strata",
   "媒体查看器",
-  "设置"
+  "设置",
+  "图片和视频"
 }
 for _, name in ipairs(float_windows_by_title) do
   hl.window_rule({ match = { title = name }, float = true, persistent_size = true })
